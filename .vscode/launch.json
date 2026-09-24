@@ -1,0 +1,38 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "vibe_flutter",
+            "cwd": "${workspaceFolder}/vibe_flutter",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main.dart"
+        },
+        {
+            "name": "vibe_server",
+            "cwd": "${workspaceFolder}/vibe_server",
+            "request": "launch",
+            "type": "dart",
+            "preLaunchTask": "docker_compose_up",
+            "program": "bin/main.dart",
+            "env": {
+                "SERVERPOD_PASSWORD_database": "HkkNtZhu-JT3VoDR5iX3dfuDNyZjW9zq"
+            },
+            "args": [
+                "--apply-migrations"
+            ]
+        }
+    ],
+    "compounds": [
+        {
+            "name": "vibe (full stack)",
+            "configurations": [
+                "vibe_server",
+                "vibe_flutter"
+            ],
+            "presentation": {
+                "order": 1
+            }
+        }
+    ]
+}
