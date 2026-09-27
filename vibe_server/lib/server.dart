@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:serverpod/serverpod.dart';
@@ -75,6 +76,38 @@ void run(List<String> args) async {
 
   // Start the server.
   await pod.start();
+
+  // Render's free tier spins the service down after ~15 min of no inbound
+  // traffic, which makes the first request afterwards time out client-side.
+  // Pinging our own public URL periodically counts as real traffic (it goes
+  // out to the internet and back through Render's proxy), so the service
+  // never sits idle long enough to sleep. Only needed in production — local
+  // dev and tests don't sit behind a spin-down proxy.
+  if (pod.runMode == 'production') {
+    _startKeepAlivePings(pod);
+  }
+}
+
+void _startKeepAlivePings(Serverpod pod) {
+  final apiConfig = pod.config.apiServer;
+  final pingUri = Uri(
+    scheme: apiConfig.publicScheme,
+    host: apiConfig.publicHost,
+    port: apiConfig.publicPort,
+  );
+
+  Timer.periodic(const Duration(minutes: 10), (_) async {
+    try {
+      final client = HttpClient();
+      final request = await client.getUrl(pingUri);
+      final response = await request.close();
+      await response.drain<void>();
+      client.close();
+    } catch (_) {
+      // Ignore failures; a missed ping just means the next one (10 minutes
+      // from now) will wake the service back up as usual.
+    }
+  });
 }
 
 void _sendRegistrationCode(

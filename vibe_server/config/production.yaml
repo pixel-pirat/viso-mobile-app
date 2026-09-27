@@ -10,7 +10,7 @@
 # Dockerfile ENTRYPOINT), since Render assigns the port dynamically.
 apiServer:
   port: 8080
-  publicHost: vibe-api.onrender.com
+  publicHost: viso-mobile-app.onrender.com
   publicPort: 443
   publicScheme: https
 
@@ -18,13 +18,13 @@ apiServer:
 # one port is routed), so these are unused placeholders for now.
 insightsServer:
   port: 8081
-  publicHost: vibe-api.onrender.com
+  publicHost: viso-mobile-app.onrender.com
   publicPort: 443
   publicScheme: https
 
 webServer:
   port: 8082
-  publicHost: vibe-api.onrender.com
+  publicHost: viso-mobile-app.onrender.com
   publicPort: 443
   publicScheme: https
 
