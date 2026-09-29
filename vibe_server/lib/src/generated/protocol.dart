@@ -20,12 +20,15 @@ import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
 import 'chat/models/chat_conversation_summary.dart' as _i5;
 import 'chat/models/chat_message.dart' as _i6;
 import 'greetings/greeting.dart' as _i7;
+import 'push/models/device_token.dart' as _i8;
 import 'package:vibe_server/src/generated/chat/models/chat_conversation_summary.dart'
-    as _i8;
-import 'package:vibe_server/src/generated/chat/models/chat_message.dart' as _i9;
+    as _i9;
+import 'package:vibe_server/src/generated/chat/models/chat_message.dart'
+    as _i10;
 export 'chat/models/chat_conversation_summary.dart';
 export 'chat/models/chat_message.dart';
 export 'greetings/greeting.dart';
+export 'push/models/device_token.dart';
 
 class Protocol extends _i1.SerializationManagerServer {
   Protocol._();
@@ -140,6 +143,89 @@ class Protocol extends _i1.SerializationManagerServer {
       ],
       managed: true,
     ),
+    _i2.TableDefinition(
+      name: 'device_token',
+      dartName: 'DeviceToken',
+      schema: 'public',
+      module: 'vibe',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'device_token_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'authUserId',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue',
+        ),
+        _i2.ColumnDefinition(
+          name: 'token',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'platform',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'updatedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+          columnDefault: 'CURRENT_TIMESTAMP',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'device_token_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'device_token_token_unique',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'token',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'device_token_auth_user_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'authUserId',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
     ..._i3.Protocol.targetTableDefinitions,
     ..._i4.Protocol.targetTableDefinitions,
     ..._i2.Protocol.targetTableDefinitions,
@@ -181,6 +267,9 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i7.Greeting) {
       return _i7.Greeting.fromJson(data) as T;
     }
+    if (t == _i8.DeviceToken) {
+      return _i8.DeviceToken.fromJson(data) as T;
+    }
     if (t == _i1.getType<_i5.ChatConversationSummary?>()) {
       return (data != null ? _i5.ChatConversationSummary.fromJson(data) : null)
           as T;
@@ -191,20 +280,25 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i1.getType<_i7.Greeting?>()) {
       return (data != null ? _i7.Greeting.fromJson(data) : null) as T;
     }
+    if (t == _i1.getType<_i8.DeviceToken?>()) {
+      return (data != null ? _i8.DeviceToken.fromJson(data) : null) as T;
+    }
     if (t == List<_i3.UserProfileModel>) {
       return (data as List)
               .map((e) => deserialize<_i3.UserProfileModel>(e))
               .toList()
           as T;
     }
-    if (t == List<_i8.ChatConversationSummary>) {
+    if (t == List<_i9.ChatConversationSummary>) {
       return (data as List)
-              .map((e) => deserialize<_i8.ChatConversationSummary>(e))
+              .map((e) => deserialize<_i9.ChatConversationSummary>(e))
               .toList()
           as T;
     }
-    if (t == List<_i9.ChatMessage>) {
-      return (data as List).map((e) => deserialize<_i9.ChatMessage>(e)).toList()
+    if (t == List<_i10.ChatMessage>) {
+      return (data as List)
+              .map((e) => deserialize<_i10.ChatMessage>(e))
+              .toList()
           as T;
     }
     try {
@@ -224,6 +318,7 @@ class Protocol extends _i1.SerializationManagerServer {
       _i5.ChatConversationSummary => 'ChatConversationSummary',
       _i6.ChatMessage => 'ChatMessage',
       _i7.Greeting => 'Greeting',
+      _i8.DeviceToken => 'DeviceToken',
       _ => null,
     };
   }
@@ -244,6 +339,8 @@ class Protocol extends _i1.SerializationManagerServer {
         return 'ChatMessage';
       case _i7.Greeting():
         return 'Greeting';
+      case _i8.DeviceToken():
+        return 'DeviceToken';
     }
     className = _i2.Protocol().getClassNameForObject(data);
     if (className != null) {
@@ -274,6 +371,9 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (dataClassName == 'Greeting') {
       return deserialize<_i7.Greeting>(data['data']);
+    }
+    if (dataClassName == 'DeviceToken') {
+      return deserialize<_i8.DeviceToken>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
@@ -313,6 +413,8 @@ class Protocol extends _i1.SerializationManagerServer {
     switch (t) {
       case _i6.ChatMessage:
         return _i6.ChatMessage.t;
+      case _i8.DeviceToken:
+        return _i8.DeviceToken.t;
     }
     return null;
   }

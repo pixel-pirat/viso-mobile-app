@@ -384,6 +384,38 @@ class EndpointGreeting extends _i2.EndpointRef {
       );
 }
 
+/// Registers/unregisters this device's Firebase Cloud Messaging token so
+/// the server can send it push notifications (e.g. for new chat messages).
+/// {@category Endpoint}
+class EndpointPush extends _i2.EndpointRef {
+  EndpointPush(_i2.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'push';
+
+  /// Registers or refreshes [token] for the signed-in user's device.
+  _i3.Future<void> registerDeviceToken(
+    String token,
+    String platform,
+  ) => caller.callServerEndpoint<void>(
+    'push',
+    'registerDeviceToken',
+    {
+      'token': token,
+      'platform': platform,
+    },
+  );
+
+  /// Removes [token], e.g. on sign-out, so this device stops receiving
+  /// pushes for the account that was signed in.
+  _i3.Future<void> unregisterDeviceToken(String token) =>
+      caller.callServerEndpoint<void>(
+        'push',
+        'unregisterDeviceToken',
+        {'token': token},
+      );
+}
+
 class Modules {
   Modules(Client client) {
     serverpod_auth_core = _i4.Caller(client);
@@ -429,6 +461,7 @@ class Client extends _i2.ServerpodClientShared {
     userProfile = EndpointUserProfile(this);
     chat = EndpointChat(this);
     greeting = EndpointGreeting(this);
+    push = EndpointPush(this);
     modules = Modules(this);
   }
 
@@ -442,6 +475,8 @@ class Client extends _i2.ServerpodClientShared {
 
   late final EndpointGreeting greeting;
 
+  late final EndpointPush push;
+
   late final Modules modules;
 
   @override
@@ -451,6 +486,7 @@ class Client extends _i2.ServerpodClientShared {
     'userProfile': userProfile,
     'chat': chat,
     'greeting': greeting,
+    'push': push,
   };
 
   @override

@@ -1,0 +1,15 @@
+### A Firebase Cloud Messaging token registered by a signed-in user's device,
+### used to send that device push notifications.
+class: DeviceToken
+table: device_token
+fields:
+  authUserId: UuidValue
+  token: String
+  platform: String
+  updatedAt: DateTime, default=now
+indexes:
+  device_token_token_unique:
+    fields: token
+    unique: true
+  device_token_auth_user_idx:
+    fields: authUserId

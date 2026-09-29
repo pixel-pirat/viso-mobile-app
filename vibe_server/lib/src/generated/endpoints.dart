@@ -17,11 +17,12 @@ import '../auth/jwt_refresh_endpoint.dart' as _i3;
 import '../auth/user_profile_endpoint.dart' as _i4;
 import '../chat/chat_endpoint.dart' as _i5;
 import '../greetings/greeting_endpoint.dart' as _i6;
-import 'dart:typed_data' as _i7;
+import '../push/push_endpoint.dart' as _i7;
+import 'dart:typed_data' as _i8;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    as _i8;
-import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
     as _i9;
+import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
+    as _i10;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -55,6 +56,12 @@ class Endpoints extends _i1.EndpointDispatch {
         ..initialize(
           server,
           'greeting',
+          null,
+        ),
+      'push': _i7.PushEndpoint()
+        ..initialize(
+          server,
+          'push',
           null,
         ),
     };
@@ -281,7 +288,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'image': _i1.ParameterDescription(
               name: 'image',
-              type: _i1.getType<_i7.ByteData>(),
+              type: _i1.getType<_i8.ByteData>(),
               nullable: false,
             ),
           },
@@ -470,9 +477,59 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
-    modules['serverpod_auth_core'] = _i8.Endpoints()
+    connectors['push'] = _i1.EndpointConnector(
+      name: 'push',
+      endpoint: endpoints['push']!,
+      methodConnectors: {
+        'registerDeviceToken': _i1.MethodConnector(
+          name: 'registerDeviceToken',
+          params: {
+            'token': _i1.ParameterDescription(
+              name: 'token',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'platform': _i1.ParameterDescription(
+              name: 'platform',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['push'] as _i7.PushEndpoint).registerDeviceToken(
+                    session,
+                    params['token'],
+                    params['platform'],
+                  ),
+        ),
+        'unregisterDeviceToken': _i1.MethodConnector(
+          name: 'unregisterDeviceToken',
+          params: {
+            'token': _i1.ParameterDescription(
+              name: 'token',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['push'] as _i7.PushEndpoint).unregisterDeviceToken(
+                    session,
+                    params['token'],
+                  ),
+        ),
+      },
+    );
+    modules['serverpod_auth_core'] = _i9.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_idp'] = _i9.Endpoints()
+    modules['serverpod_auth_idp'] = _i10.Endpoints()
       ..initializeEndpoints(server);
   }
 }
