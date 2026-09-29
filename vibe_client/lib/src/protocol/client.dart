@@ -18,8 +18,11 @@ import 'dart:async' as _i3;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
     as _i4;
 import 'dart:typed_data' as _i5;
-import 'package:vibe_client/src/protocol/greetings/greeting.dart' as _i6;
-import 'protocol.dart' as _i7;
+import 'package:vibe_client/src/protocol/chat/models/chat_conversation_summary.dart'
+    as _i6;
+import 'package:vibe_client/src/protocol/chat/models/chat_message.dart' as _i7;
+import 'package:vibe_client/src/protocol/greetings/greeting.dart' as _i8;
+import 'protocol.dart' as _i9;
 
 /// By extending [EmailIdpBaseEndpoint], the email identity provider endpoints
 /// are made available on the server and enable the corresponding sign-in widget
@@ -302,6 +305,67 @@ class EndpointUserProfile extends _i4.EndpointUserProfileEditBase {
       );
 }
 
+/// Real direct-messaging between signed-in users: conversation list,
+/// message history, sending, read receipts and finding people to message.
+/// {@category Endpoint}
+class EndpointChat extends _i2.EndpointRef {
+  EndpointChat(_i2.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'chat';
+
+  /// Returns up to 20 real users whose name or username matches [query],
+  /// excluding the signed-in user. Used by the "New Message" flow.
+  _i3.Future<List<_i4.UserProfileModel>> searchUsers(String query) =>
+      caller.callServerEndpoint<List<_i4.UserProfileModel>>(
+        'chat',
+        'searchUsers',
+        {'query': query},
+      );
+
+  /// Returns the signed-in user's conversations, most recent first.
+  _i3.Future<List<_i6.ChatConversationSummary>> listConversations() =>
+      caller.callServerEndpoint<List<_i6.ChatConversationSummary>>(
+        'chat',
+        'listConversations',
+        {},
+      );
+
+  /// Returns the message history with [partnerId], oldest first.
+  _i3.Future<List<_i7.ChatMessage>> getMessages(
+    _i2.UuidValue partnerId, {
+    required int limit,
+  }) => caller.callServerEndpoint<List<_i7.ChatMessage>>(
+    'chat',
+    'getMessages',
+    {
+      'partnerId': partnerId,
+      'limit': limit,
+    },
+  );
+
+  /// Sends a text message to [recipientId].
+  _i3.Future<_i7.ChatMessage> sendMessage(
+    _i2.UuidValue recipientId,
+    String text,
+  ) => caller.callServerEndpoint<_i7.ChatMessage>(
+    'chat',
+    'sendMessage',
+    {
+      'recipientId': recipientId,
+      'text': text,
+    },
+  );
+
+  /// Marks all messages from [partnerId] to the signed-in user as read.
+  _i3.Future<void> markConversationRead(_i2.UuidValue partnerId) =>
+      caller.callServerEndpoint<void>(
+        'chat',
+        'markConversationRead',
+        {'partnerId': partnerId},
+      );
+}
+
 /// This is an example endpoint that returns a greeting message through
 /// its [hello] method.
 /// {@category Endpoint}
@@ -312,8 +376,8 @@ class EndpointGreeting extends _i2.EndpointRef {
   String get name => 'greeting';
 
   /// Returns a personalized greeting message: "Hello {name}".
-  _i3.Future<_i6.Greeting> hello(String name) =>
-      caller.callServerEndpoint<_i6.Greeting>(
+  _i3.Future<_i8.Greeting> hello(String name) =>
+      caller.callServerEndpoint<_i8.Greeting>(
         'greeting',
         'hello',
         {'name': name},
@@ -351,7 +415,7 @@ class Client extends _i2.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
          host,
-         _i7.Protocol(),
+         _i9.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
@@ -363,6 +427,7 @@ class Client extends _i2.ServerpodClientShared {
     emailIdp = EndpointEmailIdp(this);
     jwtRefresh = EndpointJwtRefresh(this);
     userProfile = EndpointUserProfile(this);
+    chat = EndpointChat(this);
     greeting = EndpointGreeting(this);
     modules = Modules(this);
   }
@@ -373,6 +438,8 @@ class Client extends _i2.ServerpodClientShared {
 
   late final EndpointUserProfile userProfile;
 
+  late final EndpointChat chat;
+
   late final EndpointGreeting greeting;
 
   late final Modules modules;
@@ -382,6 +449,7 @@ class Client extends _i2.ServerpodClientShared {
     'emailIdp': emailIdp,
     'jwtRefresh': jwtRefresh,
     'userProfile': userProfile,
+    'chat': chat,
     'greeting': greeting,
   };
 

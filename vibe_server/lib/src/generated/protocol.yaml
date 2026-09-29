@@ -15,5 +15,11 @@ userProfile:
   - changeUserName:
   - changeFullName:
   - get:
+chat:
+  - searchUsers:
+  - listConversations:
+  - getMessages:
+  - sendMessage:
+  - markConversationRead:
 greeting:
   - hello:

@@ -17,7 +17,10 @@ import 'dart:async' as _i3;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _i4;
 import 'dart:typed_data' as _i5;
-import 'package:vibe_server/src/generated/greetings/greeting.dart' as _i6;
+import 'package:vibe_server/src/generated/chat/models/chat_conversation_summary.dart'
+    as _i6;
+import 'package:vibe_server/src/generated/chat/models/chat_message.dart' as _i7;
+import 'package:vibe_server/src/generated/greetings/greeting.dart' as _i8;
 import 'package:vibe_server/src/generated/protocol.dart';
 import 'package:vibe_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -138,6 +141,8 @@ class TestEndpoints {
 
   late final _UserProfileEndpoint userProfile;
 
+  late final _ChatEndpoint chat;
+
   late final _GreetingEndpoint greeting;
 }
 
@@ -157,6 +162,10 @@ class _InternalTestEndpoints extends TestEndpoints
       serializationManager,
     );
     userProfile = _UserProfileEndpoint(
+      endpoints,
+      serializationManager,
+    );
+    chat = _ChatEndpoint(
       endpoints,
       serializationManager,
     );
@@ -649,6 +658,179 @@ class _UserProfileEndpoint {
   }
 }
 
+class _ChatEndpoint {
+  _ChatEndpoint(
+    this._endpointDispatch,
+    this._serializationManager,
+  );
+
+  final _i2.EndpointDispatch _endpointDispatch;
+
+  final _i2.SerializationManager _serializationManager;
+
+  _i3.Future<List<_i4.UserProfileModel>> searchUsers(
+    _i1.TestSessionBuilder sessionBuilder,
+    String query,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'chat',
+            method: 'searchUsers',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'chat',
+          methodName: 'searchUsers',
+          parameters: _i1.testObjectToJson({'query': query}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<List<_i4.UserProfileModel>>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<List<_i6.ChatConversationSummary>> listConversations(
+    _i1.TestSessionBuilder sessionBuilder,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'chat',
+            method: 'listConversations',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'chat',
+          methodName: 'listConversations',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<List<_i6.ChatConversationSummary>>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<List<_i7.ChatMessage>> getMessages(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i2.UuidValue partnerId, {
+    required int limit,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'chat',
+            method: 'getMessages',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'chat',
+          methodName: 'getMessages',
+          parameters: _i1.testObjectToJson({
+            'partnerId': partnerId,
+            'limit': limit,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<List<_i7.ChatMessage>>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i7.ChatMessage> sendMessage(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i2.UuidValue recipientId,
+    String text,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'chat',
+            method: 'sendMessage',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'chat',
+          methodName: 'sendMessage',
+          parameters: _i1.testObjectToJson({
+            'recipientId': recipientId,
+            'text': text,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i7.ChatMessage>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<void> markConversationRead(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i2.UuidValue partnerId,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'chat',
+            method: 'markConversationRead',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'chat',
+          methodName: 'markConversationRead',
+          parameters: _i1.testObjectToJson({'partnerId': partnerId}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<void>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+}
+
 class _GreetingEndpoint {
   _GreetingEndpoint(
     this._endpointDispatch,
@@ -659,7 +841,7 @@ class _GreetingEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<_i6.Greeting> hello(
+  _i3.Future<_i8.Greeting> hello(
     _i1.TestSessionBuilder sessionBuilder,
     String name,
   ) async {
@@ -682,7 +864,7 @@ class _GreetingEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i6.Greeting>);
+                as _i3.Future<_i8.Greeting>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();

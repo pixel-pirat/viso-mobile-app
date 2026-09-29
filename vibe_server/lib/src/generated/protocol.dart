@@ -17,7 +17,14 @@ import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _i3;
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
     as _i4;
-import 'greetings/greeting.dart' as _i5;
+import 'chat/models/chat_conversation_summary.dart' as _i5;
+import 'chat/models/chat_message.dart' as _i6;
+import 'greetings/greeting.dart' as _i7;
+import 'package:vibe_server/src/generated/chat/models/chat_conversation_summary.dart'
+    as _i8;
+import 'package:vibe_server/src/generated/chat/models/chat_message.dart' as _i9;
+export 'chat/models/chat_conversation_summary.dart';
+export 'chat/models/chat_message.dart';
 export 'greetings/greeting.dart';
 
 class Protocol extends _i1.SerializationManagerServer {
@@ -28,6 +35,111 @@ class Protocol extends _i1.SerializationManagerServer {
   static final Protocol _instance = Protocol._();
 
   static final List<_i2.TableDefinition> targetTableDefinitions = [
+    _i2.TableDefinition(
+      name: 'chat_message',
+      dartName: 'ChatMessage',
+      schema: 'public',
+      module: 'vibe',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'chat_message_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'senderId',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue',
+        ),
+        _i2.ColumnDefinition(
+          name: 'recipientId',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue',
+        ),
+        _i2.ColumnDefinition(
+          name: 'text',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'createdAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+          columnDefault: 'CURRENT_TIMESTAMP',
+        ),
+        _i2.ColumnDefinition(
+          name: 'readAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'chat_message_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'chat_message_sender_recipient_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'senderId',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'recipientId',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'createdAt',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'chat_message_recipient_sender_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'recipientId',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'senderId',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'createdAt',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
     ..._i3.Protocol.targetTableDefinitions,
     ..._i4.Protocol.targetTableDefinitions,
     ..._i2.Protocol.targetTableDefinitions,
@@ -60,11 +172,40 @@ class Protocol extends _i1.SerializationManagerServer {
       }
     }
 
-    if (t == _i5.Greeting) {
-      return _i5.Greeting.fromJson(data) as T;
+    if (t == _i5.ChatConversationSummary) {
+      return _i5.ChatConversationSummary.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i5.Greeting?>()) {
-      return (data != null ? _i5.Greeting.fromJson(data) : null) as T;
+    if (t == _i6.ChatMessage) {
+      return _i6.ChatMessage.fromJson(data) as T;
+    }
+    if (t == _i7.Greeting) {
+      return _i7.Greeting.fromJson(data) as T;
+    }
+    if (t == _i1.getType<_i5.ChatConversationSummary?>()) {
+      return (data != null ? _i5.ChatConversationSummary.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i6.ChatMessage?>()) {
+      return (data != null ? _i6.ChatMessage.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i7.Greeting?>()) {
+      return (data != null ? _i7.Greeting.fromJson(data) : null) as T;
+    }
+    if (t == List<_i3.UserProfileModel>) {
+      return (data as List)
+              .map((e) => deserialize<_i3.UserProfileModel>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i8.ChatConversationSummary>) {
+      return (data as List)
+              .map((e) => deserialize<_i8.ChatConversationSummary>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i9.ChatMessage>) {
+      return (data as List).map((e) => deserialize<_i9.ChatMessage>(e)).toList()
+          as T;
     }
     try {
       return _i3.Protocol().deserialize<T>(data, t);
@@ -80,7 +221,9 @@ class Protocol extends _i1.SerializationManagerServer {
 
   static String? getClassNameForType(Type type) {
     return switch (type) {
-      _i5.Greeting => 'Greeting',
+      _i5.ChatConversationSummary => 'ChatConversationSummary',
+      _i6.ChatMessage => 'ChatMessage',
+      _i7.Greeting => 'Greeting',
       _ => null,
     };
   }
@@ -95,7 +238,11 @@ class Protocol extends _i1.SerializationManagerServer {
     }
 
     switch (data) {
-      case _i5.Greeting():
+      case _i5.ChatConversationSummary():
+        return 'ChatConversationSummary';
+      case _i6.ChatMessage():
+        return 'ChatMessage';
+      case _i7.Greeting():
         return 'Greeting';
     }
     className = _i2.Protocol().getClassNameForObject(data);
@@ -119,8 +266,14 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName is! String) {
       return super.deserializeByClassName(data);
     }
+    if (dataClassName == 'ChatConversationSummary') {
+      return deserialize<_i5.ChatConversationSummary>(data['data']);
+    }
+    if (dataClassName == 'ChatMessage') {
+      return deserialize<_i6.ChatMessage>(data['data']);
+    }
     if (dataClassName == 'Greeting') {
-      return deserialize<_i5.Greeting>(data['data']);
+      return deserialize<_i7.Greeting>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
@@ -156,6 +309,10 @@ class Protocol extends _i1.SerializationManagerServer {
       if (table != null) {
         return table;
       }
+    }
+    switch (t) {
+      case _i6.ChatMessage:
+        return _i6.ChatMessage.t;
     }
     return null;
   }

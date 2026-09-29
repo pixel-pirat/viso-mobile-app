@@ -1,0 +1,22 @@
+### A direct message between two users.
+class: ChatMessage
+table: chat_message
+fields:
+  ### The auth user id of whoever sent this message.
+  senderId: UuidValue
+
+  ### The auth user id of whoever should receive this message.
+  recipientId: UuidValue
+
+  text: String
+
+  createdAt: DateTime, default=now
+
+  ### Set once the recipient has opened the conversation.
+  readAt: DateTime?
+
+indexes:
+  chat_message_sender_recipient_idx:
+    fields: senderId, recipientId, createdAt
+  chat_message_recipient_sender_idx:
+    fields: recipientId, senderId, createdAt

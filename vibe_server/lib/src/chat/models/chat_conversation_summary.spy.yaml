@@ -1,0 +1,12 @@
+### One row in the signed-in user's conversation list: the other
+### participant plus a preview of the most recent message.
+class: ChatConversationSummary
+fields:
+  partnerId: UuidValue
+  partnerName: String
+  partnerUserName: String?
+  partnerAvatarUrl: String?
+  lastMessageText: String
+  lastMessageAt: DateTime
+  lastMessageIsMine: bool
+  unreadCount: int
