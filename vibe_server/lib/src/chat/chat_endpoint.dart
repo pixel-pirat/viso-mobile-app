@@ -74,7 +74,8 @@ class ChatEndpoint extends Endpoint {
       summaries.add(
         ChatConversationSummary(
           partnerId: partnerId,
-          partnerName: profile?.fullName ??
+          partnerName:
+              profile?.fullName ??
               profile?.userName ??
               profile?.email?.split('@').first ??
               'Unknown user',
@@ -88,7 +89,9 @@ class ChatEndpoint extends Endpoint {
       );
     }
 
-    summaries.sort((final a, final b) => b.lastMessageAt.compareTo(a.lastMessageAt));
+    summaries.sort(
+      (final a, final b) => b.lastMessageAt.compareTo(a.lastMessageAt),
+    );
     return summaries;
   }
 
