@@ -17,12 +17,14 @@ import '../auth/jwt_refresh_endpoint.dart' as _i3;
 import '../auth/user_profile_endpoint.dart' as _i4;
 import '../chat/chat_endpoint.dart' as _i5;
 import '../greetings/greeting_endpoint.dart' as _i6;
-import '../push/push_endpoint.dart' as _i7;
-import 'dart:typed_data' as _i8;
+import '../notifications/notifications_endpoint.dart' as _i7;
+import '../presence/presence_endpoint.dart' as _i8;
+import '../push/push_endpoint.dart' as _i9;
+import 'dart:typed_data' as _i10;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    as _i9;
+    as _i11;
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
-    as _i10;
+    as _i12;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -58,7 +60,19 @@ class Endpoints extends _i1.EndpointDispatch {
           'greeting',
           null,
         ),
-      'push': _i7.PushEndpoint()
+      'notifications': _i7.NotificationsEndpoint()
+        ..initialize(
+          server,
+          'notifications',
+          null,
+        ),
+      'presence': _i8.PresenceEndpoint()
+        ..initialize(
+          server,
+          'presence',
+          null,
+        ),
+      'push': _i9.PushEndpoint()
         ..initialize(
           server,
           'push',
@@ -288,7 +302,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'image': _i1.ParameterDescription(
               name: 'image',
-              type: _i1.getType<_i8.ByteData>(),
+              type: _i1.getType<_i10.ByteData>(),
               nullable: false,
             ),
           },
@@ -477,6 +491,100 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
+    connectors['notifications'] = _i1.EndpointConnector(
+      name: 'notifications',
+      endpoint: endpoints['notifications']!,
+      methodConnectors: {
+        'list': _i1.MethodConnector(
+          name: 'list',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['notifications'] as _i7.NotificationsEndpoint)
+                      .list(session),
+        ),
+        'markRead': _i1.MethodConnector(
+          name: 'markRead',
+          params: {
+            'notificationId': _i1.ParameterDescription(
+              name: 'notificationId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['notifications'] as _i7.NotificationsEndpoint)
+                      .markRead(
+                        session,
+                        params['notificationId'],
+                      ),
+        ),
+        'markAllRead': _i1.MethodConnector(
+          name: 'markAllRead',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['notifications'] as _i7.NotificationsEndpoint)
+                      .markAllRead(session),
+        ),
+        'sendTestNotification': _i1.MethodConnector(
+          name: 'sendTestNotification',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['notifications'] as _i7.NotificationsEndpoint)
+                      .sendTestNotification(session),
+        ),
+      },
+    );
+    connectors['presence'] = _i1.EndpointConnector(
+      name: 'presence',
+      endpoint: endpoints['presence']!,
+      methodConnectors: {
+        'heartbeat': _i1.MethodConnector(
+          name: 'heartbeat',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['presence'] as _i8.PresenceEndpoint)
+                  .heartbeat(session),
+        ),
+        'getPresence': _i1.MethodConnector(
+          name: 'getPresence',
+          params: {
+            'userId': _i1.ParameterDescription(
+              name: 'userId',
+              type: _i1.getType<_i1.UuidValue>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['presence'] as _i8.PresenceEndpoint).getPresence(
+                    session,
+                    params['userId'],
+                  ),
+        ),
+      },
+    );
     connectors['push'] = _i1.EndpointConnector(
       name: 'push',
       endpoint: endpoints['push']!,
@@ -500,7 +608,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['push'] as _i7.PushEndpoint).registerDeviceToken(
+                  (endpoints['push'] as _i9.PushEndpoint).registerDeviceToken(
                     session,
                     params['token'],
                     params['platform'],
@@ -520,16 +628,16 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['push'] as _i7.PushEndpoint).unregisterDeviceToken(
+                  (endpoints['push'] as _i9.PushEndpoint).unregisterDeviceToken(
                     session,
                     params['token'],
                   ),
         ),
       },
     );
-    modules['serverpod_auth_core'] = _i9.Endpoints()
+    modules['serverpod_auth_core'] = _i11.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_idp'] = _i10.Endpoints()
+    modules['serverpod_auth_idp'] = _i12.Endpoints()
       ..initializeEndpoints(server);
   }
 }

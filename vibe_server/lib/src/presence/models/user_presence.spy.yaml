@@ -1,0 +1,11 @@
+### Tracks when a user was last active, used to compute online/offline
+### status. Updated by a periodic heartbeat call from the app.
+class: UserPresence
+table: user_presence
+fields:
+  authUserId: UuidValue
+  lastActiveAt: DateTime, default=now
+indexes:
+  user_presence_auth_user_unique:
+    fields: authUserId
+    unique: true

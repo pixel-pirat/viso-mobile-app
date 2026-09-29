@@ -10,3 +10,4 @@ fields:
   lastMessageAt: DateTime
   lastMessageIsMine: bool
   unreadCount: int
+  partnerIsOnline: bool

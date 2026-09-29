@@ -1,0 +1,25 @@
+### A real in-app notification for a user, e.g. "so-and-so sent you a
+### message". Read from the Notifications screen.
+class: AppNotification
+table: app_notification
+fields:
+  recipientId: UuidValue
+
+  ### e.g. 'message'. Lets the client pick an icon/behavior.
+  type: String
+
+  title: String
+  body: String
+
+  ### The other user this notification is about, if any (e.g. the sender
+  ### of a message), so the client can show their avatar and deep-link.
+  relatedUserId: UuidValue?
+  relatedUserName: String?
+  relatedUserAvatarUrl: String?
+
+  createdAt: DateTime, default=now
+  readAt: DateTime?
+
+indexes:
+  app_notification_recipient_idx:
+    fields: recipientId, createdAt

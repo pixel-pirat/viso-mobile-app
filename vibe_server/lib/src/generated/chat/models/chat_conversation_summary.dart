@@ -26,6 +26,7 @@ abstract class ChatConversationSummary
     required this.lastMessageAt,
     required this.lastMessageIsMine,
     required this.unreadCount,
+    required this.partnerIsOnline,
   });
 
   factory ChatConversationSummary({
@@ -37,6 +38,7 @@ abstract class ChatConversationSummary
     required DateTime lastMessageAt,
     required bool lastMessageIsMine,
     required int unreadCount,
+    required bool partnerIsOnline,
   }) = _ChatConversationSummaryImpl;
 
   factory ChatConversationSummary.fromJson(
@@ -57,6 +59,9 @@ abstract class ChatConversationSummary
         jsonSerialization['lastMessageIsMine'],
       ),
       unreadCount: jsonSerialization['unreadCount'] as int,
+      partnerIsOnline: _i1.BoolJsonExtension.fromJson(
+        jsonSerialization['partnerIsOnline'],
+      ),
     );
   }
 
@@ -76,6 +81,8 @@ abstract class ChatConversationSummary
 
   int unreadCount;
 
+  bool partnerIsOnline;
+
   /// Returns a shallow copy of this [ChatConversationSummary]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
@@ -88,6 +95,7 @@ abstract class ChatConversationSummary
     DateTime? lastMessageAt,
     bool? lastMessageIsMine,
     int? unreadCount,
+    bool? partnerIsOnline,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -101,6 +109,7 @@ abstract class ChatConversationSummary
       'lastMessageAt': lastMessageAt.toJson(),
       'lastMessageIsMine': lastMessageIsMine,
       'unreadCount': unreadCount,
+      'partnerIsOnline': partnerIsOnline,
     };
   }
 
@@ -116,6 +125,7 @@ abstract class ChatConversationSummary
       'lastMessageAt': lastMessageAt.toJson(),
       'lastMessageIsMine': lastMessageIsMine,
       'unreadCount': unreadCount,
+      'partnerIsOnline': partnerIsOnline,
     };
   }
 
@@ -137,6 +147,7 @@ class _ChatConversationSummaryImpl extends ChatConversationSummary {
     required DateTime lastMessageAt,
     required bool lastMessageIsMine,
     required int unreadCount,
+    required bool partnerIsOnline,
   }) : super._(
          partnerId: partnerId,
          partnerName: partnerName,
@@ -146,6 +157,7 @@ class _ChatConversationSummaryImpl extends ChatConversationSummary {
          lastMessageAt: lastMessageAt,
          lastMessageIsMine: lastMessageIsMine,
          unreadCount: unreadCount,
+         partnerIsOnline: partnerIsOnline,
        );
 
   /// Returns a shallow copy of this [ChatConversationSummary]
@@ -161,6 +173,7 @@ class _ChatConversationSummaryImpl extends ChatConversationSummary {
     DateTime? lastMessageAt,
     bool? lastMessageIsMine,
     int? unreadCount,
+    bool? partnerIsOnline,
   }) {
     return ChatConversationSummary(
       partnerId: partnerId ?? this.partnerId,
@@ -175,6 +188,7 @@ class _ChatConversationSummaryImpl extends ChatConversationSummary {
       lastMessageAt: lastMessageAt ?? this.lastMessageAt,
       lastMessageIsMine: lastMessageIsMine ?? this.lastMessageIsMine,
       unreadCount: unreadCount ?? this.unreadCount,
+      partnerIsOnline: partnerIsOnline ?? this.partnerIsOnline,
     );
   }
 }

@@ -23,6 +23,14 @@ chat:
   - markConversationRead:
 greeting:
   - hello:
+notifications:
+  - list:
+  - markRead:
+  - markAllRead:
+  - sendTestNotification:
+presence:
+  - heartbeat:
+  - getPresence:
 push:
   - registerDeviceToken:
   - unregisterDeviceToken:

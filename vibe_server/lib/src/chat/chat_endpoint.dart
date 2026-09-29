@@ -2,6 +2,7 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 
 import '../generated/protocol.dart';
+import '../presence/presence_util.dart';
 
 /// Real direct-messaging between signed-in users: conversation list,
 /// message history, sending, read receipts and finding people to message.
@@ -70,6 +71,7 @@ class ChatEndpoint extends Endpoint {
         session,
         partnerId,
       );
+      final isOnline = await isUserOnline(session, partnerId);
 
       summaries.add(
         ChatConversationSummary(
@@ -85,6 +87,7 @@ class ChatEndpoint extends Endpoint {
           lastMessageAt: lastMessage.createdAt,
           lastMessageIsMine: lastMessage.senderId == myId,
           unreadCount: unreadCountByPartner[partnerId] ?? 0,
+          partnerIsOnline: isOnline,
         ),
       );
     }
@@ -131,10 +134,35 @@ class ChatEndpoint extends Endpoint {
       throw ArgumentError('Cannot send a message to yourself.');
     }
 
-    return ChatMessage.db.insertRow(
+    final message = await ChatMessage.db.insertRow(
       session,
       ChatMessage(senderId: myId, recipientId: recipientId, text: trimmed),
     );
+
+    final senderProfile = await _userProfiles.maybeFindUserProfileByUserId(
+      session,
+      myId,
+    );
+    final senderName =
+        senderProfile?.fullName ??
+        senderProfile?.userName ??
+        senderProfile?.email?.split('@').first ??
+        'Someone';
+
+    await AppNotification.db.insertRow(
+      session,
+      AppNotification(
+        recipientId: recipientId,
+        type: 'message',
+        title: senderName,
+        body: trimmed,
+        relatedUserId: myId,
+        relatedUserName: senderName,
+        relatedUserAvatarUrl: senderProfile?.imageUrl?.toString(),
+      ),
+    );
+
+    return message;
   }
 
   /// Marks all messages from [partnerId] to the signed-in user as read.

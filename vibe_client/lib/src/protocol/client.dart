@@ -22,7 +22,11 @@ import 'package:vibe_client/src/protocol/chat/models/chat_conversation_summary.d
     as _i6;
 import 'package:vibe_client/src/protocol/chat/models/chat_message.dart' as _i7;
 import 'package:vibe_client/src/protocol/greetings/greeting.dart' as _i8;
-import 'protocol.dart' as _i9;
+import 'package:vibe_client/src/protocol/notifications/models/app_notification.dart'
+    as _i9;
+import 'package:vibe_client/src/protocol/presence/models/presence_status.dart'
+    as _i10;
+import 'protocol.dart' as _i11;
 
 /// By extending [EmailIdpBaseEndpoint], the email identity provider endpoints
 /// are made available on the server and enable the corresponding sign-in widget
@@ -384,6 +388,73 @@ class EndpointGreeting extends _i2.EndpointRef {
       );
 }
 
+/// Real, database-backed notifications for the signed-in user.
+/// {@category Endpoint}
+class EndpointNotifications extends _i2.EndpointRef {
+  EndpointNotifications(_i2.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'notifications';
+
+  /// Returns the signed-in user's notifications, most recent first.
+  _i3.Future<List<_i9.AppNotification>> list() =>
+      caller.callServerEndpoint<List<_i9.AppNotification>>(
+        'notifications',
+        'list',
+        {},
+      );
+
+  /// Marks a single notification as read.
+  _i3.Future<void> markRead(int notificationId) =>
+      caller.callServerEndpoint<void>(
+        'notifications',
+        'markRead',
+        {'notificationId': notificationId},
+      );
+
+  /// Marks all of the signed-in user's notifications as read.
+  _i3.Future<void> markAllRead() => caller.callServerEndpoint<void>(
+    'notifications',
+    'markAllRead',
+    {},
+  );
+
+  /// Creates a notification the signed-in user sends to themself, to
+  /// confirm the notifications pipeline is working end to end.
+  _i3.Future<_i9.AppNotification> sendTestNotification() =>
+      caller.callServerEndpoint<_i9.AppNotification>(
+        'notifications',
+        'sendTestNotification',
+        {},
+      );
+}
+
+/// Tracks and reports whether users are currently online, based on a
+/// periodic heartbeat call from the app while it's in the foreground.
+/// {@category Endpoint}
+class EndpointPresence extends _i2.EndpointRef {
+  EndpointPresence(_i2.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'presence';
+
+  /// Marks the signed-in user as active right now. Call this periodically
+  /// (e.g. every 30s) while the app is in the foreground.
+  _i3.Future<void> heartbeat() => caller.callServerEndpoint<void>(
+    'presence',
+    'heartbeat',
+    {},
+  );
+
+  /// Returns whether [userId] is currently online.
+  _i3.Future<_i10.PresenceStatus> getPresence(_i2.UuidValue userId) =>
+      caller.callServerEndpoint<_i10.PresenceStatus>(
+        'presence',
+        'getPresence',
+        {'userId': userId},
+      );
+}
+
 /// Registers/unregisters this device's Firebase Cloud Messaging token so
 /// the server can send it push notifications (e.g. for new chat messages).
 /// {@category Endpoint}
@@ -447,7 +518,7 @@ class Client extends _i2.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
          host,
-         _i9.Protocol(),
+         _i11.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
@@ -461,6 +532,8 @@ class Client extends _i2.ServerpodClientShared {
     userProfile = EndpointUserProfile(this);
     chat = EndpointChat(this);
     greeting = EndpointGreeting(this);
+    notifications = EndpointNotifications(this);
+    presence = EndpointPresence(this);
     push = EndpointPush(this);
     modules = Modules(this);
   }
@@ -475,6 +548,10 @@ class Client extends _i2.ServerpodClientShared {
 
   late final EndpointGreeting greeting;
 
+  late final EndpointNotifications notifications;
+
+  late final EndpointPresence presence;
+
   late final EndpointPush push;
 
   late final Modules modules;
@@ -486,6 +563,8 @@ class Client extends _i2.ServerpodClientShared {
     'userProfile': userProfile,
     'chat': chat,
     'greeting': greeting,
+    'notifications': notifications,
+    'presence': presence,
     'push': push,
   };
 
