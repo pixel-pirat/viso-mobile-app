@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 
 import '../generated/protocol.dart';
 import '../presence/presence_util.dart';
+import '../push/push_sender.dart';
 
 /// Real direct-messaging between signed-in users: conversation list,
 /// message history, sending, read receipts and finding people to message.
@@ -159,6 +162,17 @@ class ChatEndpoint extends Endpoint {
         relatedUserId: myId,
         relatedUserName: senderName,
         relatedUserAvatarUrl: senderProfile?.imageUrl?.toString(),
+      ),
+    );
+
+    // Best-effort; never blocks sending the message itself.
+    unawaited(
+      PushSender.sendToUser(
+        session,
+        recipientId,
+        title: senderName,
+        body: trimmed,
+        data: {'type': 'message', 'senderId': myId.toString()},
       ),
     );
 

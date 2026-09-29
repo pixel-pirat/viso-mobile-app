@@ -2,6 +2,7 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 
 import '../generated/protocol.dart';
+import '../push/push_sender.dart';
 
 /// Real, database-backed notifications for the signed-in user.
 class NotificationsEndpoint extends Endpoint {
@@ -51,14 +52,21 @@ class NotificationsEndpoint extends Endpoint {
   /// confirm the notifications pipeline is working end to end.
   Future<AppNotification> sendTestNotification(final Session session) async {
     final myId = session.authenticated!.authUserId;
-    return AppNotification.db.insertRow(
+    const title = 'Test notification';
+    const body = 'If you can see this, notifications are working.';
+
+    final notification = await AppNotification.db.insertRow(
       session,
       AppNotification(
         recipientId: myId,
         type: 'test',
-        title: 'Test notification',
-        body: 'If you can see this, notifications are working.',
+        title: title,
+        body: body,
       ),
     );
+
+    await PushSender.sendToUser(session, myId, title: title, body: body);
+
+    return notification;
   }
 }
