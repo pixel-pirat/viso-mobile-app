@@ -24,8 +24,8 @@ class PushSender {
       final json = session.passwords['firebaseServiceAccountJson'];
       if (json == null) return;
 
+      _projectId = (jsonDecode(json) as Map)['project_id'] as String?;
       final credentials = ServiceAccountCredentials.fromJson(json);
-      _projectId = credentials.projectId;
       _client = await clientViaServiceAccount(credentials, [_fcmScope]);
     }();
   }
