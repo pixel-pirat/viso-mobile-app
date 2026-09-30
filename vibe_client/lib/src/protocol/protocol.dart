@@ -22,17 +22,23 @@ import 'posts/models/post_like.dart' as _i8;
 import 'presence/models/presence_status.dart' as _i9;
 import 'presence/models/user_presence.dart' as _i10;
 import 'push/models/device_token.dart' as _i11;
+import 'stories/models/story.dart' as _i12;
+import 'stories/models/story_group.dart' as _i13;
+import 'stories/models/story_item.dart' as _i14;
+import 'stories/models/story_view.dart' as _i15;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
-    as _i12;
-import 'package:vibe_client/src/protocol/chat/models/chat_conversation_summary.dart'
-    as _i13;
-import 'package:vibe_client/src/protocol/chat/models/chat_message.dart' as _i14;
-import 'package:vibe_client/src/protocol/notifications/models/app_notification.dart'
-    as _i15;
-import 'package:vibe_client/src/protocol/posts/models/post_feed_item.dart'
     as _i16;
-import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
+import 'package:vibe_client/src/protocol/chat/models/chat_conversation_summary.dart'
     as _i17;
+import 'package:vibe_client/src/protocol/chat/models/chat_message.dart' as _i18;
+import 'package:vibe_client/src/protocol/notifications/models/app_notification.dart'
+    as _i19;
+import 'package:vibe_client/src/protocol/posts/models/post_feed_item.dart'
+    as _i20;
+import 'package:vibe_client/src/protocol/stories/models/story_group.dart'
+    as _i21;
+import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
+    as _i22;
 export 'chat/models/chat_conversation_summary.dart';
 export 'chat/models/chat_message.dart';
 export 'greetings/greeting.dart';
@@ -43,6 +49,10 @@ export 'posts/models/post_like.dart';
 export 'presence/models/presence_status.dart';
 export 'presence/models/user_presence.dart';
 export 'push/models/device_token.dart';
+export 'stories/models/story.dart';
+export 'stories/models/story_group.dart';
+export 'stories/models/story_item.dart';
+export 'stories/models/story_view.dart';
 export 'client.dart';
 
 class Protocol extends _i1.SerializationManager {
@@ -109,6 +119,18 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i11.DeviceToken) {
       return _i11.DeviceToken.fromJson(data) as T;
     }
+    if (t == _i12.Story) {
+      return _i12.Story.fromJson(data) as T;
+    }
+    if (t == _i13.StoryGroup) {
+      return _i13.StoryGroup.fromJson(data) as T;
+    }
+    if (t == _i14.StoryItem) {
+      return _i14.StoryItem.fromJson(data) as T;
+    }
+    if (t == _i15.StoryView) {
+      return _i15.StoryView.fromJson(data) as T;
+    }
     if (t == _i1.getType<_i2.ChatConversationSummary?>()) {
       return (data != null ? _i2.ChatConversationSummary.fromJson(data) : null)
           as T;
@@ -140,47 +162,67 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i1.getType<_i11.DeviceToken?>()) {
       return (data != null ? _i11.DeviceToken.fromJson(data) : null) as T;
     }
-    if (t == List<String>) {
-      return (data as List).map((e) => deserialize<String>(e)).toList() as T;
+    if (t == _i1.getType<_i12.Story?>()) {
+      return (data != null ? _i12.Story.fromJson(data) : null) as T;
     }
-    if (t == List<_i12.UserProfileModel>) {
-      return (data as List)
-              .map((e) => deserialize<_i12.UserProfileModel>(e))
-              .toList()
-          as T;
+    if (t == _i1.getType<_i13.StoryGroup?>()) {
+      return (data != null ? _i13.StoryGroup.fromJson(data) : null) as T;
     }
-    if (t == List<_i13.ChatConversationSummary>) {
-      return (data as List)
-              .map((e) => deserialize<_i13.ChatConversationSummary>(e))
-              .toList()
-          as T;
+    if (t == _i1.getType<_i14.StoryItem?>()) {
+      return (data != null ? _i14.StoryItem.fromJson(data) : null) as T;
     }
-    if (t == List<_i14.ChatMessage>) {
-      return (data as List)
-              .map((e) => deserialize<_i14.ChatMessage>(e))
-              .toList()
-          as T;
-    }
-    if (t == List<_i15.AppNotification>) {
-      return (data as List)
-              .map((e) => deserialize<_i15.AppNotification>(e))
-              .toList()
-          as T;
+    if (t == _i1.getType<_i15.StoryView?>()) {
+      return (data != null ? _i15.StoryView.fromJson(data) : null) as T;
     }
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
-    if (t == List<_i16.PostFeedItem>) {
+    if (t == List<_i14.StoryItem>) {
+      return (data as List).map((e) => deserialize<_i14.StoryItem>(e)).toList()
+          as T;
+    }
+    if (t == List<_i16.UserProfileModel>) {
       return (data as List)
-              .map((e) => deserialize<_i16.PostFeedItem>(e))
+              .map((e) => deserialize<_i16.UserProfileModel>(e))
               .toList()
+          as T;
+    }
+    if (t == List<_i17.ChatConversationSummary>) {
+      return (data as List)
+              .map((e) => deserialize<_i17.ChatConversationSummary>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i18.ChatMessage>) {
+      return (data as List)
+              .map((e) => deserialize<_i18.ChatMessage>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i19.AppNotification>) {
+      return (data as List)
+              .map((e) => deserialize<_i19.AppNotification>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<String>) {
+      return (data as List).map((e) => deserialize<String>(e)).toList() as T;
+    }
+    if (t == List<_i20.PostFeedItem>) {
+      return (data as List)
+              .map((e) => deserialize<_i20.PostFeedItem>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i21.StoryGroup>) {
+      return (data as List).map((e) => deserialize<_i21.StoryGroup>(e)).toList()
           as T;
     }
     try {
-      return _i12.Protocol().deserialize<T>(data, t);
+      return _i16.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     try {
-      return _i17.Protocol().deserialize<T>(data, t);
+      return _i22.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
@@ -197,6 +239,10 @@ class Protocol extends _i1.SerializationManager {
       _i9.PresenceStatus => 'PresenceStatus',
       _i10.UserPresence => 'UserPresence',
       _i11.DeviceToken => 'DeviceToken',
+      _i12.Story => 'Story',
+      _i13.StoryGroup => 'StoryGroup',
+      _i14.StoryItem => 'StoryItem',
+      _i15.StoryView => 'StoryView',
       _ => null,
     };
   }
@@ -231,12 +277,20 @@ class Protocol extends _i1.SerializationManager {
         return 'UserPresence';
       case _i11.DeviceToken():
         return 'DeviceToken';
+      case _i12.Story():
+        return 'Story';
+      case _i13.StoryGroup():
+        return 'StoryGroup';
+      case _i14.StoryItem():
+        return 'StoryItem';
+      case _i15.StoryView():
+        return 'StoryView';
     }
-    className = _i12.Protocol().getClassNameForObject(data);
+    className = _i16.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth_core.$className';
     }
-    className = _i17.Protocol().getClassNameForObject(data);
+    className = _i22.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth_idp.$className';
     }
@@ -279,13 +333,25 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName == 'DeviceToken') {
       return deserialize<_i11.DeviceToken>(data['data']);
     }
+    if (dataClassName == 'Story') {
+      return deserialize<_i12.Story>(data['data']);
+    }
+    if (dataClassName == 'StoryGroup') {
+      return deserialize<_i13.StoryGroup>(data['data']);
+    }
+    if (dataClassName == 'StoryItem') {
+      return deserialize<_i14.StoryItem>(data['data']);
+    }
+    if (dataClassName == 'StoryView') {
+      return deserialize<_i15.StoryView>(data['data']);
+    }
     if (dataClassName.startsWith('serverpod_auth_core.')) {
       data['className'] = dataClassName.substring(20);
-      return _i12.Protocol().deserializeByClassName(data);
+      return _i16.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod_auth_idp.')) {
       data['className'] = dataClassName.substring(19);
-      return _i17.Protocol().deserializeByClassName(data);
+      return _i22.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }
@@ -300,10 +366,10 @@ class Protocol extends _i1.SerializationManager {
       return null;
     }
     try {
-      return _i12.Protocol().mapRecordToJson(record);
+      return _i16.Protocol().mapRecordToJson(record);
     } catch (_) {}
     try {
-      return _i17.Protocol().mapRecordToJson(record);
+      return _i22.Protocol().mapRecordToJson(record);
     } catch (_) {}
     throw Exception('Unsupported record type ${record.runtimeType}');
   }

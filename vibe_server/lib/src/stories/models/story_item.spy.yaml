@@ -1,0 +1,8 @@
+class: StoryItem
+fields:
+  id: int
+  mediaUrl: String
+  mediaType: String
+  createdAt: DateTime
+  viewCount: int
+  isSeenByMe: bool

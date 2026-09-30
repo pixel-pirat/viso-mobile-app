@@ -1,0 +1,14 @@
+class: Story
+table: story
+fields:
+  authorId: UuidValue
+  mediaUrl: String
+  mediaType: String
+  createdAt: DateTime, default=now
+  expiresAt: DateTime
+  viewCount: int, default=0
+indexes:
+  story_author_idx:
+    fields: authorId, createdAt
+  story_expires_idx:
+    fields: expiresAt

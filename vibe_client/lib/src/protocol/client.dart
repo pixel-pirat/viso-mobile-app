@@ -29,7 +29,10 @@ import 'package:vibe_client/src/protocol/posts/models/post_feed_item.dart'
     as _i11;
 import 'package:vibe_client/src/protocol/presence/models/presence_status.dart'
     as _i12;
-import 'protocol.dart' as _i13;
+import 'package:vibe_client/src/protocol/stories/models/story.dart' as _i13;
+import 'package:vibe_client/src/protocol/stories/models/story_group.dart'
+    as _i14;
+import 'protocol.dart' as _i15;
 
 /// By extending [EmailIdpBaseEndpoint], the email identity provider endpoints
 /// are made available on the server and enable the corresponding sign-in widget
@@ -585,6 +588,49 @@ class EndpointPush extends _i2.EndpointRef {
       );
 }
 
+/// Stories: 24h-expiring photo/video updates, grouped by author, with
+/// seen/view tracking. Mirrors the pattern used by [PostEndpoint].
+/// {@category Endpoint}
+class EndpointStory extends _i2.EndpointRef {
+  EndpointStory(_i2.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'story';
+
+  /// Creates a story. [mediaUrl] should already be uploaded via
+  /// [MediaEndpoint.upload]. Expires 24 hours from now.
+  _i3.Future<_i13.Story> createStory(
+    String mediaUrl,
+    String mediaType,
+  ) => caller.callServerEndpoint<_i13.Story>(
+    'story',
+    'createStory',
+    {
+      'mediaUrl': mediaUrl,
+      'mediaType': mediaType,
+    },
+  );
+
+  /// Returns active (non-expired) stories grouped by author. The signed-in
+  /// user's own group (if any) always comes first; the rest are ordered
+  /// unseen-first, then by most recent story.
+  _i3.Future<List<_i14.StoryGroup>> getStoriesFeed() =>
+      caller.callServerEndpoint<List<_i14.StoryGroup>>(
+        'story',
+        'getStoriesFeed',
+        {},
+      );
+
+  /// Marks [storyId] as viewed by the signed-in user (idempotent) and bumps
+  /// its view count the first time.
+  _i3.Future<void> markStoryViewed(int storyId) =>
+      caller.callServerEndpoint<void>(
+        'story',
+        'markStoryViewed',
+        {'storyId': storyId},
+      );
+}
+
 class Modules {
   Modules(Client client) {
     serverpod_auth_core = _i4.Caller(client);
@@ -616,7 +662,7 @@ class Client extends _i2.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
          host,
-         _i13.Protocol(),
+         _i15.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
@@ -635,6 +681,7 @@ class Client extends _i2.ServerpodClientShared {
     post = EndpointPost(this);
     presence = EndpointPresence(this);
     push = EndpointPush(this);
+    story = EndpointStory(this);
     modules = Modules(this);
   }
 
@@ -658,6 +705,8 @@ class Client extends _i2.ServerpodClientShared {
 
   late final EndpointPush push;
 
+  late final EndpointStory story;
+
   late final Modules modules;
 
   @override
@@ -672,6 +721,7 @@ class Client extends _i2.ServerpodClientShared {
     'post': post,
     'presence': presence,
     'push': push,
+    'story': story,
   };
 
   @override

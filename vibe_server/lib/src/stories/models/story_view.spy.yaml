@@ -1,0 +1,10 @@
+class: StoryView
+table: story_view
+fields:
+  storyId: int
+  viewerId: UuidValue
+  viewedAt: DateTime, default=now
+indexes:
+  story_view_unique:
+    fields: storyId, viewerId
+    unique: true

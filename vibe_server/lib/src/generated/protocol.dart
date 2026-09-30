@@ -27,14 +27,20 @@ import 'posts/models/post_like.dart' as _i11;
 import 'presence/models/presence_status.dart' as _i12;
 import 'presence/models/user_presence.dart' as _i13;
 import 'push/models/device_token.dart' as _i14;
+import 'stories/models/story.dart' as _i15;
+import 'stories/models/story_group.dart' as _i16;
+import 'stories/models/story_item.dart' as _i17;
+import 'stories/models/story_view.dart' as _i18;
 import 'package:vibe_server/src/generated/chat/models/chat_conversation_summary.dart'
-    as _i15;
+    as _i19;
 import 'package:vibe_server/src/generated/chat/models/chat_message.dart'
-    as _i16;
+    as _i20;
 import 'package:vibe_server/src/generated/notifications/models/app_notification.dart'
-    as _i17;
+    as _i21;
 import 'package:vibe_server/src/generated/posts/models/post_feed_item.dart'
-    as _i18;
+    as _i22;
+import 'package:vibe_server/src/generated/stories/models/story_group.dart'
+    as _i23;
 export 'chat/models/chat_conversation_summary.dart';
 export 'chat/models/chat_message.dart';
 export 'greetings/greeting.dart';
@@ -45,6 +51,10 @@ export 'posts/models/post_like.dart';
 export 'presence/models/presence_status.dart';
 export 'presence/models/user_presence.dart';
 export 'push/models/device_token.dart';
+export 'stories/models/story.dart';
+export 'stories/models/story_group.dart';
+export 'stories/models/story_item.dart';
+export 'stories/models/story_view.dart';
 
 class Protocol extends _i1.SerializationManagerServer {
   Protocol._();
@@ -529,6 +539,174 @@ class Protocol extends _i1.SerializationManagerServer {
       managed: true,
     ),
     _i2.TableDefinition(
+      name: 'story',
+      dartName: 'Story',
+      schema: 'public',
+      module: 'vibe',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'story_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'authorId',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue',
+        ),
+        _i2.ColumnDefinition(
+          name: 'mediaUrl',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'mediaType',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'createdAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+          columnDefault: 'CURRENT_TIMESTAMP',
+        ),
+        _i2.ColumnDefinition(
+          name: 'expiresAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+        _i2.ColumnDefinition(
+          name: 'viewCount',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+          columnDefault: '0',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'story_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'story_author_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'authorId',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'createdAt',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'story_expires_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'expiresAt',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'story_view',
+      dartName: 'StoryView',
+      schema: 'public',
+      module: 'vibe',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'story_view_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'storyId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'viewerId',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue',
+        ),
+        _i2.ColumnDefinition(
+          name: 'viewedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+          columnDefault: 'CURRENT_TIMESTAMP',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'story_view_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'story_view_unique',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'storyId',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'viewerId',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
       name: 'user_presence',
       dartName: 'UserPresence',
       schema: 'public',
@@ -648,6 +826,18 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i14.DeviceToken) {
       return _i14.DeviceToken.fromJson(data) as T;
     }
+    if (t == _i15.Story) {
+      return _i15.Story.fromJson(data) as T;
+    }
+    if (t == _i16.StoryGroup) {
+      return _i16.StoryGroup.fromJson(data) as T;
+    }
+    if (t == _i17.StoryItem) {
+      return _i17.StoryItem.fromJson(data) as T;
+    }
+    if (t == _i18.StoryView) {
+      return _i18.StoryView.fromJson(data) as T;
+    }
     if (t == _i1.getType<_i5.ChatConversationSummary?>()) {
       return (data != null ? _i5.ChatConversationSummary.fromJson(data) : null)
           as T;
@@ -679,8 +869,24 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i1.getType<_i14.DeviceToken?>()) {
       return (data != null ? _i14.DeviceToken.fromJson(data) : null) as T;
     }
+    if (t == _i1.getType<_i15.Story?>()) {
+      return (data != null ? _i15.Story.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i16.StoryGroup?>()) {
+      return (data != null ? _i16.StoryGroup.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i17.StoryItem?>()) {
+      return (data != null ? _i17.StoryItem.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i18.StoryView?>()) {
+      return (data != null ? _i18.StoryView.fromJson(data) : null) as T;
+    }
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
+    }
+    if (t == List<_i17.StoryItem>) {
+      return (data as List).map((e) => deserialize<_i17.StoryItem>(e)).toList()
+          as T;
     }
     if (t == List<_i3.UserProfileModel>) {
       return (data as List)
@@ -688,31 +894,35 @@ class Protocol extends _i1.SerializationManagerServer {
               .toList()
           as T;
     }
-    if (t == List<_i15.ChatConversationSummary>) {
+    if (t == List<_i19.ChatConversationSummary>) {
       return (data as List)
-              .map((e) => deserialize<_i15.ChatConversationSummary>(e))
+              .map((e) => deserialize<_i19.ChatConversationSummary>(e))
               .toList()
           as T;
     }
-    if (t == List<_i16.ChatMessage>) {
+    if (t == List<_i20.ChatMessage>) {
       return (data as List)
-              .map((e) => deserialize<_i16.ChatMessage>(e))
+              .map((e) => deserialize<_i20.ChatMessage>(e))
               .toList()
           as T;
     }
-    if (t == List<_i17.AppNotification>) {
+    if (t == List<_i21.AppNotification>) {
       return (data as List)
-              .map((e) => deserialize<_i17.AppNotification>(e))
+              .map((e) => deserialize<_i21.AppNotification>(e))
               .toList()
           as T;
     }
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
-    if (t == List<_i18.PostFeedItem>) {
+    if (t == List<_i22.PostFeedItem>) {
       return (data as List)
-              .map((e) => deserialize<_i18.PostFeedItem>(e))
+              .map((e) => deserialize<_i22.PostFeedItem>(e))
               .toList()
+          as T;
+    }
+    if (t == List<_i23.StoryGroup>) {
+      return (data as List).map((e) => deserialize<_i23.StoryGroup>(e)).toList()
           as T;
     }
     try {
@@ -739,6 +949,10 @@ class Protocol extends _i1.SerializationManagerServer {
       _i12.PresenceStatus => 'PresenceStatus',
       _i13.UserPresence => 'UserPresence',
       _i14.DeviceToken => 'DeviceToken',
+      _i15.Story => 'Story',
+      _i16.StoryGroup => 'StoryGroup',
+      _i17.StoryItem => 'StoryItem',
+      _i18.StoryView => 'StoryView',
       _ => null,
     };
   }
@@ -773,6 +987,14 @@ class Protocol extends _i1.SerializationManagerServer {
         return 'UserPresence';
       case _i14.DeviceToken():
         return 'DeviceToken';
+      case _i15.Story():
+        return 'Story';
+      case _i16.StoryGroup():
+        return 'StoryGroup';
+      case _i17.StoryItem():
+        return 'StoryItem';
+      case _i18.StoryView():
+        return 'StoryView';
     }
     className = _i2.Protocol().getClassNameForObject(data);
     if (className != null) {
@@ -825,6 +1047,18 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName == 'DeviceToken') {
       return deserialize<_i14.DeviceToken>(data['data']);
     }
+    if (dataClassName == 'Story') {
+      return deserialize<_i15.Story>(data['data']);
+    }
+    if (dataClassName == 'StoryGroup') {
+      return deserialize<_i16.StoryGroup>(data['data']);
+    }
+    if (dataClassName == 'StoryItem') {
+      return deserialize<_i17.StoryItem>(data['data']);
+    }
+    if (dataClassName == 'StoryView') {
+      return deserialize<_i18.StoryView>(data['data']);
+    }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
       return _i2.Protocol().deserializeByClassName(data);
@@ -873,6 +1107,10 @@ class Protocol extends _i1.SerializationManagerServer {
         return _i13.UserPresence.t;
       case _i14.DeviceToken:
         return _i14.DeviceToken.t;
+      case _i15.Story:
+        return _i15.Story.t;
+      case _i18.StoryView:
+        return _i18.StoryView.t;
     }
     return null;
   }

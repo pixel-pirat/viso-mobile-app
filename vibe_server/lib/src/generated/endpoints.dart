@@ -22,11 +22,12 @@ import '../notifications/notifications_endpoint.dart' as _i8;
 import '../posts/post_endpoint.dart' as _i9;
 import '../presence/presence_endpoint.dart' as _i10;
 import '../push/push_endpoint.dart' as _i11;
-import 'dart:typed_data' as _i12;
+import '../stories/story_endpoint.dart' as _i12;
+import 'dart:typed_data' as _i13;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    as _i13;
-import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
     as _i14;
+import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
+    as _i15;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -90,6 +91,12 @@ class Endpoints extends _i1.EndpointDispatch {
         ..initialize(
           server,
           'push',
+          null,
+        ),
+      'story': _i12.StoryEndpoint()
+        ..initialize(
+          server,
+          'story',
           null,
         ),
     };
@@ -316,7 +323,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'image': _i1.ParameterDescription(
               name: 'image',
-              type: _i1.getType<_i12.ByteData>(),
+              type: _i1.getType<_i13.ByteData>(),
               nullable: false,
             ),
           },
@@ -514,7 +521,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'bytes': _i1.ParameterDescription(
               name: 'bytes',
-              type: _i1.getType<_i12.ByteData>(),
+              type: _i1.getType<_i13.ByteData>(),
               nullable: false,
             ),
             'fileExtension': _i1.ParameterDescription(
@@ -785,9 +792,68 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
-    modules['serverpod_auth_core'] = _i13.Endpoints()
+    connectors['story'] = _i1.EndpointConnector(
+      name: 'story',
+      endpoint: endpoints['story']!,
+      methodConnectors: {
+        'createStory': _i1.MethodConnector(
+          name: 'createStory',
+          params: {
+            'mediaUrl': _i1.ParameterDescription(
+              name: 'mediaUrl',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'mediaType': _i1.ParameterDescription(
+              name: 'mediaType',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['story'] as _i12.StoryEndpoint).createStory(
+                session,
+                params['mediaUrl'],
+                params['mediaType'],
+              ),
+        ),
+        'getStoriesFeed': _i1.MethodConnector(
+          name: 'getStoriesFeed',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['story'] as _i12.StoryEndpoint)
+                  .getStoriesFeed(session),
+        ),
+        'markStoryViewed': _i1.MethodConnector(
+          name: 'markStoryViewed',
+          params: {
+            'storyId': _i1.ParameterDescription(
+              name: 'storyId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['story'] as _i12.StoryEndpoint).markStoryViewed(
+                    session,
+                    params['storyId'],
+                  ),
+        ),
+      },
+    );
+    modules['serverpod_auth_core'] = _i14.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_idp'] = _i14.Endpoints()
+    modules['serverpod_auth_idp'] = _i15.Endpoints()
       ..initializeEndpoints(server);
   }
 }

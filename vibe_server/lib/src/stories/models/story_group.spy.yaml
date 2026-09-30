@@ -1,0 +1,7 @@
+class: StoryGroup
+fields:
+  authorId: UuidValue
+  authorName: String
+  authorAvatarUrl: String?
+  stories: List<StoryItem>
+  hasUnseen: bool
