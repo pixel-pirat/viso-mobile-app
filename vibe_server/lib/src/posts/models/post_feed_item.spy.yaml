@@ -1,0 +1,17 @@
+### A post with its author's real profile info and the signed-in user's
+### relationship to it (liked or not), ready for display.
+class: PostFeedItem
+fields:
+  id: int
+  authorId: UuidValue
+  authorName: String
+  authorUserName: String?
+  authorAvatarUrl: String?
+  text: String
+  mediaUrls: List<String>
+  mediaType: String
+  createdAt: DateTime
+  likeCount: int
+  commentCount: int
+  viewCount: int
+  isLikedByMe: bool

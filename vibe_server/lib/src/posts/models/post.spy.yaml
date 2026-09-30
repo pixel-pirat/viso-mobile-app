@@ -1,0 +1,24 @@
+### A post created by a user, optionally with photo/video attachments.
+class: Post
+table: post
+fields:
+  authorId: UuidValue
+  text: String
+
+  ### Public URLs of attached media (from MediaEndpoint.upload).
+  mediaUrls: List<String>
+
+  ### 'none', 'image' or 'video'.
+  mediaType: String
+
+  createdAt: DateTime, default=now
+
+  likeCount: int, default=0
+  commentCount: int, default=0
+  viewCount: int, default=0
+
+indexes:
+  post_created_idx:
+    fields: createdAt
+  post_author_idx:
+    fields: authorId, createdAt

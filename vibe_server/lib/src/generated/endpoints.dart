@@ -17,14 +17,16 @@ import '../auth/jwt_refresh_endpoint.dart' as _i3;
 import '../auth/user_profile_endpoint.dart' as _i4;
 import '../chat/chat_endpoint.dart' as _i5;
 import '../greetings/greeting_endpoint.dart' as _i6;
-import '../notifications/notifications_endpoint.dart' as _i7;
-import '../presence/presence_endpoint.dart' as _i8;
-import '../push/push_endpoint.dart' as _i9;
-import 'dart:typed_data' as _i10;
+import '../media/media_endpoint.dart' as _i7;
+import '../notifications/notifications_endpoint.dart' as _i8;
+import '../posts/post_endpoint.dart' as _i9;
+import '../presence/presence_endpoint.dart' as _i10;
+import '../push/push_endpoint.dart' as _i11;
+import 'dart:typed_data' as _i12;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    as _i11;
+    as _i13;
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
-    as _i12;
+    as _i14;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -60,19 +62,31 @@ class Endpoints extends _i1.EndpointDispatch {
           'greeting',
           null,
         ),
-      'notifications': _i7.NotificationsEndpoint()
+      'media': _i7.MediaEndpoint()
+        ..initialize(
+          server,
+          'media',
+          null,
+        ),
+      'notifications': _i8.NotificationsEndpoint()
         ..initialize(
           server,
           'notifications',
           null,
         ),
-      'presence': _i8.PresenceEndpoint()
+      'post': _i9.PostEndpoint()
+        ..initialize(
+          server,
+          'post',
+          null,
+        ),
+      'presence': _i10.PresenceEndpoint()
         ..initialize(
           server,
           'presence',
           null,
         ),
-      'push': _i9.PushEndpoint()
+      'push': _i11.PushEndpoint()
         ..initialize(
           server,
           'push',
@@ -302,7 +316,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'image': _i1.ParameterDescription(
               name: 'image',
-              type: _i1.getType<_i10.ByteData>(),
+              type: _i1.getType<_i12.ByteData>(),
               nullable: false,
             ),
           },
@@ -491,6 +505,36 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
+    connectors['media'] = _i1.EndpointConnector(
+      name: 'media',
+      endpoint: endpoints['media']!,
+      methodConnectors: {
+        'upload': _i1.MethodConnector(
+          name: 'upload',
+          params: {
+            'bytes': _i1.ParameterDescription(
+              name: 'bytes',
+              type: _i1.getType<_i12.ByteData>(),
+              nullable: false,
+            ),
+            'fileExtension': _i1.ParameterDescription(
+              name: 'fileExtension',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['media'] as _i7.MediaEndpoint).upload(
+                session,
+                params['bytes'],
+                params['fileExtension'],
+              ),
+        ),
+      },
+    );
     connectors['notifications'] = _i1.EndpointConnector(
       name: 'notifications',
       endpoint: endpoints['notifications']!,
@@ -503,7 +547,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['notifications'] as _i7.NotificationsEndpoint)
+                  (endpoints['notifications'] as _i8.NotificationsEndpoint)
                       .list(session),
         ),
         'markRead': _i1.MethodConnector(
@@ -520,7 +564,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['notifications'] as _i7.NotificationsEndpoint)
+                  (endpoints['notifications'] as _i8.NotificationsEndpoint)
                       .markRead(
                         session,
                         params['notificationId'],
@@ -534,7 +578,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['notifications'] as _i7.NotificationsEndpoint)
+                  (endpoints['notifications'] as _i8.NotificationsEndpoint)
                       .markAllRead(session),
         ),
         'sendTestNotification': _i1.MethodConnector(
@@ -545,8 +589,114 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['notifications'] as _i7.NotificationsEndpoint)
+                  (endpoints['notifications'] as _i8.NotificationsEndpoint)
                       .sendTestNotification(session),
+        ),
+      },
+    );
+    connectors['post'] = _i1.EndpointConnector(
+      name: 'post',
+      endpoint: endpoints['post']!,
+      methodConnectors: {
+        'createPost': _i1.MethodConnector(
+          name: 'createPost',
+          params: {
+            'text': _i1.ParameterDescription(
+              name: 'text',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'mediaUrls': _i1.ParameterDescription(
+              name: 'mediaUrls',
+              type: _i1.getType<List<String>>(),
+              nullable: false,
+            ),
+            'mediaType': _i1.ParameterDescription(
+              name: 'mediaType',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['post'] as _i9.PostEndpoint).createPost(
+                session,
+                params['text'],
+                params['mediaUrls'],
+                params['mediaType'],
+              ),
+        ),
+        'getFeed': _i1.MethodConnector(
+          name: 'getFeed',
+          params: {
+            'limit': _i1.ParameterDescription(
+              name: 'limit',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'offset': _i1.ParameterDescription(
+              name: 'offset',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['post'] as _i9.PostEndpoint).getFeed(
+                session,
+                limit: params['limit'],
+                offset: params['offset'],
+              ),
+        ),
+        'getMyPosts': _i1.MethodConnector(
+          name: 'getMyPosts',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['post'] as _i9.PostEndpoint).getMyPosts(session),
+        ),
+        'toggleLike': _i1.MethodConnector(
+          name: 'toggleLike',
+          params: {
+            'postId': _i1.ParameterDescription(
+              name: 'postId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['post'] as _i9.PostEndpoint).toggleLike(
+                session,
+                params['postId'],
+              ),
+        ),
+        'recordView': _i1.MethodConnector(
+          name: 'recordView',
+          params: {
+            'postId': _i1.ParameterDescription(
+              name: 'postId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['post'] as _i9.PostEndpoint).recordView(
+                session,
+                params['postId'],
+              ),
         ),
       },
     );
@@ -561,7 +711,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['presence'] as _i8.PresenceEndpoint)
+              ) async => (endpoints['presence'] as _i10.PresenceEndpoint)
                   .heartbeat(session),
         ),
         'getPresence': _i1.MethodConnector(
@@ -578,7 +728,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['presence'] as _i8.PresenceEndpoint).getPresence(
+                  (endpoints['presence'] as _i10.PresenceEndpoint).getPresence(
                     session,
                     params['userId'],
                   ),
@@ -608,7 +758,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['push'] as _i9.PushEndpoint).registerDeviceToken(
+                  (endpoints['push'] as _i11.PushEndpoint).registerDeviceToken(
                     session,
                     params['token'],
                     params['platform'],
@@ -627,17 +777,17 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async =>
-                  (endpoints['push'] as _i9.PushEndpoint).unregisterDeviceToken(
+              ) async => (endpoints['push'] as _i11.PushEndpoint)
+                  .unregisterDeviceToken(
                     session,
                     params['token'],
                   ),
         ),
       },
     );
-    modules['serverpod_auth_core'] = _i11.Endpoints()
+    modules['serverpod_auth_core'] = _i13.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_idp'] = _i12.Endpoints()
+    modules['serverpod_auth_idp'] = _i14.Endpoints()
       ..initializeEndpoints(server);
   }
 }

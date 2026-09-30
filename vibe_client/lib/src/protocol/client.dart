@@ -24,9 +24,12 @@ import 'package:vibe_client/src/protocol/chat/models/chat_message.dart' as _i7;
 import 'package:vibe_client/src/protocol/greetings/greeting.dart' as _i8;
 import 'package:vibe_client/src/protocol/notifications/models/app_notification.dart'
     as _i9;
+import 'package:vibe_client/src/protocol/posts/models/post.dart' as _i10;
+import 'package:vibe_client/src/protocol/posts/models/post_feed_item.dart'
+    as _i11;
 import 'package:vibe_client/src/protocol/presence/models/presence_status.dart'
-    as _i10;
-import 'protocol.dart' as _i11;
+    as _i12;
+import 'protocol.dart' as _i13;
 
 /// By extending [EmailIdpBaseEndpoint], the email identity provider endpoints
 /// are made available on the server and enable the corresponding sign-in widget
@@ -388,6 +391,33 @@ class EndpointGreeting extends _i2.EndpointRef {
       );
 }
 
+/// Stores uploaded photo/video bytes and returns a public URL. Backed by
+/// Serverpod's default database-backed storage (see DatabaseCloudStorage) —
+/// no external cloud storage account needed. Shared by post/story creation
+/// (avatar uploads go through UserProfileEndpoint instead, which has its
+/// own resizing logic).
+/// {@category Endpoint}
+class EndpointMedia extends _i2.EndpointRef {
+  EndpointMedia(_i2.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'media';
+
+  /// Uploads [bytes] and returns its public URL. [fileExtension] should be
+  /// a plain extension like 'jpg', 'png' or 'mp4' (no leading dot).
+  _i3.Future<String> upload(
+    _i5.ByteData bytes,
+    String fileExtension,
+  ) => caller.callServerEndpoint<String>(
+    'media',
+    'upload',
+    {
+      'bytes': bytes,
+      'fileExtension': fileExtension,
+    },
+  );
+}
+
 /// Real, database-backed notifications for the signed-in user.
 /// {@category Endpoint}
 class EndpointNotifications extends _i2.EndpointRef {
@@ -429,6 +459,74 @@ class EndpointNotifications extends _i2.EndpointRef {
       );
 }
 
+/// Real post creation, a ranked feed, likes and view counts.
+/// {@category Endpoint}
+class EndpointPost extends _i2.EndpointRef {
+  EndpointPost(_i2.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'post';
+
+  /// Creates a post. [mediaUrls] should already be uploaded via
+  /// [MediaEndpoint.upload]. [mediaType] is 'none', 'image' or 'video'.
+  _i3.Future<_i10.Post> createPost(
+    String text,
+    List<String> mediaUrls,
+    String mediaType,
+  ) => caller.callServerEndpoint<_i10.Post>(
+    'post',
+    'createPost',
+    {
+      'text': text,
+      'mediaUrls': mediaUrls,
+      'mediaType': mediaType,
+    },
+  );
+
+  /// Returns a ranked feed of recent posts. Ranking is a simple, explainable
+  /// "hot" score: engagement (likes + weighted comments) decayed by how long
+  /// ago the post was made, so fresh posts with traction rise to the top
+  /// without older popular posts dominating forever. This is intentionally
+  /// simple and easy to retune as real usage data comes in.
+  _i3.Future<List<_i11.PostFeedItem>> getFeed({
+    required int limit,
+    required int offset,
+  }) => caller.callServerEndpoint<List<_i11.PostFeedItem>>(
+    'post',
+    'getFeed',
+    {
+      'limit': limit,
+      'offset': offset,
+    },
+  );
+
+  /// Returns the signed-in user's own posts, most recent first — used by
+  /// the Profile screen's Posts tab and the Analytics screen.
+  _i3.Future<List<_i11.PostFeedItem>> getMyPosts() =>
+      caller.callServerEndpoint<List<_i11.PostFeedItem>>(
+        'post',
+        'getMyPosts',
+        {},
+      );
+
+  /// Toggles whether the signed-in user likes [postId]. Returns the new
+  /// like count.
+  _i3.Future<int> toggleLike(int postId) => caller.callServerEndpoint<int>(
+    'post',
+    'toggleLike',
+    {'postId': postId},
+  );
+
+  /// Increments the view count for [postId]. Best-effort: the client calls
+  /// this once per post per session, so counts are approximate, not a
+  /// unique-viewer count.
+  _i3.Future<void> recordView(int postId) => caller.callServerEndpoint<void>(
+    'post',
+    'recordView',
+    {'postId': postId},
+  );
+}
+
 /// Tracks and reports whether users are currently online, based on a
 /// periodic heartbeat call from the app while it's in the foreground.
 /// {@category Endpoint}
@@ -447,8 +545,8 @@ class EndpointPresence extends _i2.EndpointRef {
   );
 
   /// Returns whether [userId] is currently online.
-  _i3.Future<_i10.PresenceStatus> getPresence(_i2.UuidValue userId) =>
-      caller.callServerEndpoint<_i10.PresenceStatus>(
+  _i3.Future<_i12.PresenceStatus> getPresence(_i2.UuidValue userId) =>
+      caller.callServerEndpoint<_i12.PresenceStatus>(
         'presence',
         'getPresence',
         {'userId': userId},
@@ -518,7 +616,7 @@ class Client extends _i2.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
          host,
-         _i11.Protocol(),
+         _i13.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
@@ -532,7 +630,9 @@ class Client extends _i2.ServerpodClientShared {
     userProfile = EndpointUserProfile(this);
     chat = EndpointChat(this);
     greeting = EndpointGreeting(this);
+    media = EndpointMedia(this);
     notifications = EndpointNotifications(this);
+    post = EndpointPost(this);
     presence = EndpointPresence(this);
     push = EndpointPush(this);
     modules = Modules(this);
@@ -548,7 +648,11 @@ class Client extends _i2.ServerpodClientShared {
 
   late final EndpointGreeting greeting;
 
+  late final EndpointMedia media;
+
   late final EndpointNotifications notifications;
+
+  late final EndpointPost post;
 
   late final EndpointPresence presence;
 
@@ -563,7 +667,9 @@ class Client extends _i2.ServerpodClientShared {
     'userProfile': userProfile,
     'chat': chat,
     'greeting': greeting,
+    'media': media,
     'notifications': notifications,
+    'post': post,
     'presence': presence,
     'push': push,
   };

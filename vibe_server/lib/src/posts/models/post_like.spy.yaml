@@ -1,0 +1,12 @@
+### Tracks which users liked which posts, so likes can be toggled and
+### counted accurately per user.
+class: PostLike
+table: post_like
+fields:
+  postId: int
+  userId: UuidValue
+  createdAt: DateTime, default=now
+indexes:
+  post_like_unique:
+    fields: postId, userId
+    unique: true

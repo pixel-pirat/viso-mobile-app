@@ -21,19 +21,27 @@ import 'chat/models/chat_conversation_summary.dart' as _i5;
 import 'chat/models/chat_message.dart' as _i6;
 import 'greetings/greeting.dart' as _i7;
 import 'notifications/models/app_notification.dart' as _i8;
-import 'presence/models/presence_status.dart' as _i9;
-import 'presence/models/user_presence.dart' as _i10;
-import 'push/models/device_token.dart' as _i11;
+import 'posts/models/post.dart' as _i9;
+import 'posts/models/post_feed_item.dart' as _i10;
+import 'posts/models/post_like.dart' as _i11;
+import 'presence/models/presence_status.dart' as _i12;
+import 'presence/models/user_presence.dart' as _i13;
+import 'push/models/device_token.dart' as _i14;
 import 'package:vibe_server/src/generated/chat/models/chat_conversation_summary.dart'
-    as _i12;
+    as _i15;
 import 'package:vibe_server/src/generated/chat/models/chat_message.dart'
-    as _i13;
+    as _i16;
 import 'package:vibe_server/src/generated/notifications/models/app_notification.dart'
-    as _i14;
+    as _i17;
+import 'package:vibe_server/src/generated/posts/models/post_feed_item.dart'
+    as _i18;
 export 'chat/models/chat_conversation_summary.dart';
 export 'chat/models/chat_message.dart';
 export 'greetings/greeting.dart';
 export 'notifications/models/app_notification.dart';
+export 'posts/models/post.dart';
+export 'posts/models/post_feed_item.dart';
+export 'posts/models/post_like.dart';
 export 'presence/models/presence_status.dart';
 export 'presence/models/user_presence.dart';
 export 'push/models/device_token.dart';
@@ -339,6 +347,188 @@ class Protocol extends _i1.SerializationManagerServer {
       managed: true,
     ),
     _i2.TableDefinition(
+      name: 'post',
+      dartName: 'Post',
+      schema: 'public',
+      module: 'vibe',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'post_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'authorId',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue',
+        ),
+        _i2.ColumnDefinition(
+          name: 'text',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'mediaUrls',
+          columnType: _i2.ColumnType.json,
+          isNullable: false,
+          dartType: 'List<String>',
+        ),
+        _i2.ColumnDefinition(
+          name: 'mediaType',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'createdAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+          columnDefault: 'CURRENT_TIMESTAMP',
+        ),
+        _i2.ColumnDefinition(
+          name: 'likeCount',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+          columnDefault: '0',
+        ),
+        _i2.ColumnDefinition(
+          name: 'commentCount',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+          columnDefault: '0',
+        ),
+        _i2.ColumnDefinition(
+          name: 'viewCount',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+          columnDefault: '0',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'post_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'post_created_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'createdAt',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'post_author_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'authorId',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'createdAt',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'post_like',
+      dartName: 'PostLike',
+      schema: 'public',
+      module: 'vibe',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'post_like_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'postId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'userId',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue',
+        ),
+        _i2.ColumnDefinition(
+          name: 'createdAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+          columnDefault: 'CURRENT_TIMESTAMP',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'post_like_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'post_like_unique',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'postId',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'userId',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
       name: 'user_presence',
       dartName: 'UserPresence',
       schema: 'public',
@@ -440,14 +630,23 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i8.AppNotification) {
       return _i8.AppNotification.fromJson(data) as T;
     }
-    if (t == _i9.PresenceStatus) {
-      return _i9.PresenceStatus.fromJson(data) as T;
+    if (t == _i9.Post) {
+      return _i9.Post.fromJson(data) as T;
     }
-    if (t == _i10.UserPresence) {
-      return _i10.UserPresence.fromJson(data) as T;
+    if (t == _i10.PostFeedItem) {
+      return _i10.PostFeedItem.fromJson(data) as T;
     }
-    if (t == _i11.DeviceToken) {
-      return _i11.DeviceToken.fromJson(data) as T;
+    if (t == _i11.PostLike) {
+      return _i11.PostLike.fromJson(data) as T;
+    }
+    if (t == _i12.PresenceStatus) {
+      return _i12.PresenceStatus.fromJson(data) as T;
+    }
+    if (t == _i13.UserPresence) {
+      return _i13.UserPresence.fromJson(data) as T;
+    }
+    if (t == _i14.DeviceToken) {
+      return _i14.DeviceToken.fromJson(data) as T;
     }
     if (t == _i1.getType<_i5.ChatConversationSummary?>()) {
       return (data != null ? _i5.ChatConversationSummary.fromJson(data) : null)
@@ -462,14 +661,26 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i1.getType<_i8.AppNotification?>()) {
       return (data != null ? _i8.AppNotification.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i9.PresenceStatus?>()) {
-      return (data != null ? _i9.PresenceStatus.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i9.Post?>()) {
+      return (data != null ? _i9.Post.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i10.UserPresence?>()) {
-      return (data != null ? _i10.UserPresence.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i10.PostFeedItem?>()) {
+      return (data != null ? _i10.PostFeedItem.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i11.DeviceToken?>()) {
-      return (data != null ? _i11.DeviceToken.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i11.PostLike?>()) {
+      return (data != null ? _i11.PostLike.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i12.PresenceStatus?>()) {
+      return (data != null ? _i12.PresenceStatus.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i13.UserPresence?>()) {
+      return (data != null ? _i13.UserPresence.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i14.DeviceToken?>()) {
+      return (data != null ? _i14.DeviceToken.fromJson(data) : null) as T;
+    }
+    if (t == List<String>) {
+      return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
     if (t == List<_i3.UserProfileModel>) {
       return (data as List)
@@ -477,21 +688,30 @@ class Protocol extends _i1.SerializationManagerServer {
               .toList()
           as T;
     }
-    if (t == List<_i12.ChatConversationSummary>) {
+    if (t == List<_i15.ChatConversationSummary>) {
       return (data as List)
-              .map((e) => deserialize<_i12.ChatConversationSummary>(e))
+              .map((e) => deserialize<_i15.ChatConversationSummary>(e))
               .toList()
           as T;
     }
-    if (t == List<_i13.ChatMessage>) {
+    if (t == List<_i16.ChatMessage>) {
       return (data as List)
-              .map((e) => deserialize<_i13.ChatMessage>(e))
+              .map((e) => deserialize<_i16.ChatMessage>(e))
               .toList()
           as T;
     }
-    if (t == List<_i14.AppNotification>) {
+    if (t == List<_i17.AppNotification>) {
       return (data as List)
-              .map((e) => deserialize<_i14.AppNotification>(e))
+              .map((e) => deserialize<_i17.AppNotification>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<String>) {
+      return (data as List).map((e) => deserialize<String>(e)).toList() as T;
+    }
+    if (t == List<_i18.PostFeedItem>) {
+      return (data as List)
+              .map((e) => deserialize<_i18.PostFeedItem>(e))
               .toList()
           as T;
     }
@@ -513,9 +733,12 @@ class Protocol extends _i1.SerializationManagerServer {
       _i6.ChatMessage => 'ChatMessage',
       _i7.Greeting => 'Greeting',
       _i8.AppNotification => 'AppNotification',
-      _i9.PresenceStatus => 'PresenceStatus',
-      _i10.UserPresence => 'UserPresence',
-      _i11.DeviceToken => 'DeviceToken',
+      _i9.Post => 'Post',
+      _i10.PostFeedItem => 'PostFeedItem',
+      _i11.PostLike => 'PostLike',
+      _i12.PresenceStatus => 'PresenceStatus',
+      _i13.UserPresence => 'UserPresence',
+      _i14.DeviceToken => 'DeviceToken',
       _ => null,
     };
   }
@@ -538,11 +761,17 @@ class Protocol extends _i1.SerializationManagerServer {
         return 'Greeting';
       case _i8.AppNotification():
         return 'AppNotification';
-      case _i9.PresenceStatus():
+      case _i9.Post():
+        return 'Post';
+      case _i10.PostFeedItem():
+        return 'PostFeedItem';
+      case _i11.PostLike():
+        return 'PostLike';
+      case _i12.PresenceStatus():
         return 'PresenceStatus';
-      case _i10.UserPresence():
+      case _i13.UserPresence():
         return 'UserPresence';
-      case _i11.DeviceToken():
+      case _i14.DeviceToken():
         return 'DeviceToken';
     }
     className = _i2.Protocol().getClassNameForObject(data);
@@ -578,14 +807,23 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName == 'AppNotification') {
       return deserialize<_i8.AppNotification>(data['data']);
     }
+    if (dataClassName == 'Post') {
+      return deserialize<_i9.Post>(data['data']);
+    }
+    if (dataClassName == 'PostFeedItem') {
+      return deserialize<_i10.PostFeedItem>(data['data']);
+    }
+    if (dataClassName == 'PostLike') {
+      return deserialize<_i11.PostLike>(data['data']);
+    }
     if (dataClassName == 'PresenceStatus') {
-      return deserialize<_i9.PresenceStatus>(data['data']);
+      return deserialize<_i12.PresenceStatus>(data['data']);
     }
     if (dataClassName == 'UserPresence') {
-      return deserialize<_i10.UserPresence>(data['data']);
+      return deserialize<_i13.UserPresence>(data['data']);
     }
     if (dataClassName == 'DeviceToken') {
-      return deserialize<_i11.DeviceToken>(data['data']);
+      return deserialize<_i14.DeviceToken>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
@@ -627,10 +865,14 @@ class Protocol extends _i1.SerializationManagerServer {
         return _i6.ChatMessage.t;
       case _i8.AppNotification:
         return _i8.AppNotification.t;
-      case _i10.UserPresence:
-        return _i10.UserPresence.t;
-      case _i11.DeviceToken:
-        return _i11.DeviceToken.t;
+      case _i9.Post:
+        return _i9.Post.t;
+      case _i11.PostLike:
+        return _i11.PostLike.t;
+      case _i13.UserPresence:
+        return _i13.UserPresence.t;
+      case _i14.DeviceToken:
+        return _i14.DeviceToken.t;
     }
     return null;
   }

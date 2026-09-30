@@ -23,8 +23,11 @@ import 'package:vibe_server/src/generated/chat/models/chat_message.dart' as _i7;
 import 'package:vibe_server/src/generated/greetings/greeting.dart' as _i8;
 import 'package:vibe_server/src/generated/notifications/models/app_notification.dart'
     as _i9;
+import 'package:vibe_server/src/generated/posts/models/post.dart' as _i10;
+import 'package:vibe_server/src/generated/posts/models/post_feed_item.dart'
+    as _i11;
 import 'package:vibe_server/src/generated/presence/models/presence_status.dart'
-    as _i10;
+    as _i12;
 import 'package:vibe_server/src/generated/protocol.dart';
 import 'package:vibe_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -149,7 +152,11 @@ class TestEndpoints {
 
   late final _GreetingEndpoint greeting;
 
+  late final _MediaEndpoint media;
+
   late final _NotificationsEndpoint notifications;
+
+  late final _PostEndpoint post;
 
   late final _PresenceEndpoint presence;
 
@@ -183,7 +190,15 @@ class _InternalTestEndpoints extends TestEndpoints
       endpoints,
       serializationManager,
     );
+    media = _MediaEndpoint(
+      endpoints,
+      serializationManager,
+    );
     notifications = _NotificationsEndpoint(
+      endpoints,
+      serializationManager,
+    );
+    post = _PostEndpoint(
       endpoints,
       serializationManager,
     );
@@ -895,6 +910,52 @@ class _GreetingEndpoint {
   }
 }
 
+class _MediaEndpoint {
+  _MediaEndpoint(
+    this._endpointDispatch,
+    this._serializationManager,
+  );
+
+  final _i2.EndpointDispatch _endpointDispatch;
+
+  final _i2.SerializationManager _serializationManager;
+
+  _i3.Future<String> upload(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i5.ByteData bytes,
+    String fileExtension,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'media',
+            method: 'upload',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'media',
+          methodName: 'upload',
+          parameters: _i1.testObjectToJson({
+            'bytes': bytes,
+            'fileExtension': fileExtension,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<String>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+}
+
 class _NotificationsEndpoint {
   _NotificationsEndpoint(
     this._endpointDispatch,
@@ -1025,6 +1086,181 @@ class _NotificationsEndpoint {
   }
 }
 
+class _PostEndpoint {
+  _PostEndpoint(
+    this._endpointDispatch,
+    this._serializationManager,
+  );
+
+  final _i2.EndpointDispatch _endpointDispatch;
+
+  final _i2.SerializationManager _serializationManager;
+
+  _i3.Future<_i10.Post> createPost(
+    _i1.TestSessionBuilder sessionBuilder,
+    String text,
+    List<String> mediaUrls,
+    String mediaType,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'post',
+            method: 'createPost',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'post',
+          methodName: 'createPost',
+          parameters: _i1.testObjectToJson({
+            'text': text,
+            'mediaUrls': mediaUrls,
+            'mediaType': mediaType,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i10.Post>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<List<_i11.PostFeedItem>> getFeed(
+    _i1.TestSessionBuilder sessionBuilder, {
+    required int limit,
+    required int offset,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'post',
+            method: 'getFeed',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'post',
+          methodName: 'getFeed',
+          parameters: _i1.testObjectToJson({
+            'limit': limit,
+            'offset': offset,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<List<_i11.PostFeedItem>>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<List<_i11.PostFeedItem>> getMyPosts(
+    _i1.TestSessionBuilder sessionBuilder,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'post',
+            method: 'getMyPosts',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'post',
+          methodName: 'getMyPosts',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<List<_i11.PostFeedItem>>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<int> toggleLike(
+    _i1.TestSessionBuilder sessionBuilder,
+    int postId,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'post',
+            method: 'toggleLike',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'post',
+          methodName: 'toggleLike',
+          parameters: _i1.testObjectToJson({'postId': postId}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<int>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<void> recordView(
+    _i1.TestSessionBuilder sessionBuilder,
+    int postId,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'post',
+            method: 'recordView',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'post',
+          methodName: 'recordView',
+          parameters: _i1.testObjectToJson({'postId': postId}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<void>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+}
+
 class _PresenceEndpoint {
   _PresenceEndpoint(
     this._endpointDispatch,
@@ -1063,7 +1299,7 @@ class _PresenceEndpoint {
     });
   }
 
-  _i3.Future<_i10.PresenceStatus> getPresence(
+  _i3.Future<_i12.PresenceStatus> getPresence(
     _i1.TestSessionBuilder sessionBuilder,
     _i2.UuidValue userId,
   ) async {
@@ -1086,7 +1322,7 @@ class _PresenceEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i10.PresenceStatus>);
+                as _i3.Future<_i12.PresenceStatus>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();

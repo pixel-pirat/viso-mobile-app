@@ -23,11 +23,19 @@ chat:
   - markConversationRead:
 greeting:
   - hello:
+media:
+  - upload:
 notifications:
   - list:
   - markRead:
   - markAllRead:
   - sendTestNotification:
+post:
+  - createPost:
+  - getFeed:
+  - getMyPosts:
+  - toggleLike:
+  - recordView:
 presence:
   - heartbeat:
   - getPresence:
