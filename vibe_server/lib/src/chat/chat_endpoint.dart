@@ -466,6 +466,7 @@ class ChatEndpoint extends Endpoint {
           editedAt: m.editedAt,
           isDeleted: isDeleted,
           replyToMessageId: m.replyToMessageId,
+          replyToSenderId: replyTo?.senderId,
           replyPreviewText: replyTo == null
               ? null
               : (replyDeleted ? 'This message was deleted' : replyTo.text),

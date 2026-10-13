@@ -32,6 +32,7 @@ abstract class ChatMessageView
     this.editedAt,
     required this.isDeleted,
     this.replyToMessageId,
+    this.replyToSenderId,
     this.replyPreviewText,
     this.replyPreviewMediaType,
     required this.reactions,
@@ -50,6 +51,7 @@ abstract class ChatMessageView
     DateTime? editedAt,
     required bool isDeleted,
     int? replyToMessageId,
+    _i1.UuidValue? replyToSenderId,
     String? replyPreviewText,
     String? replyPreviewMediaType,
     required List<_i2.MessageReactionSummary> reactions,
@@ -83,6 +85,11 @@ abstract class ChatMessageView
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['editedAt']),
       isDeleted: _i1.BoolJsonExtension.fromJson(jsonSerialization['isDeleted']),
       replyToMessageId: jsonSerialization['replyToMessageId'] as int?,
+      replyToSenderId: jsonSerialization['replyToSenderId'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(
+              jsonSerialization['replyToSenderId'],
+            ),
       replyPreviewText: jsonSerialization['replyPreviewText'] as String?,
       replyPreviewMediaType:
           jsonSerialization['replyPreviewMediaType'] as String?,
@@ -116,6 +123,8 @@ abstract class ChatMessageView
 
   int? replyToMessageId;
 
+  _i1.UuidValue? replyToSenderId;
+
   String? replyPreviewText;
 
   String? replyPreviewMediaType;
@@ -138,6 +147,7 @@ abstract class ChatMessageView
     DateTime? editedAt,
     bool? isDeleted,
     int? replyToMessageId,
+    _i1.UuidValue? replyToSenderId,
     String? replyPreviewText,
     String? replyPreviewMediaType,
     List<_i2.MessageReactionSummary>? reactions,
@@ -158,6 +168,7 @@ abstract class ChatMessageView
       if (editedAt != null) 'editedAt': editedAt?.toJson(),
       'isDeleted': isDeleted,
       if (replyToMessageId != null) 'replyToMessageId': replyToMessageId,
+      if (replyToSenderId != null) 'replyToSenderId': replyToSenderId?.toJson(),
       if (replyPreviewText != null) 'replyPreviewText': replyPreviewText,
       if (replyPreviewMediaType != null)
         'replyPreviewMediaType': replyPreviewMediaType,
@@ -181,6 +192,7 @@ abstract class ChatMessageView
       if (editedAt != null) 'editedAt': editedAt?.toJson(),
       'isDeleted': isDeleted,
       if (replyToMessageId != null) 'replyToMessageId': replyToMessageId,
+      if (replyToSenderId != null) 'replyToSenderId': replyToSenderId?.toJson(),
       if (replyPreviewText != null) 'replyPreviewText': replyPreviewText,
       if (replyPreviewMediaType != null)
         'replyPreviewMediaType': replyPreviewMediaType,
@@ -210,6 +222,7 @@ class _ChatMessageViewImpl extends ChatMessageView {
     DateTime? editedAt,
     required bool isDeleted,
     int? replyToMessageId,
+    _i1.UuidValue? replyToSenderId,
     String? replyPreviewText,
     String? replyPreviewMediaType,
     required List<_i2.MessageReactionSummary> reactions,
@@ -226,6 +239,7 @@ class _ChatMessageViewImpl extends ChatMessageView {
          editedAt: editedAt,
          isDeleted: isDeleted,
          replyToMessageId: replyToMessageId,
+         replyToSenderId: replyToSenderId,
          replyPreviewText: replyPreviewText,
          replyPreviewMediaType: replyPreviewMediaType,
          reactions: reactions,
@@ -248,6 +262,7 @@ class _ChatMessageViewImpl extends ChatMessageView {
     Object? editedAt = _Undefined,
     bool? isDeleted,
     Object? replyToMessageId = _Undefined,
+    Object? replyToSenderId = _Undefined,
     Object? replyPreviewText = _Undefined,
     Object? replyPreviewMediaType = _Undefined,
     List<_i2.MessageReactionSummary>? reactions,
@@ -267,6 +282,9 @@ class _ChatMessageViewImpl extends ChatMessageView {
       replyToMessageId: replyToMessageId is int?
           ? replyToMessageId
           : this.replyToMessageId,
+      replyToSenderId: replyToSenderId is _i1.UuidValue?
+          ? replyToSenderId
+          : this.replyToSenderId,
       replyPreviewText: replyPreviewText is String?
           ? replyPreviewText
           : this.replyPreviewText,
