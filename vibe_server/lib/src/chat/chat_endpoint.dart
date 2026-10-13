@@ -45,6 +45,16 @@ class ChatEndpoint extends Endpoint {
     return rows.map((final r) => r.toModel()).toList();
   }
 
+  /// Returns [userId]'s profile — used to resolve display info (e.g. for
+  /// the Starred Messages screen, where messages aren't scoped to a
+  /// single already-known conversation partner).
+  Future<UserProfileModel?> getUserProfile(
+    final Session session,
+    final UuidValue userId,
+  ) {
+    return _userProfiles.maybeFindUserProfileByUserId(session, userId);
+  }
+
   /// Streams live updates (new/edited/deleted messages, reactions,
   /// delivery/read receipts) for the conversation with [partnerId].
   Stream<ChatMessageView> watchConversation(

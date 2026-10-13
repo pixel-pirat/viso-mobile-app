@@ -17,6 +17,7 @@ userProfile:
   - get:
 chat:
   - searchUsers:
+  - getUserProfile:
   - watchConversation:
   - watchMyMessages:
   - watchTyping:

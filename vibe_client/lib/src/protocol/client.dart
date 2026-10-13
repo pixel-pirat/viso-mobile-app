@@ -339,6 +339,16 @@ class EndpointChat extends _i2.EndpointRef {
         {'query': query},
       );
 
+  /// Returns [userId]'s profile — used to resolve display info (e.g. for
+  /// the Starred Messages screen, where messages aren't scoped to a
+  /// single already-known conversation partner).
+  _i3.Future<_i4.UserProfileModel?> getUserProfile(_i2.UuidValue userId) =>
+      caller.callServerEndpoint<_i4.UserProfileModel?>(
+        'chat',
+        'getUserProfile',
+        {'userId': userId},
+      );
+
   /// Streams live updates (new/edited/deleted messages, reactions,
   /// delivery/read receipts) for the conversation with [partnerId].
   _i3.Stream<_i6.ChatMessageView> watchConversation(_i2.UuidValue partnerId) =>
