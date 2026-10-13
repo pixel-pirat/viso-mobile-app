@@ -17,4 +17,4 @@ fields:
   replyToSenderId: UuidValue?
   replyPreviewText: String?
   replyPreviewMediaType: String?
-  reactions: List<MessageReactionSummary>
+  reactions: List<MessageReactionInfo>

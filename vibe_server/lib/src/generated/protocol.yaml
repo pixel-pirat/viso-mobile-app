@@ -17,6 +17,10 @@ userProfile:
   - get:
 chat:
   - searchUsers:
+  - watchConversation:
+  - watchMyMessages:
+  - watchTyping:
+  - setTyping:
   - listConversations:
   - getMessages:
   - sendMessage:

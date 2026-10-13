@@ -1,0 +1,7 @@
+### One user's reaction on a message. Raw (not pre-aggregated by viewer)
+### so a single view is valid for every viewer — needed since the same
+### view gets broadcast to both participants over the real-time stream.
+class: MessageReactionInfo
+fields:
+  userId: UuidValue
+  emoji: String

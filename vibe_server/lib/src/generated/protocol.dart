@@ -21,34 +21,36 @@ import 'chat/models/chat_conversation_summary.dart' as _i5;
 import 'chat/models/chat_message.dart' as _i6;
 import 'chat/models/chat_message_view.dart' as _i7;
 import 'chat/models/message_reaction.dart' as _i8;
-import 'chat/models/message_reaction_summary.dart' as _i9;
-import 'greetings/greeting.dart' as _i10;
-import 'notifications/models/app_notification.dart' as _i11;
-import 'posts/models/post.dart' as _i12;
-import 'posts/models/post_feed_item.dart' as _i13;
-import 'posts/models/post_like.dart' as _i14;
-import 'presence/models/presence_status.dart' as _i15;
-import 'presence/models/user_presence.dart' as _i16;
-import 'push/models/device_token.dart' as _i17;
-import 'stories/models/story.dart' as _i18;
-import 'stories/models/story_group.dart' as _i19;
-import 'stories/models/story_item.dart' as _i20;
-import 'stories/models/story_view.dart' as _i21;
+import 'chat/models/message_reaction_info.dart' as _i9;
+import 'chat/models/typing_status.dart' as _i10;
+import 'greetings/greeting.dart' as _i11;
+import 'notifications/models/app_notification.dart' as _i12;
+import 'posts/models/post.dart' as _i13;
+import 'posts/models/post_feed_item.dart' as _i14;
+import 'posts/models/post_like.dart' as _i15;
+import 'presence/models/presence_status.dart' as _i16;
+import 'presence/models/user_presence.dart' as _i17;
+import 'push/models/device_token.dart' as _i18;
+import 'stories/models/story.dart' as _i19;
+import 'stories/models/story_group.dart' as _i20;
+import 'stories/models/story_item.dart' as _i21;
+import 'stories/models/story_view.dart' as _i22;
 import 'package:vibe_server/src/generated/chat/models/chat_conversation_summary.dart'
-    as _i22;
-import 'package:vibe_server/src/generated/chat/models/chat_message_view.dart'
     as _i23;
-import 'package:vibe_server/src/generated/notifications/models/app_notification.dart'
+import 'package:vibe_server/src/generated/chat/models/chat_message_view.dart'
     as _i24;
-import 'package:vibe_server/src/generated/posts/models/post_feed_item.dart'
+import 'package:vibe_server/src/generated/notifications/models/app_notification.dart'
     as _i25;
-import 'package:vibe_server/src/generated/stories/models/story_group.dart'
+import 'package:vibe_server/src/generated/posts/models/post_feed_item.dart'
     as _i26;
+import 'package:vibe_server/src/generated/stories/models/story_group.dart'
+    as _i27;
 export 'chat/models/chat_conversation_summary.dart';
 export 'chat/models/chat_message.dart';
 export 'chat/models/chat_message_view.dart';
 export 'chat/models/message_reaction.dart';
-export 'chat/models/message_reaction_summary.dart';
+export 'chat/models/message_reaction_info.dart';
+export 'chat/models/typing_status.dart';
 export 'greetings/greeting.dart';
 export 'notifications/models/app_notification.dart';
 export 'posts/models/post.dart';
@@ -936,44 +938,47 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i8.MessageReaction) {
       return _i8.MessageReaction.fromJson(data) as T;
     }
-    if (t == _i9.MessageReactionSummary) {
-      return _i9.MessageReactionSummary.fromJson(data) as T;
+    if (t == _i9.MessageReactionInfo) {
+      return _i9.MessageReactionInfo.fromJson(data) as T;
     }
-    if (t == _i10.Greeting) {
-      return _i10.Greeting.fromJson(data) as T;
+    if (t == _i10.TypingStatus) {
+      return _i10.TypingStatus.fromJson(data) as T;
     }
-    if (t == _i11.AppNotification) {
-      return _i11.AppNotification.fromJson(data) as T;
+    if (t == _i11.Greeting) {
+      return _i11.Greeting.fromJson(data) as T;
     }
-    if (t == _i12.Post) {
-      return _i12.Post.fromJson(data) as T;
+    if (t == _i12.AppNotification) {
+      return _i12.AppNotification.fromJson(data) as T;
     }
-    if (t == _i13.PostFeedItem) {
-      return _i13.PostFeedItem.fromJson(data) as T;
+    if (t == _i13.Post) {
+      return _i13.Post.fromJson(data) as T;
     }
-    if (t == _i14.PostLike) {
-      return _i14.PostLike.fromJson(data) as T;
+    if (t == _i14.PostFeedItem) {
+      return _i14.PostFeedItem.fromJson(data) as T;
     }
-    if (t == _i15.PresenceStatus) {
-      return _i15.PresenceStatus.fromJson(data) as T;
+    if (t == _i15.PostLike) {
+      return _i15.PostLike.fromJson(data) as T;
     }
-    if (t == _i16.UserPresence) {
-      return _i16.UserPresence.fromJson(data) as T;
+    if (t == _i16.PresenceStatus) {
+      return _i16.PresenceStatus.fromJson(data) as T;
     }
-    if (t == _i17.DeviceToken) {
-      return _i17.DeviceToken.fromJson(data) as T;
+    if (t == _i17.UserPresence) {
+      return _i17.UserPresence.fromJson(data) as T;
     }
-    if (t == _i18.Story) {
-      return _i18.Story.fromJson(data) as T;
+    if (t == _i18.DeviceToken) {
+      return _i18.DeviceToken.fromJson(data) as T;
     }
-    if (t == _i19.StoryGroup) {
-      return _i19.StoryGroup.fromJson(data) as T;
+    if (t == _i19.Story) {
+      return _i19.Story.fromJson(data) as T;
     }
-    if (t == _i20.StoryItem) {
-      return _i20.StoryItem.fromJson(data) as T;
+    if (t == _i20.StoryGroup) {
+      return _i20.StoryGroup.fromJson(data) as T;
     }
-    if (t == _i21.StoryView) {
-      return _i21.StoryView.fromJson(data) as T;
+    if (t == _i21.StoryItem) {
+      return _i21.StoryItem.fromJson(data) as T;
+    }
+    if (t == _i22.StoryView) {
+      return _i22.StoryView.fromJson(data) as T;
     }
     if (t == _i1.getType<_i5.ChatConversationSummary?>()) {
       return (data != null ? _i5.ChatConversationSummary.fromJson(data) : null)
@@ -988,57 +993,60 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i1.getType<_i8.MessageReaction?>()) {
       return (data != null ? _i8.MessageReaction.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i9.MessageReactionSummary?>()) {
-      return (data != null ? _i9.MessageReactionSummary.fromJson(data) : null)
+    if (t == _i1.getType<_i9.MessageReactionInfo?>()) {
+      return (data != null ? _i9.MessageReactionInfo.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i10.Greeting?>()) {
-      return (data != null ? _i10.Greeting.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i10.TypingStatus?>()) {
+      return (data != null ? _i10.TypingStatus.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i11.AppNotification?>()) {
-      return (data != null ? _i11.AppNotification.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i11.Greeting?>()) {
+      return (data != null ? _i11.Greeting.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i12.Post?>()) {
-      return (data != null ? _i12.Post.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i12.AppNotification?>()) {
+      return (data != null ? _i12.AppNotification.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i13.PostFeedItem?>()) {
-      return (data != null ? _i13.PostFeedItem.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i13.Post?>()) {
+      return (data != null ? _i13.Post.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i14.PostLike?>()) {
-      return (data != null ? _i14.PostLike.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i14.PostFeedItem?>()) {
+      return (data != null ? _i14.PostFeedItem.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i15.PresenceStatus?>()) {
-      return (data != null ? _i15.PresenceStatus.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i15.PostLike?>()) {
+      return (data != null ? _i15.PostLike.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i16.UserPresence?>()) {
-      return (data != null ? _i16.UserPresence.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i16.PresenceStatus?>()) {
+      return (data != null ? _i16.PresenceStatus.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i17.DeviceToken?>()) {
-      return (data != null ? _i17.DeviceToken.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i17.UserPresence?>()) {
+      return (data != null ? _i17.UserPresence.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i18.Story?>()) {
-      return (data != null ? _i18.Story.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i18.DeviceToken?>()) {
+      return (data != null ? _i18.DeviceToken.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i19.StoryGroup?>()) {
-      return (data != null ? _i19.StoryGroup.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i19.Story?>()) {
+      return (data != null ? _i19.Story.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i20.StoryItem?>()) {
-      return (data != null ? _i20.StoryItem.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i20.StoryGroup?>()) {
+      return (data != null ? _i20.StoryGroup.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i21.StoryView?>()) {
-      return (data != null ? _i21.StoryView.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i21.StoryItem?>()) {
+      return (data != null ? _i21.StoryItem.fromJson(data) : null) as T;
     }
-    if (t == List<_i9.MessageReactionSummary>) {
+    if (t == _i1.getType<_i22.StoryView?>()) {
+      return (data != null ? _i22.StoryView.fromJson(data) : null) as T;
+    }
+    if (t == List<_i9.MessageReactionInfo>) {
       return (data as List)
-              .map((e) => deserialize<_i9.MessageReactionSummary>(e))
+              .map((e) => deserialize<_i9.MessageReactionInfo>(e))
               .toList()
           as T;
     }
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
-    if (t == List<_i20.StoryItem>) {
-      return (data as List).map((e) => deserialize<_i20.StoryItem>(e)).toList()
+    if (t == List<_i21.StoryItem>) {
+      return (data as List).map((e) => deserialize<_i21.StoryItem>(e)).toList()
           as T;
     }
     if (t == List<_i3.UserProfileModel>) {
@@ -1047,35 +1055,35 @@ class Protocol extends _i1.SerializationManagerServer {
               .toList()
           as T;
     }
-    if (t == List<_i22.ChatConversationSummary>) {
+    if (t == List<_i23.ChatConversationSummary>) {
       return (data as List)
-              .map((e) => deserialize<_i22.ChatConversationSummary>(e))
+              .map((e) => deserialize<_i23.ChatConversationSummary>(e))
               .toList()
           as T;
     }
-    if (t == List<_i23.ChatMessageView>) {
+    if (t == List<_i24.ChatMessageView>) {
       return (data as List)
-              .map((e) => deserialize<_i23.ChatMessageView>(e))
+              .map((e) => deserialize<_i24.ChatMessageView>(e))
               .toList()
           as T;
     }
-    if (t == List<_i24.AppNotification>) {
+    if (t == List<_i25.AppNotification>) {
       return (data as List)
-              .map((e) => deserialize<_i24.AppNotification>(e))
+              .map((e) => deserialize<_i25.AppNotification>(e))
               .toList()
           as T;
     }
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
-    if (t == List<_i25.PostFeedItem>) {
+    if (t == List<_i26.PostFeedItem>) {
       return (data as List)
-              .map((e) => deserialize<_i25.PostFeedItem>(e))
+              .map((e) => deserialize<_i26.PostFeedItem>(e))
               .toList()
           as T;
     }
-    if (t == List<_i26.StoryGroup>) {
-      return (data as List).map((e) => deserialize<_i26.StoryGroup>(e)).toList()
+    if (t == List<_i27.StoryGroup>) {
+      return (data as List).map((e) => deserialize<_i27.StoryGroup>(e)).toList()
           as T;
     }
     try {
@@ -1096,19 +1104,20 @@ class Protocol extends _i1.SerializationManagerServer {
       _i6.ChatMessage => 'ChatMessage',
       _i7.ChatMessageView => 'ChatMessageView',
       _i8.MessageReaction => 'MessageReaction',
-      _i9.MessageReactionSummary => 'MessageReactionSummary',
-      _i10.Greeting => 'Greeting',
-      _i11.AppNotification => 'AppNotification',
-      _i12.Post => 'Post',
-      _i13.PostFeedItem => 'PostFeedItem',
-      _i14.PostLike => 'PostLike',
-      _i15.PresenceStatus => 'PresenceStatus',
-      _i16.UserPresence => 'UserPresence',
-      _i17.DeviceToken => 'DeviceToken',
-      _i18.Story => 'Story',
-      _i19.StoryGroup => 'StoryGroup',
-      _i20.StoryItem => 'StoryItem',
-      _i21.StoryView => 'StoryView',
+      _i9.MessageReactionInfo => 'MessageReactionInfo',
+      _i10.TypingStatus => 'TypingStatus',
+      _i11.Greeting => 'Greeting',
+      _i12.AppNotification => 'AppNotification',
+      _i13.Post => 'Post',
+      _i14.PostFeedItem => 'PostFeedItem',
+      _i15.PostLike => 'PostLike',
+      _i16.PresenceStatus => 'PresenceStatus',
+      _i17.UserPresence => 'UserPresence',
+      _i18.DeviceToken => 'DeviceToken',
+      _i19.Story => 'Story',
+      _i20.StoryGroup => 'StoryGroup',
+      _i21.StoryItem => 'StoryItem',
+      _i22.StoryView => 'StoryView',
       _ => null,
     };
   }
@@ -1131,31 +1140,33 @@ class Protocol extends _i1.SerializationManagerServer {
         return 'ChatMessageView';
       case _i8.MessageReaction():
         return 'MessageReaction';
-      case _i9.MessageReactionSummary():
-        return 'MessageReactionSummary';
-      case _i10.Greeting():
+      case _i9.MessageReactionInfo():
+        return 'MessageReactionInfo';
+      case _i10.TypingStatus():
+        return 'TypingStatus';
+      case _i11.Greeting():
         return 'Greeting';
-      case _i11.AppNotification():
+      case _i12.AppNotification():
         return 'AppNotification';
-      case _i12.Post():
+      case _i13.Post():
         return 'Post';
-      case _i13.PostFeedItem():
+      case _i14.PostFeedItem():
         return 'PostFeedItem';
-      case _i14.PostLike():
+      case _i15.PostLike():
         return 'PostLike';
-      case _i15.PresenceStatus():
+      case _i16.PresenceStatus():
         return 'PresenceStatus';
-      case _i16.UserPresence():
+      case _i17.UserPresence():
         return 'UserPresence';
-      case _i17.DeviceToken():
+      case _i18.DeviceToken():
         return 'DeviceToken';
-      case _i18.Story():
+      case _i19.Story():
         return 'Story';
-      case _i19.StoryGroup():
+      case _i20.StoryGroup():
         return 'StoryGroup';
-      case _i20.StoryItem():
+      case _i21.StoryItem():
         return 'StoryItem';
-      case _i21.StoryView():
+      case _i22.StoryView():
         return 'StoryView';
     }
     className = _i2.Protocol().getClassNameForObject(data);
@@ -1191,44 +1202,47 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName == 'MessageReaction') {
       return deserialize<_i8.MessageReaction>(data['data']);
     }
-    if (dataClassName == 'MessageReactionSummary') {
-      return deserialize<_i9.MessageReactionSummary>(data['data']);
+    if (dataClassName == 'MessageReactionInfo') {
+      return deserialize<_i9.MessageReactionInfo>(data['data']);
+    }
+    if (dataClassName == 'TypingStatus') {
+      return deserialize<_i10.TypingStatus>(data['data']);
     }
     if (dataClassName == 'Greeting') {
-      return deserialize<_i10.Greeting>(data['data']);
+      return deserialize<_i11.Greeting>(data['data']);
     }
     if (dataClassName == 'AppNotification') {
-      return deserialize<_i11.AppNotification>(data['data']);
+      return deserialize<_i12.AppNotification>(data['data']);
     }
     if (dataClassName == 'Post') {
-      return deserialize<_i12.Post>(data['data']);
+      return deserialize<_i13.Post>(data['data']);
     }
     if (dataClassName == 'PostFeedItem') {
-      return deserialize<_i13.PostFeedItem>(data['data']);
+      return deserialize<_i14.PostFeedItem>(data['data']);
     }
     if (dataClassName == 'PostLike') {
-      return deserialize<_i14.PostLike>(data['data']);
+      return deserialize<_i15.PostLike>(data['data']);
     }
     if (dataClassName == 'PresenceStatus') {
-      return deserialize<_i15.PresenceStatus>(data['data']);
+      return deserialize<_i16.PresenceStatus>(data['data']);
     }
     if (dataClassName == 'UserPresence') {
-      return deserialize<_i16.UserPresence>(data['data']);
+      return deserialize<_i17.UserPresence>(data['data']);
     }
     if (dataClassName == 'DeviceToken') {
-      return deserialize<_i17.DeviceToken>(data['data']);
+      return deserialize<_i18.DeviceToken>(data['data']);
     }
     if (dataClassName == 'Story') {
-      return deserialize<_i18.Story>(data['data']);
+      return deserialize<_i19.Story>(data['data']);
     }
     if (dataClassName == 'StoryGroup') {
-      return deserialize<_i19.StoryGroup>(data['data']);
+      return deserialize<_i20.StoryGroup>(data['data']);
     }
     if (dataClassName == 'StoryItem') {
-      return deserialize<_i20.StoryItem>(data['data']);
+      return deserialize<_i21.StoryItem>(data['data']);
     }
     if (dataClassName == 'StoryView') {
-      return deserialize<_i21.StoryView>(data['data']);
+      return deserialize<_i22.StoryView>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
@@ -1270,20 +1284,20 @@ class Protocol extends _i1.SerializationManagerServer {
         return _i6.ChatMessage.t;
       case _i8.MessageReaction:
         return _i8.MessageReaction.t;
-      case _i11.AppNotification:
-        return _i11.AppNotification.t;
-      case _i12.Post:
-        return _i12.Post.t;
-      case _i14.PostLike:
-        return _i14.PostLike.t;
-      case _i16.UserPresence:
-        return _i16.UserPresence.t;
-      case _i17.DeviceToken:
-        return _i17.DeviceToken.t;
-      case _i18.Story:
-        return _i18.Story.t;
-      case _i21.StoryView:
-        return _i21.StoryView.t;
+      case _i12.AppNotification:
+        return _i12.AppNotification.t;
+      case _i13.Post:
+        return _i13.Post.t;
+      case _i15.PostLike:
+        return _i15.PostLike.t;
+      case _i17.UserPresence:
+        return _i17.UserPresence.t;
+      case _i18.DeviceToken:
+        return _i18.DeviceToken.t;
+      case _i19.Story:
+        return _i19.Story.t;
+      case _i22.StoryView:
+        return _i22.StoryView.t;
     }
     return null;
   }

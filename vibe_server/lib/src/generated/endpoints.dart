@@ -409,6 +409,30 @@ class Endpoints extends _i1.EndpointDispatch {
                 params['query'],
               ),
         ),
+        'setTyping': _i1.MethodConnector(
+          name: 'setTyping',
+          params: {
+            'partnerId': _i1.ParameterDescription(
+              name: 'partnerId',
+              type: _i1.getType<_i1.UuidValue>(),
+              nullable: false,
+            ),
+            'isTyping': _i1.ParameterDescription(
+              name: 'isTyping',
+              type: _i1.getType<bool>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['chat'] as _i5.ChatEndpoint).setTyping(
+                session,
+                params['partnerId'],
+                params['isTyping'],
+              ),
+        ),
         'listConversations': _i1.MethodConnector(
           name: 'listConversations',
           params: {},
@@ -613,6 +637,62 @@ class Endpoints extends _i1.EndpointDispatch {
                     session,
                     params['partnerId'],
                   ),
+        ),
+        'watchConversation': _i1.MethodStreamConnector(
+          name: 'watchConversation',
+          params: {
+            'partnerId': _i1.ParameterDescription(
+              name: 'partnerId',
+              type: _i1.getType<_i1.UuidValue>(),
+              nullable: false,
+            ),
+          },
+          streamParams: {},
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+                Map<String, Stream> streamParams,
+              ) => (endpoints['chat'] as _i5.ChatEndpoint).watchConversation(
+                session,
+                params['partnerId'],
+              ),
+        ),
+        'watchMyMessages': _i1.MethodStreamConnector(
+          name: 'watchMyMessages',
+          params: {},
+          streamParams: {},
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+                Map<String, Stream> streamParams,
+              ) => (endpoints['chat'] as _i5.ChatEndpoint).watchMyMessages(
+                session,
+              ),
+        ),
+        'watchTyping': _i1.MethodStreamConnector(
+          name: 'watchTyping',
+          params: {
+            'partnerId': _i1.ParameterDescription(
+              name: 'partnerId',
+              type: _i1.getType<_i1.UuidValue>(),
+              nullable: false,
+            ),
+          },
+          streamParams: {},
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+                Map<String, Stream> streamParams,
+              ) => (endpoints['chat'] as _i5.ChatEndpoint).watchTyping(
+                session,
+                params['partnerId'],
+              ),
         ),
       },
     );

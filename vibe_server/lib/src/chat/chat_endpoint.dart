@@ -6,11 +6,13 @@ import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 import '../generated/protocol.dart';
 import '../presence/presence_util.dart';
 import '../push/push_sender.dart';
+import 'chat_event_bus.dart';
 
 /// Real direct-messaging between signed-in users: conversation list,
 /// message history, sending (text/media/replies), reactions, edits,
-/// deletes, forwarding, read/delivered receipts and finding people to
-/// message.
+/// deletes, forwarding, read/delivered receipts, typing, live updates
+/// (via [watchConversation]/[watchMyMessages]/[watchTyping]) and finding
+/// people to message.
 class ChatEndpoint extends Endpoint {
   final UserProfiles _userProfiles = const UserProfiles();
 
@@ -37,6 +39,55 @@ class ChatEndpoint extends Endpoint {
     );
 
     return rows.map((final r) => r.toModel()).toList();
+  }
+
+  /// Streams live updates (new/edited/deleted messages, reactions,
+  /// delivery/read receipts) for the conversation with [partnerId].
+  Stream<ChatMessageView> watchConversation(
+    final Session session,
+    final UuidValue partnerId,
+  ) async* {
+    final myId = session.authenticated!.authUserId;
+    yield* ChatEventBus.instance.messageUpdates.where((final view) {
+      final participants = {view.senderId, view.recipientId};
+      return participants.contains(myId) && participants.contains(partnerId);
+    });
+  }
+
+  /// Streams live updates for every conversation the signed-in user is
+  /// part of — used by the chat list to refresh instantly instead of
+  /// polling.
+  Stream<ChatMessageView> watchMyMessages(final Session session) async* {
+    final myId = session.authenticated!.authUserId;
+    yield* ChatEventBus.instance.messageUpdates.where(
+      (final view) => view.senderId == myId || view.recipientId == myId,
+    );
+  }
+
+  /// Streams typing signals from [partnerId] directed at the signed-in
+  /// user.
+  Stream<TypingStatus> watchTyping(
+    final Session session,
+    final UuidValue partnerId,
+  ) async* {
+    final myId = session.authenticated!.authUserId;
+    yield* ChatEventBus.instance.typingUpdates.where(
+      (final status) =>
+          status.toUserId == myId && status.fromUserId == partnerId,
+    );
+  }
+
+  /// Broadcasts whether the signed-in user is currently typing to
+  /// [partnerId]. Transient — not persisted.
+  Future<void> setTyping(
+    final Session session,
+    final UuidValue partnerId,
+    final bool isTyping,
+  ) async {
+    final myId = session.authenticated!.authUserId;
+    ChatEventBus.instance.publishTyping(
+      TypingStatus(fromUserId: myId, toUserId: partnerId, isTyping: isTyping),
+    );
   }
 
   /// Returns the signed-in user's conversations, most recent first.
@@ -153,9 +204,12 @@ class ChatEndpoint extends Endpoint {
         m.deliveredAt = now;
       }
       await ChatMessage.db.update(session, toMarkDelivered);
+      for (final view in await _toViews(session, toMarkDelivered)) {
+        ChatEventBus.instance.publishMessage(view);
+      }
     }
 
-    return _toViews(session, visible.reversed.toList(), myId);
+    return _toViews(session, visible.reversed.toList());
   }
 
   /// Sends a message to [recipientId]. [mediaUrl]/[mediaType] should
@@ -227,8 +281,9 @@ class ChatEndpoint extends Endpoint {
       ),
     );
 
-    final views = await _toViews(session, [message], myId);
-    return views.first;
+    final view = (await _toViews(session, [message])).first;
+    ChatEventBus.instance.publishMessage(view);
+    return view;
   }
 
   /// Re-sends [messageId]'s content (text/media) to [toRecipientId].
@@ -279,19 +334,20 @@ class ChatEndpoint extends Endpoint {
     message.editedAt = DateTime.now().toUtc();
     await ChatMessage.db.updateRow(session, message);
 
-    final views = await _toViews(session, [message], myId);
-    return views.first;
+    final view = (await _toViews(session, [message])).first;
+    ChatEventBus.instance.publishMessage(view);
+    return view;
   }
 
   /// Deletes a message for everyone — only the sender can do this. Clears
   /// the content; the client renders a "message deleted" placeholder.
-  Future<void> deleteMessageForEveryone(
+  Future<ChatMessageView> deleteMessageForEveryone(
     final Session session,
     final int messageId,
   ) async {
     final myId = session.authenticated!.authUserId;
     final message = await ChatMessage.db.findById(session, messageId);
-    if (message == null) return;
+    if (message == null) throw ArgumentError('Message not found.');
     if (message.senderId != myId) {
       throw ArgumentError(
         'You can only delete your own messages for everyone.',
@@ -303,6 +359,10 @@ class ChatEndpoint extends Endpoint {
     message.mediaUrl = null;
     message.mediaType = null;
     await ChatMessage.db.updateRow(session, message);
+
+    final view = (await _toViews(session, [message])).first;
+    ChatEventBus.instance.publishMessage(view);
+    return view;
   }
 
   /// Hides a message from the signed-in user's view only; the other party
@@ -328,7 +388,7 @@ class ChatEndpoint extends Endpoint {
 
   /// Sets the signed-in user's reaction on a message to [emoji]. Reacting
   /// with the same emoji again removes it; a different emoji replaces it.
-  Future<void> reactToMessage(
+  Future<ChatMessageView> reactToMessage(
     final Session session,
     final int messageId,
     final String emoji,
@@ -359,6 +419,10 @@ class ChatEndpoint extends Endpoint {
         MessageReaction(messageId: messageId, userId: myId, emoji: emoji),
       );
     }
+
+    final view = (await _toViews(session, [message])).first;
+    ChatEventBus.instance.publishMessage(view);
+    return view;
   }
 
   /// Marks all messages from [partnerId] to the signed-in user as read.
@@ -382,6 +446,9 @@ class ChatEndpoint extends Endpoint {
     }
     if (unread.isNotEmpty) {
       await ChatMessage.db.update(session, unread);
+      for (final view in await _toViews(session, unread)) {
+        ChatEventBus.instance.publishMessage(view);
+      }
     }
   }
 
@@ -403,7 +470,6 @@ class ChatEndpoint extends Endpoint {
   Future<List<ChatMessageView>> _toViews(
     final Session session,
     final List<ChatMessage> messages,
-    final UuidValue myId,
   ) async {
     if (messages.isEmpty) return [];
 
@@ -433,19 +499,13 @@ class ChatEndpoint extends Endpoint {
     for (final m in messages) {
       final isDeleted = m.deletedAt != null;
 
-      final grouped = <String, List<MessageReaction>>{};
-      for (final r in reactionsByMessage[m.id] ?? const <MessageReaction>[]) {
-        grouped.putIfAbsent(r.emoji, () => []).add(r);
-      }
-      final reactionSummaries = grouped.entries
-          .map(
-            (final e) => MessageReactionSummary(
-              emoji: e.key,
-              count: e.value.length,
-              reactedByMe: e.value.any((final r) => r.userId == myId),
-            ),
-          )
-          .toList();
+      final reactionInfos =
+          (reactionsByMessage[m.id] ?? const <MessageReaction>[])
+              .map(
+                (final r) =>
+                    MessageReactionInfo(userId: r.userId, emoji: r.emoji),
+              )
+              .toList();
 
       final replyTo = m.replyToMessageId != null
           ? repliedById[m.replyToMessageId]
@@ -473,7 +533,7 @@ class ChatEndpoint extends Endpoint {
           replyPreviewMediaType: replyTo == null || replyDeleted
               ? null
               : replyTo.mediaType,
-          reactions: reactionSummaries,
+          reactions: reactionInfos,
         ),
       );
     }

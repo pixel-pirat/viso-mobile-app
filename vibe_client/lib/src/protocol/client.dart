@@ -18,22 +18,23 @@ import 'dart:async' as _i3;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
     as _i4;
 import 'dart:typed_data' as _i5;
-import 'package:vibe_client/src/protocol/chat/models/chat_conversation_summary.dart'
-    as _i6;
 import 'package:vibe_client/src/protocol/chat/models/chat_message_view.dart'
-    as _i7;
-import 'package:vibe_client/src/protocol/greetings/greeting.dart' as _i8;
+    as _i6;
+import 'package:vibe_client/src/protocol/chat/models/typing_status.dart' as _i7;
+import 'package:vibe_client/src/protocol/chat/models/chat_conversation_summary.dart'
+    as _i8;
+import 'package:vibe_client/src/protocol/greetings/greeting.dart' as _i9;
 import 'package:vibe_client/src/protocol/notifications/models/app_notification.dart'
-    as _i9;
-import 'package:vibe_client/src/protocol/posts/models/post.dart' as _i10;
+    as _i10;
+import 'package:vibe_client/src/protocol/posts/models/post.dart' as _i11;
 import 'package:vibe_client/src/protocol/posts/models/post_feed_item.dart'
-    as _i11;
-import 'package:vibe_client/src/protocol/presence/models/presence_status.dart'
     as _i12;
-import 'package:vibe_client/src/protocol/stories/models/story.dart' as _i13;
+import 'package:vibe_client/src/protocol/presence/models/presence_status.dart'
+    as _i13;
+import 'package:vibe_client/src/protocol/stories/models/story.dart' as _i14;
 import 'package:vibe_client/src/protocol/stories/models/story_group.dart'
-    as _i14;
-import 'protocol.dart' as _i15;
+    as _i15;
+import 'protocol.dart' as _i16;
 
 /// By extending [EmailIdpBaseEndpoint], the email identity provider endpoints
 /// are made available on the server and enable the corresponding sign-in widget
@@ -318,8 +319,9 @@ class EndpointUserProfile extends _i4.EndpointUserProfileEditBase {
 
 /// Real direct-messaging between signed-in users: conversation list,
 /// message history, sending (text/media/replies), reactions, edits,
-/// deletes, forwarding, read/delivered receipts and finding people to
-/// message.
+/// deletes, forwarding, read/delivered receipts, typing, live updates
+/// (via [watchConversation]/[watchMyMessages]/[watchTyping]) and finding
+/// people to message.
 /// {@category Endpoint}
 class EndpointChat extends _i2.EndpointRef {
   EndpointChat(_i2.EndpointCaller caller) : super(caller);
@@ -336,9 +338,63 @@ class EndpointChat extends _i2.EndpointRef {
         {'query': query},
       );
 
+  /// Streams live updates (new/edited/deleted messages, reactions,
+  /// delivery/read receipts) for the conversation with [partnerId].
+  _i3.Stream<_i6.ChatMessageView> watchConversation(_i2.UuidValue partnerId) =>
+      caller.callStreamingServerEndpoint<
+        _i3.Stream<_i6.ChatMessageView>,
+        _i6.ChatMessageView
+      >(
+        'chat',
+        'watchConversation',
+        {'partnerId': partnerId},
+        {},
+      );
+
+  /// Streams live updates for every conversation the signed-in user is
+  /// part of — used by the chat list to refresh instantly instead of
+  /// polling.
+  _i3.Stream<_i6.ChatMessageView> watchMyMessages() =>
+      caller.callStreamingServerEndpoint<
+        _i3.Stream<_i6.ChatMessageView>,
+        _i6.ChatMessageView
+      >(
+        'chat',
+        'watchMyMessages',
+        {},
+        {},
+      );
+
+  /// Streams typing signals from [partnerId] directed at the signed-in
+  /// user.
+  _i3.Stream<_i7.TypingStatus> watchTyping(_i2.UuidValue partnerId) =>
+      caller.callStreamingServerEndpoint<
+        _i3.Stream<_i7.TypingStatus>,
+        _i7.TypingStatus
+      >(
+        'chat',
+        'watchTyping',
+        {'partnerId': partnerId},
+        {},
+      );
+
+  /// Broadcasts whether the signed-in user is currently typing to
+  /// [partnerId]. Transient — not persisted.
+  _i3.Future<void> setTyping(
+    _i2.UuidValue partnerId,
+    bool isTyping,
+  ) => caller.callServerEndpoint<void>(
+    'chat',
+    'setTyping',
+    {
+      'partnerId': partnerId,
+      'isTyping': isTyping,
+    },
+  );
+
   /// Returns the signed-in user's conversations, most recent first.
-  _i3.Future<List<_i6.ChatConversationSummary>> listConversations() =>
-      caller.callServerEndpoint<List<_i6.ChatConversationSummary>>(
+  _i3.Future<List<_i8.ChatConversationSummary>> listConversations() =>
+      caller.callServerEndpoint<List<_i8.ChatConversationSummary>>(
         'chat',
         'listConversations',
         {},
@@ -347,10 +403,10 @@ class EndpointChat extends _i2.EndpointRef {
   /// Returns the message history with [partnerId], oldest first, with
   /// media, reply previews and reactions resolved. Also opportunistically
   /// marks any of the partner's messages as delivered.
-  _i3.Future<List<_i7.ChatMessageView>> getMessages(
+  _i3.Future<List<_i6.ChatMessageView>> getMessages(
     _i2.UuidValue partnerId, {
     required int limit,
-  }) => caller.callServerEndpoint<List<_i7.ChatMessageView>>(
+  }) => caller.callServerEndpoint<List<_i6.ChatMessageView>>(
     'chat',
     'getMessages',
     {
@@ -362,13 +418,13 @@ class EndpointChat extends _i2.EndpointRef {
   /// Sends a message to [recipientId]. [mediaUrl]/[mediaType] should
   /// already be uploaded via [MediaEndpoint.upload]. A message needs text
   /// or an attachment (or both, e.g. a captioned photo).
-  _i3.Future<_i7.ChatMessageView> sendMessage(
+  _i3.Future<_i6.ChatMessageView> sendMessage(
     _i2.UuidValue recipientId,
     String text, {
     String? mediaUrl,
     String? mediaType,
     int? replyToMessageId,
-  }) => caller.callServerEndpoint<_i7.ChatMessageView>(
+  }) => caller.callServerEndpoint<_i6.ChatMessageView>(
     'chat',
     'sendMessage',
     {
@@ -381,10 +437,10 @@ class EndpointChat extends _i2.EndpointRef {
   );
 
   /// Re-sends [messageId]'s content (text/media) to [toRecipientId].
-  _i3.Future<_i7.ChatMessageView> forwardMessage(
+  _i3.Future<_i6.ChatMessageView> forwardMessage(
     int messageId,
     _i2.UuidValue toRecipientId,
-  ) => caller.callServerEndpoint<_i7.ChatMessageView>(
+  ) => caller.callServerEndpoint<_i6.ChatMessageView>(
     'chat',
     'forwardMessage',
     {
@@ -394,10 +450,10 @@ class EndpointChat extends _i2.EndpointRef {
   );
 
   /// Edits the text of a message the signed-in user sent.
-  _i3.Future<_i7.ChatMessageView> editMessage(
+  _i3.Future<_i6.ChatMessageView> editMessage(
     int messageId,
     String newText,
-  ) => caller.callServerEndpoint<_i7.ChatMessageView>(
+  ) => caller.callServerEndpoint<_i6.ChatMessageView>(
     'chat',
     'editMessage',
     {
@@ -408,8 +464,8 @@ class EndpointChat extends _i2.EndpointRef {
 
   /// Deletes a message for everyone — only the sender can do this. Clears
   /// the content; the client renders a "message deleted" placeholder.
-  _i3.Future<void> deleteMessageForEveryone(int messageId) =>
-      caller.callServerEndpoint<void>(
+  _i3.Future<_i6.ChatMessageView> deleteMessageForEveryone(int messageId) =>
+      caller.callServerEndpoint<_i6.ChatMessageView>(
         'chat',
         'deleteMessageForEveryone',
         {'messageId': messageId},
@@ -426,10 +482,10 @@ class EndpointChat extends _i2.EndpointRef {
 
   /// Sets the signed-in user's reaction on a message to [emoji]. Reacting
   /// with the same emoji again removes it; a different emoji replaces it.
-  _i3.Future<void> reactToMessage(
+  _i3.Future<_i6.ChatMessageView> reactToMessage(
     int messageId,
     String emoji,
-  ) => caller.callServerEndpoint<void>(
+  ) => caller.callServerEndpoint<_i6.ChatMessageView>(
     'chat',
     'reactToMessage',
     {
@@ -457,8 +513,8 @@ class EndpointGreeting extends _i2.EndpointRef {
   String get name => 'greeting';
 
   /// Returns a personalized greeting message: "Hello {name}".
-  _i3.Future<_i8.Greeting> hello(String name) =>
-      caller.callServerEndpoint<_i8.Greeting>(
+  _i3.Future<_i9.Greeting> hello(String name) =>
+      caller.callServerEndpoint<_i9.Greeting>(
         'greeting',
         'hello',
         {'name': name},
@@ -501,8 +557,8 @@ class EndpointNotifications extends _i2.EndpointRef {
   String get name => 'notifications';
 
   /// Returns the signed-in user's notifications, most recent first.
-  _i3.Future<List<_i9.AppNotification>> list() =>
-      caller.callServerEndpoint<List<_i9.AppNotification>>(
+  _i3.Future<List<_i10.AppNotification>> list() =>
+      caller.callServerEndpoint<List<_i10.AppNotification>>(
         'notifications',
         'list',
         {},
@@ -525,8 +581,8 @@ class EndpointNotifications extends _i2.EndpointRef {
 
   /// Creates a notification the signed-in user sends to themself, to
   /// confirm the notifications pipeline is working end to end.
-  _i3.Future<_i9.AppNotification> sendTestNotification() =>
-      caller.callServerEndpoint<_i9.AppNotification>(
+  _i3.Future<_i10.AppNotification> sendTestNotification() =>
+      caller.callServerEndpoint<_i10.AppNotification>(
         'notifications',
         'sendTestNotification',
         {},
@@ -543,11 +599,11 @@ class EndpointPost extends _i2.EndpointRef {
 
   /// Creates a post. [mediaUrls] should already be uploaded via
   /// [MediaEndpoint.upload]. [mediaType] is 'none', 'image' or 'video'.
-  _i3.Future<_i10.Post> createPost(
+  _i3.Future<_i11.Post> createPost(
     String text,
     List<String> mediaUrls,
     String mediaType,
-  ) => caller.callServerEndpoint<_i10.Post>(
+  ) => caller.callServerEndpoint<_i11.Post>(
     'post',
     'createPost',
     {
@@ -562,10 +618,10 @@ class EndpointPost extends _i2.EndpointRef {
   /// ago the post was made, so fresh posts with traction rise to the top
   /// without older popular posts dominating forever. This is intentionally
   /// simple and easy to retune as real usage data comes in.
-  _i3.Future<List<_i11.PostFeedItem>> getFeed({
+  _i3.Future<List<_i12.PostFeedItem>> getFeed({
     required int limit,
     required int offset,
-  }) => caller.callServerEndpoint<List<_i11.PostFeedItem>>(
+  }) => caller.callServerEndpoint<List<_i12.PostFeedItem>>(
     'post',
     'getFeed',
     {
@@ -576,8 +632,8 @@ class EndpointPost extends _i2.EndpointRef {
 
   /// Returns the signed-in user's own posts, most recent first — used by
   /// the Profile screen's Posts tab and the Analytics screen.
-  _i3.Future<List<_i11.PostFeedItem>> getMyPosts() =>
-      caller.callServerEndpoint<List<_i11.PostFeedItem>>(
+  _i3.Future<List<_i12.PostFeedItem>> getMyPosts() =>
+      caller.callServerEndpoint<List<_i12.PostFeedItem>>(
         'post',
         'getMyPosts',
         {},
@@ -619,8 +675,8 @@ class EndpointPresence extends _i2.EndpointRef {
   );
 
   /// Returns whether [userId] is currently online.
-  _i3.Future<_i12.PresenceStatus> getPresence(_i2.UuidValue userId) =>
-      caller.callServerEndpoint<_i12.PresenceStatus>(
+  _i3.Future<_i13.PresenceStatus> getPresence(_i2.UuidValue userId) =>
+      caller.callServerEndpoint<_i13.PresenceStatus>(
         'presence',
         'getPresence',
         {'userId': userId},
@@ -670,10 +726,10 @@ class EndpointStory extends _i2.EndpointRef {
 
   /// Creates a story. [mediaUrl] should already be uploaded via
   /// [MediaEndpoint.upload]. Expires 24 hours from now.
-  _i3.Future<_i13.Story> createStory(
+  _i3.Future<_i14.Story> createStory(
     String mediaUrl,
     String mediaType,
-  ) => caller.callServerEndpoint<_i13.Story>(
+  ) => caller.callServerEndpoint<_i14.Story>(
     'story',
     'createStory',
     {
@@ -685,8 +741,8 @@ class EndpointStory extends _i2.EndpointRef {
   /// Returns active (non-expired) stories grouped by author. The signed-in
   /// user's own group (if any) always comes first; the rest are ordered
   /// unseen-first, then by most recent story.
-  _i3.Future<List<_i14.StoryGroup>> getStoriesFeed() =>
-      caller.callServerEndpoint<List<_i14.StoryGroup>>(
+  _i3.Future<List<_i15.StoryGroup>> getStoriesFeed() =>
+      caller.callServerEndpoint<List<_i15.StoryGroup>>(
         'story',
         'getStoriesFeed',
         {},
@@ -733,7 +789,7 @@ class Client extends _i2.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
          host,
-         _i15.Protocol(),
+         _i16.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,

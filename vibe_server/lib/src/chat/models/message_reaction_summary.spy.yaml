@@ -1,6 +1,0 @@
-### One emoji's aggregated reaction count on a message.
-class: MessageReactionSummary
-fields:
-  emoji: String
-  count: int
-  reactedByMe: bool

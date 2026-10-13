@@ -12,7 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 
 import 'package:serverpod/serverpod.dart' as _i1;
-import '../../chat/models/message_reaction_summary.dart' as _i2;
+import '../../chat/models/message_reaction_info.dart' as _i2;
 import 'package:vibe_server/src/generated/protocol.dart' as _i3;
 
 /// A fully-resolved chat message, ready for the client to render: media,
@@ -54,7 +54,7 @@ abstract class ChatMessageView
     _i1.UuidValue? replyToSenderId,
     String? replyPreviewText,
     String? replyPreviewMediaType,
-    required List<_i2.MessageReactionSummary> reactions,
+    required List<_i2.MessageReactionInfo> reactions,
   }) = _ChatMessageViewImpl;
 
   factory ChatMessageView.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -93,7 +93,7 @@ abstract class ChatMessageView
       replyPreviewText: jsonSerialization['replyPreviewText'] as String?,
       replyPreviewMediaType:
           jsonSerialization['replyPreviewMediaType'] as String?,
-      reactions: _i3.Protocol().deserialize<List<_i2.MessageReactionSummary>>(
+      reactions: _i3.Protocol().deserialize<List<_i2.MessageReactionInfo>>(
         jsonSerialization['reactions'],
       ),
     );
@@ -129,7 +129,7 @@ abstract class ChatMessageView
 
   String? replyPreviewMediaType;
 
-  List<_i2.MessageReactionSummary> reactions;
+  List<_i2.MessageReactionInfo> reactions;
 
   /// Returns a shallow copy of this [ChatMessageView]
   /// with some or all fields replaced by the given arguments.
@@ -150,7 +150,7 @@ abstract class ChatMessageView
     _i1.UuidValue? replyToSenderId,
     String? replyPreviewText,
     String? replyPreviewMediaType,
-    List<_i2.MessageReactionSummary>? reactions,
+    List<_i2.MessageReactionInfo>? reactions,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -225,7 +225,7 @@ class _ChatMessageViewImpl extends ChatMessageView {
     _i1.UuidValue? replyToSenderId,
     String? replyPreviewText,
     String? replyPreviewMediaType,
-    required List<_i2.MessageReactionSummary> reactions,
+    required List<_i2.MessageReactionInfo> reactions,
   }) : super._(
          id: id,
          senderId: senderId,
@@ -265,7 +265,7 @@ class _ChatMessageViewImpl extends ChatMessageView {
     Object? replyToSenderId = _Undefined,
     Object? replyPreviewText = _Undefined,
     Object? replyPreviewMediaType = _Undefined,
-    List<_i2.MessageReactionSummary>? reactions,
+    List<_i2.MessageReactionInfo>? reactions,
   }) {
     return ChatMessageView(
       id: id ?? this.id,

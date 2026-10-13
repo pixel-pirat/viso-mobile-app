@@ -1,0 +1,7 @@
+### A transient (not persisted) typing signal broadcast over
+### [ChatEndpoint.watchTyping].
+class: TypingStatus
+fields:
+  fromUserId: UuidValue
+  toUserId: UuidValue
+  isTyping: bool

@@ -17,21 +17,23 @@ import 'dart:async' as _i3;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _i4;
 import 'dart:typed_data' as _i5;
-import 'package:vibe_server/src/generated/chat/models/chat_conversation_summary.dart'
-    as _i6;
 import 'package:vibe_server/src/generated/chat/models/chat_message_view.dart'
+    as _i6;
+import 'package:vibe_server/src/generated/chat/models/typing_status.dart'
     as _i7;
-import 'package:vibe_server/src/generated/greetings/greeting.dart' as _i8;
+import 'package:vibe_server/src/generated/chat/models/chat_conversation_summary.dart'
+    as _i8;
+import 'package:vibe_server/src/generated/greetings/greeting.dart' as _i9;
 import 'package:vibe_server/src/generated/notifications/models/app_notification.dart'
-    as _i9;
-import 'package:vibe_server/src/generated/posts/models/post.dart' as _i10;
+    as _i10;
+import 'package:vibe_server/src/generated/posts/models/post.dart' as _i11;
 import 'package:vibe_server/src/generated/posts/models/post_feed_item.dart'
-    as _i11;
-import 'package:vibe_server/src/generated/presence/models/presence_status.dart'
     as _i12;
-import 'package:vibe_server/src/generated/stories/models/story.dart' as _i13;
+import 'package:vibe_server/src/generated/presence/models/presence_status.dart'
+    as _i13;
+import 'package:vibe_server/src/generated/stories/models/story.dart' as _i14;
 import 'package:vibe_server/src/generated/stories/models/story_group.dart'
-    as _i14;
+    as _i15;
 import 'package:vibe_server/src/generated/protocol.dart';
 import 'package:vibe_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -746,7 +748,137 @@ class _ChatEndpoint {
     });
   }
 
-  _i3.Future<List<_i6.ChatConversationSummary>> listConversations(
+  _i3.Stream<_i6.ChatMessageView> watchConversation(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i2.UuidValue partnerId,
+  ) {
+    var _localTestStreamManager = _i1.TestStreamManager<_i6.ChatMessageView>();
+    _i1.callStreamFunctionAndHandleExceptions(
+      () async {
+        var _localUniqueSession =
+            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+              endpoint: 'chat',
+              method: 'watchConversation',
+            );
+        var _localCallContext = await _endpointDispatch
+            .getMethodStreamCallContext(
+              createSessionCallback: (_) => _localUniqueSession,
+              endpointPath: 'chat',
+              methodName: 'watchConversation',
+              arguments: {'partnerId': partnerId},
+              requestedInputStreams: [],
+              serializationManager: _serializationManager,
+            );
+        await _localTestStreamManager.callStreamMethod(
+          _localCallContext,
+          _localUniqueSession,
+          {},
+        );
+      },
+      _localTestStreamManager.outputStreamController,
+    );
+    return _localTestStreamManager.outputStreamController.stream;
+  }
+
+  _i3.Stream<_i6.ChatMessageView> watchMyMessages(
+    _i1.TestSessionBuilder sessionBuilder,
+  ) {
+    var _localTestStreamManager = _i1.TestStreamManager<_i6.ChatMessageView>();
+    _i1.callStreamFunctionAndHandleExceptions(
+      () async {
+        var _localUniqueSession =
+            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+              endpoint: 'chat',
+              method: 'watchMyMessages',
+            );
+        var _localCallContext = await _endpointDispatch
+            .getMethodStreamCallContext(
+              createSessionCallback: (_) => _localUniqueSession,
+              endpointPath: 'chat',
+              methodName: 'watchMyMessages',
+              arguments: {},
+              requestedInputStreams: [],
+              serializationManager: _serializationManager,
+            );
+        await _localTestStreamManager.callStreamMethod(
+          _localCallContext,
+          _localUniqueSession,
+          {},
+        );
+      },
+      _localTestStreamManager.outputStreamController,
+    );
+    return _localTestStreamManager.outputStreamController.stream;
+  }
+
+  _i3.Stream<_i7.TypingStatus> watchTyping(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i2.UuidValue partnerId,
+  ) {
+    var _localTestStreamManager = _i1.TestStreamManager<_i7.TypingStatus>();
+    _i1.callStreamFunctionAndHandleExceptions(
+      () async {
+        var _localUniqueSession =
+            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+              endpoint: 'chat',
+              method: 'watchTyping',
+            );
+        var _localCallContext = await _endpointDispatch
+            .getMethodStreamCallContext(
+              createSessionCallback: (_) => _localUniqueSession,
+              endpointPath: 'chat',
+              methodName: 'watchTyping',
+              arguments: {'partnerId': partnerId},
+              requestedInputStreams: [],
+              serializationManager: _serializationManager,
+            );
+        await _localTestStreamManager.callStreamMethod(
+          _localCallContext,
+          _localUniqueSession,
+          {},
+        );
+      },
+      _localTestStreamManager.outputStreamController,
+    );
+    return _localTestStreamManager.outputStreamController.stream;
+  }
+
+  _i3.Future<void> setTyping(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i2.UuidValue partnerId,
+    bool isTyping,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'chat',
+            method: 'setTyping',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'chat',
+          methodName: 'setTyping',
+          parameters: _i1.testObjectToJson({
+            'partnerId': partnerId,
+            'isTyping': isTyping,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<void>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<List<_i8.ChatConversationSummary>> listConversations(
     _i1.TestSessionBuilder sessionBuilder,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -768,7 +900,7 @@ class _ChatEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<List<_i6.ChatConversationSummary>>);
+                as _i3.Future<List<_i8.ChatConversationSummary>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -776,7 +908,7 @@ class _ChatEndpoint {
     });
   }
 
-  _i3.Future<List<_i7.ChatMessageView>> getMessages(
+  _i3.Future<List<_i6.ChatMessageView>> getMessages(
     _i1.TestSessionBuilder sessionBuilder,
     _i2.UuidValue partnerId, {
     required int limit,
@@ -803,7 +935,7 @@ class _ChatEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<List<_i7.ChatMessageView>>);
+                as _i3.Future<List<_i6.ChatMessageView>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -811,7 +943,7 @@ class _ChatEndpoint {
     });
   }
 
-  _i3.Future<_i7.ChatMessageView> sendMessage(
+  _i3.Future<_i6.ChatMessageView> sendMessage(
     _i1.TestSessionBuilder sessionBuilder,
     _i2.UuidValue recipientId,
     String text, {
@@ -844,7 +976,7 @@ class _ChatEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i7.ChatMessageView>);
+                as _i3.Future<_i6.ChatMessageView>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -852,7 +984,7 @@ class _ChatEndpoint {
     });
   }
 
-  _i3.Future<_i7.ChatMessageView> forwardMessage(
+  _i3.Future<_i6.ChatMessageView> forwardMessage(
     _i1.TestSessionBuilder sessionBuilder,
     int messageId,
     _i2.UuidValue toRecipientId,
@@ -879,7 +1011,7 @@ class _ChatEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i7.ChatMessageView>);
+                as _i3.Future<_i6.ChatMessageView>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -887,7 +1019,7 @@ class _ChatEndpoint {
     });
   }
 
-  _i3.Future<_i7.ChatMessageView> editMessage(
+  _i3.Future<_i6.ChatMessageView> editMessage(
     _i1.TestSessionBuilder sessionBuilder,
     int messageId,
     String newText,
@@ -914,7 +1046,7 @@ class _ChatEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i7.ChatMessageView>);
+                as _i3.Future<_i6.ChatMessageView>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -922,7 +1054,7 @@ class _ChatEndpoint {
     });
   }
 
-  _i3.Future<void> deleteMessageForEveryone(
+  _i3.Future<_i6.ChatMessageView> deleteMessageForEveryone(
     _i1.TestSessionBuilder sessionBuilder,
     int messageId,
   ) async {
@@ -945,7 +1077,7 @@ class _ChatEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<void>);
+                as _i3.Future<_i6.ChatMessageView>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -984,7 +1116,7 @@ class _ChatEndpoint {
     });
   }
 
-  _i3.Future<void> reactToMessage(
+  _i3.Future<_i6.ChatMessageView> reactToMessage(
     _i1.TestSessionBuilder sessionBuilder,
     int messageId,
     String emoji,
@@ -1011,7 +1143,7 @@ class _ChatEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<void>);
+                as _i3.Future<_i6.ChatMessageView>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1061,7 +1193,7 @@ class _GreetingEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<_i8.Greeting> hello(
+  _i3.Future<_i9.Greeting> hello(
     _i1.TestSessionBuilder sessionBuilder,
     String name,
   ) async {
@@ -1084,7 +1216,7 @@ class _GreetingEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i8.Greeting>);
+                as _i3.Future<_i9.Greeting>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1149,7 +1281,7 @@ class _NotificationsEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<List<_i9.AppNotification>> list(
+  _i3.Future<List<_i10.AppNotification>> list(
     _i1.TestSessionBuilder sessionBuilder,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -1171,7 +1303,7 @@ class _NotificationsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<List<_i9.AppNotification>>);
+                as _i3.Future<List<_i10.AppNotification>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1238,7 +1370,7 @@ class _NotificationsEndpoint {
     });
   }
 
-  _i3.Future<_i9.AppNotification> sendTestNotification(
+  _i3.Future<_i10.AppNotification> sendTestNotification(
     _i1.TestSessionBuilder sessionBuilder,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -1260,7 +1392,7 @@ class _NotificationsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i9.AppNotification>);
+                as _i3.Future<_i10.AppNotification>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1279,7 +1411,7 @@ class _PostEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<_i10.Post> createPost(
+  _i3.Future<_i11.Post> createPost(
     _i1.TestSessionBuilder sessionBuilder,
     String text,
     List<String> mediaUrls,
@@ -1308,7 +1440,7 @@ class _PostEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i10.Post>);
+                as _i3.Future<_i11.Post>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1316,7 +1448,7 @@ class _PostEndpoint {
     });
   }
 
-  _i3.Future<List<_i11.PostFeedItem>> getFeed(
+  _i3.Future<List<_i12.PostFeedItem>> getFeed(
     _i1.TestSessionBuilder sessionBuilder, {
     required int limit,
     required int offset,
@@ -1343,7 +1475,7 @@ class _PostEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<List<_i11.PostFeedItem>>);
+                as _i3.Future<List<_i12.PostFeedItem>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1351,7 +1483,7 @@ class _PostEndpoint {
     });
   }
 
-  _i3.Future<List<_i11.PostFeedItem>> getMyPosts(
+  _i3.Future<List<_i12.PostFeedItem>> getMyPosts(
     _i1.TestSessionBuilder sessionBuilder,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -1373,7 +1505,7 @@ class _PostEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<List<_i11.PostFeedItem>>);
+                as _i3.Future<List<_i12.PostFeedItem>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1482,7 +1614,7 @@ class _PresenceEndpoint {
     });
   }
 
-  _i3.Future<_i12.PresenceStatus> getPresence(
+  _i3.Future<_i13.PresenceStatus> getPresence(
     _i1.TestSessionBuilder sessionBuilder,
     _i2.UuidValue userId,
   ) async {
@@ -1505,7 +1637,7 @@ class _PresenceEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i12.PresenceStatus>);
+                as _i3.Future<_i13.PresenceStatus>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1601,7 +1733,7 @@ class _StoryEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<_i13.Story> createStory(
+  _i3.Future<_i14.Story> createStory(
     _i1.TestSessionBuilder sessionBuilder,
     String mediaUrl,
     String mediaType,
@@ -1628,7 +1760,7 @@ class _StoryEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i13.Story>);
+                as _i3.Future<_i14.Story>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1636,7 +1768,7 @@ class _StoryEndpoint {
     });
   }
 
-  _i3.Future<List<_i14.StoryGroup>> getStoriesFeed(
+  _i3.Future<List<_i15.StoryGroup>> getStoriesFeed(
     _i1.TestSessionBuilder sessionBuilder,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -1658,7 +1790,7 @@ class _StoryEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<List<_i14.StoryGroup>>);
+                as _i3.Future<List<_i15.StoryGroup>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
