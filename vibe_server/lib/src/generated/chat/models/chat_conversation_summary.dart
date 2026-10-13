@@ -23,6 +23,7 @@ abstract class ChatConversationSummary
     this.partnerUserName,
     this.partnerAvatarUrl,
     required this.lastMessageText,
+    this.lastMessageMediaType,
     required this.lastMessageAt,
     required this.lastMessageIsMine,
     required this.unreadCount,
@@ -35,6 +36,7 @@ abstract class ChatConversationSummary
     String? partnerUserName,
     String? partnerAvatarUrl,
     required String lastMessageText,
+    String? lastMessageMediaType,
     required DateTime lastMessageAt,
     required bool lastMessageIsMine,
     required int unreadCount,
@@ -52,6 +54,8 @@ abstract class ChatConversationSummary
       partnerUserName: jsonSerialization['partnerUserName'] as String?,
       partnerAvatarUrl: jsonSerialization['partnerAvatarUrl'] as String?,
       lastMessageText: jsonSerialization['lastMessageText'] as String,
+      lastMessageMediaType:
+          jsonSerialization['lastMessageMediaType'] as String?,
       lastMessageAt: _i1.DateTimeJsonExtension.fromJson(
         jsonSerialization['lastMessageAt'],
       ),
@@ -75,6 +79,8 @@ abstract class ChatConversationSummary
 
   String lastMessageText;
 
+  String? lastMessageMediaType;
+
   DateTime lastMessageAt;
 
   bool lastMessageIsMine;
@@ -92,6 +98,7 @@ abstract class ChatConversationSummary
     String? partnerUserName,
     String? partnerAvatarUrl,
     String? lastMessageText,
+    String? lastMessageMediaType,
     DateTime? lastMessageAt,
     bool? lastMessageIsMine,
     int? unreadCount,
@@ -106,6 +113,8 @@ abstract class ChatConversationSummary
       if (partnerUserName != null) 'partnerUserName': partnerUserName,
       if (partnerAvatarUrl != null) 'partnerAvatarUrl': partnerAvatarUrl,
       'lastMessageText': lastMessageText,
+      if (lastMessageMediaType != null)
+        'lastMessageMediaType': lastMessageMediaType,
       'lastMessageAt': lastMessageAt.toJson(),
       'lastMessageIsMine': lastMessageIsMine,
       'unreadCount': unreadCount,
@@ -122,6 +131,8 @@ abstract class ChatConversationSummary
       if (partnerUserName != null) 'partnerUserName': partnerUserName,
       if (partnerAvatarUrl != null) 'partnerAvatarUrl': partnerAvatarUrl,
       'lastMessageText': lastMessageText,
+      if (lastMessageMediaType != null)
+        'lastMessageMediaType': lastMessageMediaType,
       'lastMessageAt': lastMessageAt.toJson(),
       'lastMessageIsMine': lastMessageIsMine,
       'unreadCount': unreadCount,
@@ -144,6 +155,7 @@ class _ChatConversationSummaryImpl extends ChatConversationSummary {
     String? partnerUserName,
     String? partnerAvatarUrl,
     required String lastMessageText,
+    String? lastMessageMediaType,
     required DateTime lastMessageAt,
     required bool lastMessageIsMine,
     required int unreadCount,
@@ -154,6 +166,7 @@ class _ChatConversationSummaryImpl extends ChatConversationSummary {
          partnerUserName: partnerUserName,
          partnerAvatarUrl: partnerAvatarUrl,
          lastMessageText: lastMessageText,
+         lastMessageMediaType: lastMessageMediaType,
          lastMessageAt: lastMessageAt,
          lastMessageIsMine: lastMessageIsMine,
          unreadCount: unreadCount,
@@ -170,6 +183,7 @@ class _ChatConversationSummaryImpl extends ChatConversationSummary {
     Object? partnerUserName = _Undefined,
     Object? partnerAvatarUrl = _Undefined,
     String? lastMessageText,
+    Object? lastMessageMediaType = _Undefined,
     DateTime? lastMessageAt,
     bool? lastMessageIsMine,
     int? unreadCount,
@@ -185,6 +199,9 @@ class _ChatConversationSummaryImpl extends ChatConversationSummary {
           ? partnerAvatarUrl
           : this.partnerAvatarUrl,
       lastMessageText: lastMessageText ?? this.lastMessageText,
+      lastMessageMediaType: lastMessageMediaType is String?
+          ? lastMessageMediaType
+          : this.lastMessageMediaType,
       lastMessageAt: lastMessageAt ?? this.lastMessageAt,
       lastMessageIsMine: lastMessageIsMine ?? this.lastMessageIsMine,
       unreadCount: unreadCount ?? this.unreadCount,

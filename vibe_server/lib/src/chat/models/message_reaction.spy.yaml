@@ -1,0 +1,14 @@
+### A single-emoji reaction by one user on one chat message. A user can
+### have at most one reaction per message (re-reacting replaces it;
+### reacting with the same emoji again removes it).
+class: MessageReaction
+table: message_reaction
+fields:
+  messageId: int
+  userId: UuidValue
+  emoji: String
+  createdAt: DateTime, default=now
+indexes:
+  message_reaction_unique:
+    fields: messageId, userId
+    unique: true

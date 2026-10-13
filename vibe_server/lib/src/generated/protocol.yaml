@@ -20,6 +20,11 @@ chat:
   - listConversations:
   - getMessages:
   - sendMessage:
+  - forwardMessage:
+  - editMessage:
+  - deleteMessageForEveryone:
+  - deleteMessageForMe:
+  - reactToMessage:
   - markConversationRead:
 greeting:
   - hello:

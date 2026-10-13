@@ -20,7 +20,8 @@ import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
 import 'dart:typed_data' as _i5;
 import 'package:vibe_client/src/protocol/chat/models/chat_conversation_summary.dart'
     as _i6;
-import 'package:vibe_client/src/protocol/chat/models/chat_message.dart' as _i7;
+import 'package:vibe_client/src/protocol/chat/models/chat_message_view.dart'
+    as _i7;
 import 'package:vibe_client/src/protocol/greetings/greeting.dart' as _i8;
 import 'package:vibe_client/src/protocol/notifications/models/app_notification.dart'
     as _i9;
@@ -316,7 +317,9 @@ class EndpointUserProfile extends _i4.EndpointUserProfileEditBase {
 }
 
 /// Real direct-messaging between signed-in users: conversation list,
-/// message history, sending, read receipts and finding people to message.
+/// message history, sending (text/media/replies), reactions, edits,
+/// deletes, forwarding, read/delivered receipts and finding people to
+/// message.
 /// {@category Endpoint}
 class EndpointChat extends _i2.EndpointRef {
   EndpointChat(_i2.EndpointCaller caller) : super(caller);
@@ -341,11 +344,13 @@ class EndpointChat extends _i2.EndpointRef {
         {},
       );
 
-  /// Returns the message history with [partnerId], oldest first.
-  _i3.Future<List<_i7.ChatMessage>> getMessages(
+  /// Returns the message history with [partnerId], oldest first, with
+  /// media, reply previews and reactions resolved. Also opportunistically
+  /// marks any of the partner's messages as delivered.
+  _i3.Future<List<_i7.ChatMessageView>> getMessages(
     _i2.UuidValue partnerId, {
     required int limit,
-  }) => caller.callServerEndpoint<List<_i7.ChatMessage>>(
+  }) => caller.callServerEndpoint<List<_i7.ChatMessageView>>(
     'chat',
     'getMessages',
     {
@@ -354,16 +359,82 @@ class EndpointChat extends _i2.EndpointRef {
     },
   );
 
-  /// Sends a text message to [recipientId].
-  _i3.Future<_i7.ChatMessage> sendMessage(
+  /// Sends a message to [recipientId]. [mediaUrl]/[mediaType] should
+  /// already be uploaded via [MediaEndpoint.upload]. A message needs text
+  /// or an attachment (or both, e.g. a captioned photo).
+  _i3.Future<_i7.ChatMessageView> sendMessage(
     _i2.UuidValue recipientId,
-    String text,
-  ) => caller.callServerEndpoint<_i7.ChatMessage>(
+    String text, {
+    String? mediaUrl,
+    String? mediaType,
+    int? replyToMessageId,
+  }) => caller.callServerEndpoint<_i7.ChatMessageView>(
     'chat',
     'sendMessage',
     {
       'recipientId': recipientId,
       'text': text,
+      'mediaUrl': mediaUrl,
+      'mediaType': mediaType,
+      'replyToMessageId': replyToMessageId,
+    },
+  );
+
+  /// Re-sends [messageId]'s content (text/media) to [toRecipientId].
+  _i3.Future<_i7.ChatMessageView> forwardMessage(
+    int messageId,
+    _i2.UuidValue toRecipientId,
+  ) => caller.callServerEndpoint<_i7.ChatMessageView>(
+    'chat',
+    'forwardMessage',
+    {
+      'messageId': messageId,
+      'toRecipientId': toRecipientId,
+    },
+  );
+
+  /// Edits the text of a message the signed-in user sent.
+  _i3.Future<_i7.ChatMessageView> editMessage(
+    int messageId,
+    String newText,
+  ) => caller.callServerEndpoint<_i7.ChatMessageView>(
+    'chat',
+    'editMessage',
+    {
+      'messageId': messageId,
+      'newText': newText,
+    },
+  );
+
+  /// Deletes a message for everyone — only the sender can do this. Clears
+  /// the content; the client renders a "message deleted" placeholder.
+  _i3.Future<void> deleteMessageForEveryone(int messageId) =>
+      caller.callServerEndpoint<void>(
+        'chat',
+        'deleteMessageForEveryone',
+        {'messageId': messageId},
+      );
+
+  /// Hides a message from the signed-in user's view only; the other party
+  /// still sees it normally.
+  _i3.Future<void> deleteMessageForMe(int messageId) =>
+      caller.callServerEndpoint<void>(
+        'chat',
+        'deleteMessageForMe',
+        {'messageId': messageId},
+      );
+
+  /// Sets the signed-in user's reaction on a message to [emoji]. Reacting
+  /// with the same emoji again removes it; a different emoji replaces it.
+  _i3.Future<void> reactToMessage(
+    int messageId,
+    String emoji,
+  ) => caller.callServerEndpoint<void>(
+    'chat',
+    'reactToMessage',
+    {
+      'messageId': messageId,
+      'emoji': emoji,
     },
   );
 

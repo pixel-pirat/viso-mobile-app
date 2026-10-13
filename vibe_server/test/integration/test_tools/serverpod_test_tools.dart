@@ -19,7 +19,8 @@ import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
 import 'dart:typed_data' as _i5;
 import 'package:vibe_server/src/generated/chat/models/chat_conversation_summary.dart'
     as _i6;
-import 'package:vibe_server/src/generated/chat/models/chat_message.dart' as _i7;
+import 'package:vibe_server/src/generated/chat/models/chat_message_view.dart'
+    as _i7;
 import 'package:vibe_server/src/generated/greetings/greeting.dart' as _i8;
 import 'package:vibe_server/src/generated/notifications/models/app_notification.dart'
     as _i9;
@@ -775,7 +776,7 @@ class _ChatEndpoint {
     });
   }
 
-  _i3.Future<List<_i7.ChatMessage>> getMessages(
+  _i3.Future<List<_i7.ChatMessageView>> getMessages(
     _i1.TestSessionBuilder sessionBuilder,
     _i2.UuidValue partnerId, {
     required int limit,
@@ -802,7 +803,7 @@ class _ChatEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<List<_i7.ChatMessage>>);
+                as _i3.Future<List<_i7.ChatMessageView>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -810,11 +811,14 @@ class _ChatEndpoint {
     });
   }
 
-  _i3.Future<_i7.ChatMessage> sendMessage(
+  _i3.Future<_i7.ChatMessageView> sendMessage(
     _i1.TestSessionBuilder sessionBuilder,
     _i2.UuidValue recipientId,
-    String text,
-  ) async {
+    String text, {
+    String? mediaUrl,
+    String? mediaType,
+    int? replyToMessageId,
+  }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
           (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
@@ -829,6 +833,9 @@ class _ChatEndpoint {
           parameters: _i1.testObjectToJson({
             'recipientId': recipientId,
             'text': text,
+            'mediaUrl': mediaUrl,
+            'mediaType': mediaType,
+            'replyToMessageId': replyToMessageId,
           }),
           serializationManager: _serializationManager,
         );
@@ -837,7 +844,174 @@ class _ChatEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i7.ChatMessage>);
+                as _i3.Future<_i7.ChatMessageView>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i7.ChatMessageView> forwardMessage(
+    _i1.TestSessionBuilder sessionBuilder,
+    int messageId,
+    _i2.UuidValue toRecipientId,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'chat',
+            method: 'forwardMessage',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'chat',
+          methodName: 'forwardMessage',
+          parameters: _i1.testObjectToJson({
+            'messageId': messageId,
+            'toRecipientId': toRecipientId,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i7.ChatMessageView>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i7.ChatMessageView> editMessage(
+    _i1.TestSessionBuilder sessionBuilder,
+    int messageId,
+    String newText,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'chat',
+            method: 'editMessage',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'chat',
+          methodName: 'editMessage',
+          parameters: _i1.testObjectToJson({
+            'messageId': messageId,
+            'newText': newText,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i7.ChatMessageView>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<void> deleteMessageForEveryone(
+    _i1.TestSessionBuilder sessionBuilder,
+    int messageId,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'chat',
+            method: 'deleteMessageForEveryone',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'chat',
+          methodName: 'deleteMessageForEveryone',
+          parameters: _i1.testObjectToJson({'messageId': messageId}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<void>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<void> deleteMessageForMe(
+    _i1.TestSessionBuilder sessionBuilder,
+    int messageId,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'chat',
+            method: 'deleteMessageForMe',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'chat',
+          methodName: 'deleteMessageForMe',
+          parameters: _i1.testObjectToJson({'messageId': messageId}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<void>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<void> reactToMessage(
+    _i1.TestSessionBuilder sessionBuilder,
+    int messageId,
+    String emoji,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'chat',
+            method: 'reactToMessage',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'chat',
+          methodName: 'reactToMessage',
+          parameters: _i1.testObjectToJson({
+            'messageId': messageId,
+            'emoji': emoji,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();

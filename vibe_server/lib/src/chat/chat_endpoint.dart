@@ -8,7 +8,9 @@ import '../presence/presence_util.dart';
 import '../push/push_sender.dart';
 
 /// Real direct-messaging between signed-in users: conversation list,
-/// message history, sending, read receipts and finding people to message.
+/// message history, sending (text/media/replies), reactions, edits,
+/// deletes, forwarding, read/delivered receipts and finding people to
+/// message.
 class ChatEndpoint extends Endpoint {
   final UserProfiles _userProfiles = const UserProfiles();
 
@@ -57,10 +59,17 @@ class ChatEndpoint extends Endpoint {
     for (final message in messages) {
       final isMine = message.senderId == myId;
       final partnerId = isMine ? message.recipientId : message.senderId;
+      final hiddenAt = isMine
+          ? message.hiddenForSender
+          : message.hiddenForRecipient;
 
-      lastMessageByPartner.putIfAbsent(partnerId, () => message);
+      if (hiddenAt == null) {
+        lastMessageByPartner.putIfAbsent(partnerId, () => message);
+      }
 
-      if (!isMine && message.readAt == null) {
+      if (!isMine &&
+          message.readAt == null &&
+          message.hiddenForRecipient == null) {
         unreadCountByPartner[partnerId] =
             (unreadCountByPartner[partnerId] ?? 0) + 1;
       }
@@ -75,6 +84,12 @@ class ChatEndpoint extends Endpoint {
         partnerId,
       );
       final isOnline = await isUserOnline(session, partnerId);
+      final isDeleted = lastMessage.deletedAt != null;
+      final previewText = isDeleted
+          ? 'This message was deleted'
+          : (lastMessage.text.isNotEmpty
+                ? lastMessage.text
+                : _mediaLabel(lastMessage.mediaType));
 
       summaries.add(
         ChatConversationSummary(
@@ -86,7 +101,8 @@ class ChatEndpoint extends Endpoint {
               'Unknown user',
           partnerUserName: profile?.userName,
           partnerAvatarUrl: profile?.imageUrl?.toString(),
-          lastMessageText: lastMessage.text,
+          lastMessageText: previewText,
+          lastMessageMediaType: isDeleted ? null : lastMessage.mediaType,
           lastMessageAt: lastMessage.createdAt,
           lastMessageIsMine: lastMessage.senderId == myId,
           unreadCount: unreadCountByPartner[partnerId] ?? 0,
@@ -101,8 +117,10 @@ class ChatEndpoint extends Endpoint {
     return summaries;
   }
 
-  /// Returns the message history with [partnerId], oldest first.
-  Future<List<ChatMessage>> getMessages(
+  /// Returns the message history with [partnerId], oldest first, with
+  /// media, reply previews and reactions resolved. Also opportunistically
+  /// marks any of the partner's messages as delivered.
+  Future<List<ChatMessageView>> getMessages(
     final Session session,
     final UuidValue partnerId, {
     final int limit = 100,
@@ -119,19 +137,42 @@ class ChatEndpoint extends Endpoint {
       limit: limit,
     );
 
-    return messages.reversed.toList();
+    final visible = messages.where((final m) {
+      final hiddenAt = m.senderId == myId
+          ? m.hiddenForSender
+          : m.hiddenForRecipient;
+      return hiddenAt == null;
+    }).toList();
+
+    final toMarkDelivered = visible
+        .where((final m) => m.recipientId == myId && m.deliveredAt == null)
+        .toList();
+    if (toMarkDelivered.isNotEmpty) {
+      final now = DateTime.now().toUtc();
+      for (final m in toMarkDelivered) {
+        m.deliveredAt = now;
+      }
+      await ChatMessage.db.update(session, toMarkDelivered);
+    }
+
+    return _toViews(session, visible.reversed.toList(), myId);
   }
 
-  /// Sends a text message to [recipientId].
-  Future<ChatMessage> sendMessage(
+  /// Sends a message to [recipientId]. [mediaUrl]/[mediaType] should
+  /// already be uploaded via [MediaEndpoint.upload]. A message needs text
+  /// or an attachment (or both, e.g. a captioned photo).
+  Future<ChatMessageView> sendMessage(
     final Session session,
     final UuidValue recipientId,
-    final String text,
-  ) async {
+    final String text, {
+    final String? mediaUrl,
+    final String? mediaType,
+    final int? replyToMessageId,
+  }) async {
     final myId = session.authenticated!.authUserId;
     final trimmed = text.trim();
-    if (trimmed.isEmpty) {
-      throw ArgumentError('Message text cannot be empty.');
+    if (trimmed.isEmpty && mediaUrl == null) {
+      throw ArgumentError('A message needs text or an attachment.');
     }
     if (recipientId == myId) {
       throw ArgumentError('Cannot send a message to yourself.');
@@ -139,7 +180,14 @@ class ChatEndpoint extends Endpoint {
 
     final message = await ChatMessage.db.insertRow(
       session,
-      ChatMessage(senderId: myId, recipientId: recipientId, text: trimmed),
+      ChatMessage(
+        senderId: myId,
+        recipientId: recipientId,
+        text: trimmed,
+        mediaUrl: mediaUrl,
+        mediaType: mediaUrl != null ? mediaType : null,
+        replyToMessageId: replyToMessageId,
+      ),
     );
 
     final senderProfile = await _userProfiles.maybeFindUserProfileByUserId(
@@ -151,6 +199,9 @@ class ChatEndpoint extends Endpoint {
         senderProfile?.userName ??
         senderProfile?.email?.split('@').first ??
         'Someone';
+    final notificationBody = trimmed.isNotEmpty
+        ? trimmed
+        : _mediaLabel(mediaType);
 
     await AppNotification.db.insertRow(
       session,
@@ -158,7 +209,7 @@ class ChatEndpoint extends Endpoint {
         recipientId: recipientId,
         type: 'message',
         title: senderName,
-        body: trimmed,
+        body: notificationBody,
         relatedUserId: myId,
         relatedUserName: senderName,
         relatedUserAvatarUrl: senderProfile?.imageUrl?.toString(),
@@ -171,12 +222,143 @@ class ChatEndpoint extends Endpoint {
         session,
         recipientId,
         title: senderName,
-        body: trimmed,
+        body: notificationBody,
         data: {'type': 'message', 'senderId': myId.toString()},
       ),
     );
 
-    return message;
+    final views = await _toViews(session, [message], myId);
+    return views.first;
+  }
+
+  /// Re-sends [messageId]'s content (text/media) to [toRecipientId].
+  Future<ChatMessageView> forwardMessage(
+    final Session session,
+    final int messageId,
+    final UuidValue toRecipientId,
+  ) async {
+    final myId = session.authenticated!.authUserId;
+    final original = await ChatMessage.db.findById(session, messageId);
+    if (original == null) throw ArgumentError('Message not found.');
+    if (original.senderId != myId && original.recipientId != myId) {
+      throw ArgumentError('Not part of this conversation.');
+    }
+    if (original.deletedAt != null) {
+      throw ArgumentError('Cannot forward a deleted message.');
+    }
+
+    return sendMessage(
+      session,
+      toRecipientId,
+      original.text,
+      mediaUrl: original.mediaUrl,
+      mediaType: original.mediaType,
+    );
+  }
+
+  /// Edits the text of a message the signed-in user sent.
+  Future<ChatMessageView> editMessage(
+    final Session session,
+    final int messageId,
+    final String newText,
+  ) async {
+    final myId = session.authenticated!.authUserId;
+    final trimmed = newText.trim();
+    if (trimmed.isEmpty) throw ArgumentError('Message text cannot be empty.');
+
+    final message = await ChatMessage.db.findById(session, messageId);
+    if (message == null) throw ArgumentError('Message not found.');
+    if (message.senderId != myId) {
+      throw ArgumentError('You can only edit your own messages.');
+    }
+    if (message.deletedAt != null) {
+      throw ArgumentError('Cannot edit a deleted message.');
+    }
+
+    message.text = trimmed;
+    message.editedAt = DateTime.now().toUtc();
+    await ChatMessage.db.updateRow(session, message);
+
+    final views = await _toViews(session, [message], myId);
+    return views.first;
+  }
+
+  /// Deletes a message for everyone — only the sender can do this. Clears
+  /// the content; the client renders a "message deleted" placeholder.
+  Future<void> deleteMessageForEveryone(
+    final Session session,
+    final int messageId,
+  ) async {
+    final myId = session.authenticated!.authUserId;
+    final message = await ChatMessage.db.findById(session, messageId);
+    if (message == null) return;
+    if (message.senderId != myId) {
+      throw ArgumentError(
+        'You can only delete your own messages for everyone.',
+      );
+    }
+
+    message.deletedAt = DateTime.now().toUtc();
+    message.text = '';
+    message.mediaUrl = null;
+    message.mediaType = null;
+    await ChatMessage.db.updateRow(session, message);
+  }
+
+  /// Hides a message from the signed-in user's view only; the other party
+  /// still sees it normally.
+  Future<void> deleteMessageForMe(
+    final Session session,
+    final int messageId,
+  ) async {
+    final myId = session.authenticated!.authUserId;
+    final message = await ChatMessage.db.findById(session, messageId);
+    if (message == null) return;
+
+    final now = DateTime.now().toUtc();
+    if (message.senderId == myId) {
+      message.hiddenForSender = now;
+    } else if (message.recipientId == myId) {
+      message.hiddenForRecipient = now;
+    } else {
+      return;
+    }
+    await ChatMessage.db.updateRow(session, message);
+  }
+
+  /// Sets the signed-in user's reaction on a message to [emoji]. Reacting
+  /// with the same emoji again removes it; a different emoji replaces it.
+  Future<void> reactToMessage(
+    final Session session,
+    final int messageId,
+    final String emoji,
+  ) async {
+    final myId = session.authenticated!.authUserId;
+
+    final message = await ChatMessage.db.findById(session, messageId);
+    if (message == null) throw ArgumentError('Message not found.');
+    if (message.senderId != myId && message.recipientId != myId) {
+      throw ArgumentError('Not part of this conversation.');
+    }
+
+    final existing = await MessageReaction.db.findFirstRow(
+      session,
+      where: (final t) => t.messageId.equals(messageId) & t.userId.equals(myId),
+    );
+
+    if (existing != null) {
+      if (existing.emoji == emoji) {
+        await MessageReaction.db.deleteRow(session, existing);
+      } else {
+        existing.emoji = emoji;
+        await MessageReaction.db.updateRow(session, existing);
+      }
+    } else {
+      await MessageReaction.db.insertRow(
+        session,
+        MessageReaction(messageId: messageId, userId: myId, emoji: emoji),
+      );
+    }
   }
 
   /// Marks all messages from [partnerId] to the signed-in user as read.
@@ -201,5 +383,99 @@ class ChatEndpoint extends Endpoint {
     if (unread.isNotEmpty) {
       await ChatMessage.db.update(session, unread);
     }
+  }
+
+  String _mediaLabel(final String? mediaType) {
+    switch (mediaType) {
+      case 'image':
+        return '📷 Photo';
+      case 'video':
+        return '🎥 Video';
+      case 'audio':
+        return '🎤 Voice message';
+      case 'file':
+        return '📄 Document';
+      default:
+        return 'Sent an attachment';
+    }
+  }
+
+  Future<List<ChatMessageView>> _toViews(
+    final Session session,
+    final List<ChatMessage> messages,
+    final UuidValue myId,
+  ) async {
+    if (messages.isEmpty) return [];
+
+    final messageIds = messages.map((final m) => m.id!).toSet();
+    final reactions = await MessageReaction.db.find(
+      session,
+      where: (final t) => t.messageId.inSet(messageIds),
+    );
+    final reactionsByMessage = <int, List<MessageReaction>>{};
+    for (final r in reactions) {
+      reactionsByMessage.putIfAbsent(r.messageId, () => []).add(r);
+    }
+
+    final replyIds = messages
+        .map((final m) => m.replyToMessageId)
+        .whereType<int>()
+        .toSet();
+    final repliedMessages = replyIds.isEmpty
+        ? <ChatMessage>[]
+        : await ChatMessage.db.find(
+            session,
+            where: (final t) => t.id.inSet(replyIds),
+          );
+    final repliedById = {for (final m in repliedMessages) m.id!: m};
+
+    final views = <ChatMessageView>[];
+    for (final m in messages) {
+      final isDeleted = m.deletedAt != null;
+
+      final grouped = <String, List<MessageReaction>>{};
+      for (final r in reactionsByMessage[m.id] ?? const <MessageReaction>[]) {
+        grouped.putIfAbsent(r.emoji, () => []).add(r);
+      }
+      final reactionSummaries = grouped.entries
+          .map(
+            (final e) => MessageReactionSummary(
+              emoji: e.key,
+              count: e.value.length,
+              reactedByMe: e.value.any((final r) => r.userId == myId),
+            ),
+          )
+          .toList();
+
+      final replyTo = m.replyToMessageId != null
+          ? repliedById[m.replyToMessageId]
+          : null;
+      final replyDeleted = replyTo?.deletedAt != null;
+
+      views.add(
+        ChatMessageView(
+          id: m.id!,
+          senderId: m.senderId,
+          recipientId: m.recipientId,
+          text: isDeleted ? '' : m.text,
+          mediaUrl: isDeleted ? null : m.mediaUrl,
+          mediaType: isDeleted ? null : m.mediaType,
+          createdAt: m.createdAt,
+          deliveredAt: m.deliveredAt,
+          readAt: m.readAt,
+          editedAt: m.editedAt,
+          isDeleted: isDeleted,
+          replyToMessageId: m.replyToMessageId,
+          replyPreviewText: replyTo == null
+              ? null
+              : (replyDeleted ? 'This message was deleted' : replyTo.text),
+          replyPreviewMediaType: replyTo == null || replyDeleted
+              ? null
+              : replyTo.mediaType,
+          reactions: reactionSummaries,
+        ),
+      );
+    }
+    return views;
   }
 }

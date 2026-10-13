@@ -21,8 +21,16 @@ abstract class ChatMessage
     required this.senderId,
     required this.recipientId,
     required this.text,
+    this.mediaUrl,
+    this.mediaType,
+    this.replyToMessageId,
     DateTime? createdAt,
+    this.deliveredAt,
     this.readAt,
+    this.editedAt,
+    this.deletedAt,
+    this.hiddenForSender,
+    this.hiddenForRecipient,
   }) : createdAt = createdAt ?? DateTime.now();
 
   factory ChatMessage({
@@ -30,8 +38,16 @@ abstract class ChatMessage
     required _i1.UuidValue senderId,
     required _i1.UuidValue recipientId,
     required String text,
+    String? mediaUrl,
+    String? mediaType,
+    int? replyToMessageId,
     DateTime? createdAt,
+    DateTime? deliveredAt,
     DateTime? readAt,
+    DateTime? editedAt,
+    DateTime? deletedAt,
+    DateTime? hiddenForSender,
+    DateTime? hiddenForRecipient,
   }) = _ChatMessageImpl;
 
   factory ChatMessage.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -44,12 +60,36 @@ abstract class ChatMessage
         jsonSerialization['recipientId'],
       ),
       text: jsonSerialization['text'] as String,
+      mediaUrl: jsonSerialization['mediaUrl'] as String?,
+      mediaType: jsonSerialization['mediaType'] as String?,
+      replyToMessageId: jsonSerialization['replyToMessageId'] as int?,
       createdAt: jsonSerialization['createdAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
+      deliveredAt: jsonSerialization['deliveredAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(
+              jsonSerialization['deliveredAt'],
+            ),
       readAt: jsonSerialization['readAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['readAt']),
+      editedAt: jsonSerialization['editedAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['editedAt']),
+      deletedAt: jsonSerialization['deletedAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['deletedAt']),
+      hiddenForSender: jsonSerialization['hiddenForSender'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(
+              jsonSerialization['hiddenForSender'],
+            ),
+      hiddenForRecipient: jsonSerialization['hiddenForRecipient'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(
+              jsonSerialization['hiddenForRecipient'],
+            ),
     );
   }
 
@@ -68,10 +108,35 @@ abstract class ChatMessage
 
   String text;
 
+  /// Set when this message carries a photo/video/voice note/document
+  /// instead of (or alongside) text.
+  String? mediaUrl;
+
+  String? mediaType;
+
+  /// The message this one is replying to, if any.
+  int? replyToMessageId;
+
   DateTime createdAt;
+
+  /// Set the first time the recipient's client fetches this message.
+  DateTime? deliveredAt;
 
   /// Set once the recipient has opened the conversation.
   DateTime? readAt;
+
+  /// Set when the sender edits the text after sending.
+  DateTime? editedAt;
+
+  /// Set when the sender deletes this message for everyone. Text/media
+  /// are cleared; the client renders a "message deleted" placeholder.
+  DateTime? deletedAt;
+
+  /// Set when the sender/recipient deletes this message for themselves
+  /// only — the other party still sees it normally.
+  DateTime? hiddenForSender;
+
+  DateTime? hiddenForRecipient;
 
   @override
   _i1.Table<int?> get table => t;
@@ -84,8 +149,16 @@ abstract class ChatMessage
     _i1.UuidValue? senderId,
     _i1.UuidValue? recipientId,
     String? text,
+    String? mediaUrl,
+    String? mediaType,
+    int? replyToMessageId,
     DateTime? createdAt,
+    DateTime? deliveredAt,
     DateTime? readAt,
+    DateTime? editedAt,
+    DateTime? deletedAt,
+    DateTime? hiddenForSender,
+    DateTime? hiddenForRecipient,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -95,8 +168,17 @@ abstract class ChatMessage
       'senderId': senderId.toJson(),
       'recipientId': recipientId.toJson(),
       'text': text,
+      if (mediaUrl != null) 'mediaUrl': mediaUrl,
+      if (mediaType != null) 'mediaType': mediaType,
+      if (replyToMessageId != null) 'replyToMessageId': replyToMessageId,
       'createdAt': createdAt.toJson(),
+      if (deliveredAt != null) 'deliveredAt': deliveredAt?.toJson(),
       if (readAt != null) 'readAt': readAt?.toJson(),
+      if (editedAt != null) 'editedAt': editedAt?.toJson(),
+      if (deletedAt != null) 'deletedAt': deletedAt?.toJson(),
+      if (hiddenForSender != null) 'hiddenForSender': hiddenForSender?.toJson(),
+      if (hiddenForRecipient != null)
+        'hiddenForRecipient': hiddenForRecipient?.toJson(),
     };
   }
 
@@ -108,8 +190,17 @@ abstract class ChatMessage
       'senderId': senderId.toJson(),
       'recipientId': recipientId.toJson(),
       'text': text,
+      if (mediaUrl != null) 'mediaUrl': mediaUrl,
+      if (mediaType != null) 'mediaType': mediaType,
+      if (replyToMessageId != null) 'replyToMessageId': replyToMessageId,
       'createdAt': createdAt.toJson(),
+      if (deliveredAt != null) 'deliveredAt': deliveredAt?.toJson(),
       if (readAt != null) 'readAt': readAt?.toJson(),
+      if (editedAt != null) 'editedAt': editedAt?.toJson(),
+      if (deletedAt != null) 'deletedAt': deletedAt?.toJson(),
+      if (hiddenForSender != null) 'hiddenForSender': hiddenForSender?.toJson(),
+      if (hiddenForRecipient != null)
+        'hiddenForRecipient': hiddenForRecipient?.toJson(),
     };
   }
 
@@ -151,15 +242,31 @@ class _ChatMessageImpl extends ChatMessage {
     required _i1.UuidValue senderId,
     required _i1.UuidValue recipientId,
     required String text,
+    String? mediaUrl,
+    String? mediaType,
+    int? replyToMessageId,
     DateTime? createdAt,
+    DateTime? deliveredAt,
     DateTime? readAt,
+    DateTime? editedAt,
+    DateTime? deletedAt,
+    DateTime? hiddenForSender,
+    DateTime? hiddenForRecipient,
   }) : super._(
          id: id,
          senderId: senderId,
          recipientId: recipientId,
          text: text,
+         mediaUrl: mediaUrl,
+         mediaType: mediaType,
+         replyToMessageId: replyToMessageId,
          createdAt: createdAt,
+         deliveredAt: deliveredAt,
          readAt: readAt,
+         editedAt: editedAt,
+         deletedAt: deletedAt,
+         hiddenForSender: hiddenForSender,
+         hiddenForRecipient: hiddenForRecipient,
        );
 
   /// Returns a shallow copy of this [ChatMessage]
@@ -171,16 +278,38 @@ class _ChatMessageImpl extends ChatMessage {
     _i1.UuidValue? senderId,
     _i1.UuidValue? recipientId,
     String? text,
+    Object? mediaUrl = _Undefined,
+    Object? mediaType = _Undefined,
+    Object? replyToMessageId = _Undefined,
     DateTime? createdAt,
+    Object? deliveredAt = _Undefined,
     Object? readAt = _Undefined,
+    Object? editedAt = _Undefined,
+    Object? deletedAt = _Undefined,
+    Object? hiddenForSender = _Undefined,
+    Object? hiddenForRecipient = _Undefined,
   }) {
     return ChatMessage(
       id: id is int? ? id : this.id,
       senderId: senderId ?? this.senderId,
       recipientId: recipientId ?? this.recipientId,
       text: text ?? this.text,
+      mediaUrl: mediaUrl is String? ? mediaUrl : this.mediaUrl,
+      mediaType: mediaType is String? ? mediaType : this.mediaType,
+      replyToMessageId: replyToMessageId is int?
+          ? replyToMessageId
+          : this.replyToMessageId,
       createdAt: createdAt ?? this.createdAt,
+      deliveredAt: deliveredAt is DateTime? ? deliveredAt : this.deliveredAt,
       readAt: readAt is DateTime? ? readAt : this.readAt,
+      editedAt: editedAt is DateTime? ? editedAt : this.editedAt,
+      deletedAt: deletedAt is DateTime? ? deletedAt : this.deletedAt,
+      hiddenForSender: hiddenForSender is DateTime?
+          ? hiddenForSender
+          : this.hiddenForSender,
+      hiddenForRecipient: hiddenForRecipient is DateTime?
+          ? hiddenForRecipient
+          : this.hiddenForRecipient,
     );
   }
 }
@@ -206,15 +335,60 @@ class ChatMessageUpdateTable extends _i1.UpdateTable<ChatMessageTable> {
     value,
   );
 
+  _i1.ColumnValue<String, String> mediaUrl(String? value) => _i1.ColumnValue(
+    table.mediaUrl,
+    value,
+  );
+
+  _i1.ColumnValue<String, String> mediaType(String? value) => _i1.ColumnValue(
+    table.mediaType,
+    value,
+  );
+
+  _i1.ColumnValue<int, int> replyToMessageId(int? value) => _i1.ColumnValue(
+    table.replyToMessageId,
+    value,
+  );
+
   _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
       _i1.ColumnValue(
         table.createdAt,
         value,
       );
 
+  _i1.ColumnValue<DateTime, DateTime> deliveredAt(DateTime? value) =>
+      _i1.ColumnValue(
+        table.deliveredAt,
+        value,
+      );
+
   _i1.ColumnValue<DateTime, DateTime> readAt(DateTime? value) =>
       _i1.ColumnValue(
         table.readAt,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> editedAt(DateTime? value) =>
+      _i1.ColumnValue(
+        table.editedAt,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> deletedAt(DateTime? value) =>
+      _i1.ColumnValue(
+        table.deletedAt,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> hiddenForSender(DateTime? value) =>
+      _i1.ColumnValue(
+        table.hiddenForSender,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> hiddenForRecipient(DateTime? value) =>
+      _i1.ColumnValue(
+        table.hiddenForRecipient,
         value,
       );
 }
@@ -234,13 +408,45 @@ class ChatMessageTable extends _i1.Table<int?> {
       'text',
       this,
     );
+    mediaUrl = _i1.ColumnString(
+      'mediaUrl',
+      this,
+    );
+    mediaType = _i1.ColumnString(
+      'mediaType',
+      this,
+    );
+    replyToMessageId = _i1.ColumnInt(
+      'replyToMessageId',
+      this,
+    );
     createdAt = _i1.ColumnDateTime(
       'createdAt',
       this,
       hasDefault: true,
     );
+    deliveredAt = _i1.ColumnDateTime(
+      'deliveredAt',
+      this,
+    );
     readAt = _i1.ColumnDateTime(
       'readAt',
+      this,
+    );
+    editedAt = _i1.ColumnDateTime(
+      'editedAt',
+      this,
+    );
+    deletedAt = _i1.ColumnDateTime(
+      'deletedAt',
+      this,
+    );
+    hiddenForSender = _i1.ColumnDateTime(
+      'hiddenForSender',
+      this,
+    );
+    hiddenForRecipient = _i1.ColumnDateTime(
+      'hiddenForRecipient',
       this,
     );
   }
@@ -255,10 +461,35 @@ class ChatMessageTable extends _i1.Table<int?> {
 
   late final _i1.ColumnString text;
 
+  /// Set when this message carries a photo/video/voice note/document
+  /// instead of (or alongside) text.
+  late final _i1.ColumnString mediaUrl;
+
+  late final _i1.ColumnString mediaType;
+
+  /// The message this one is replying to, if any.
+  late final _i1.ColumnInt replyToMessageId;
+
   late final _i1.ColumnDateTime createdAt;
+
+  /// Set the first time the recipient's client fetches this message.
+  late final _i1.ColumnDateTime deliveredAt;
 
   /// Set once the recipient has opened the conversation.
   late final _i1.ColumnDateTime readAt;
+
+  /// Set when the sender edits the text after sending.
+  late final _i1.ColumnDateTime editedAt;
+
+  /// Set when the sender deletes this message for everyone. Text/media
+  /// are cleared; the client renders a "message deleted" placeholder.
+  late final _i1.ColumnDateTime deletedAt;
+
+  /// Set when the sender/recipient deletes this message for themselves
+  /// only — the other party still sees it normally.
+  late final _i1.ColumnDateTime hiddenForSender;
+
+  late final _i1.ColumnDateTime hiddenForRecipient;
 
   @override
   List<_i1.Column> get columns => [
@@ -266,8 +497,16 @@ class ChatMessageTable extends _i1.Table<int?> {
     senderId,
     recipientId,
     text,
+    mediaUrl,
+    mediaType,
+    replyToMessageId,
     createdAt,
+    deliveredAt,
     readAt,
+    editedAt,
+    deletedAt,
+    hiddenForSender,
+    hiddenForRecipient,
   ];
 }
 

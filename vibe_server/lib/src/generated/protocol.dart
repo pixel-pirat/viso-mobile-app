@@ -19,30 +19,36 @@ import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
     as _i4;
 import 'chat/models/chat_conversation_summary.dart' as _i5;
 import 'chat/models/chat_message.dart' as _i6;
-import 'greetings/greeting.dart' as _i7;
-import 'notifications/models/app_notification.dart' as _i8;
-import 'posts/models/post.dart' as _i9;
-import 'posts/models/post_feed_item.dart' as _i10;
-import 'posts/models/post_like.dart' as _i11;
-import 'presence/models/presence_status.dart' as _i12;
-import 'presence/models/user_presence.dart' as _i13;
-import 'push/models/device_token.dart' as _i14;
-import 'stories/models/story.dart' as _i15;
-import 'stories/models/story_group.dart' as _i16;
-import 'stories/models/story_item.dart' as _i17;
-import 'stories/models/story_view.dart' as _i18;
+import 'chat/models/chat_message_view.dart' as _i7;
+import 'chat/models/message_reaction.dart' as _i8;
+import 'chat/models/message_reaction_summary.dart' as _i9;
+import 'greetings/greeting.dart' as _i10;
+import 'notifications/models/app_notification.dart' as _i11;
+import 'posts/models/post.dart' as _i12;
+import 'posts/models/post_feed_item.dart' as _i13;
+import 'posts/models/post_like.dart' as _i14;
+import 'presence/models/presence_status.dart' as _i15;
+import 'presence/models/user_presence.dart' as _i16;
+import 'push/models/device_token.dart' as _i17;
+import 'stories/models/story.dart' as _i18;
+import 'stories/models/story_group.dart' as _i19;
+import 'stories/models/story_item.dart' as _i20;
+import 'stories/models/story_view.dart' as _i21;
 import 'package:vibe_server/src/generated/chat/models/chat_conversation_summary.dart'
-    as _i19;
-import 'package:vibe_server/src/generated/chat/models/chat_message.dart'
-    as _i20;
-import 'package:vibe_server/src/generated/notifications/models/app_notification.dart'
-    as _i21;
-import 'package:vibe_server/src/generated/posts/models/post_feed_item.dart'
     as _i22;
-import 'package:vibe_server/src/generated/stories/models/story_group.dart'
+import 'package:vibe_server/src/generated/chat/models/chat_message_view.dart'
     as _i23;
+import 'package:vibe_server/src/generated/notifications/models/app_notification.dart'
+    as _i24;
+import 'package:vibe_server/src/generated/posts/models/post_feed_item.dart'
+    as _i25;
+import 'package:vibe_server/src/generated/stories/models/story_group.dart'
+    as _i26;
 export 'chat/models/chat_conversation_summary.dart';
 export 'chat/models/chat_message.dart';
+export 'chat/models/chat_message_view.dart';
+export 'chat/models/message_reaction.dart';
+export 'chat/models/message_reaction_summary.dart';
 export 'greetings/greeting.dart';
 export 'notifications/models/app_notification.dart';
 export 'posts/models/post.dart';
@@ -200,6 +206,24 @@ class Protocol extends _i1.SerializationManagerServer {
           dartType: 'String',
         ),
         _i2.ColumnDefinition(
+          name: 'mediaUrl',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'mediaType',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'replyToMessageId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: true,
+          dartType: 'int?',
+        ),
+        _i2.ColumnDefinition(
           name: 'createdAt',
           columnType: _i2.ColumnType.timestampWithoutTimeZone,
           isNullable: false,
@@ -207,7 +231,37 @@ class Protocol extends _i1.SerializationManagerServer {
           columnDefault: 'CURRENT_TIMESTAMP',
         ),
         _i2.ColumnDefinition(
+          name: 'deliveredAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+        ),
+        _i2.ColumnDefinition(
           name: 'readAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'editedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'deletedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'hiddenForSender',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'hiddenForRecipient',
           columnType: _i2.ColumnType.timestampWithoutTimeZone,
           isNullable: true,
           dartType: 'DateTime?',
@@ -351,6 +405,80 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: false,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'message_reaction',
+      dartName: 'MessageReaction',
+      schema: 'public',
+      module: 'vibe',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'message_reaction_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'messageId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'userId',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue',
+        ),
+        _i2.ColumnDefinition(
+          name: 'emoji',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'createdAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+          columnDefault: 'CURRENT_TIMESTAMP',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'message_reaction_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'message_reaction_unique',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'messageId',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'userId',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
           isPrimary: false,
         ),
       ],
@@ -802,41 +930,50 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i6.ChatMessage) {
       return _i6.ChatMessage.fromJson(data) as T;
     }
-    if (t == _i7.Greeting) {
-      return _i7.Greeting.fromJson(data) as T;
+    if (t == _i7.ChatMessageView) {
+      return _i7.ChatMessageView.fromJson(data) as T;
     }
-    if (t == _i8.AppNotification) {
-      return _i8.AppNotification.fromJson(data) as T;
+    if (t == _i8.MessageReaction) {
+      return _i8.MessageReaction.fromJson(data) as T;
     }
-    if (t == _i9.Post) {
-      return _i9.Post.fromJson(data) as T;
+    if (t == _i9.MessageReactionSummary) {
+      return _i9.MessageReactionSummary.fromJson(data) as T;
     }
-    if (t == _i10.PostFeedItem) {
-      return _i10.PostFeedItem.fromJson(data) as T;
+    if (t == _i10.Greeting) {
+      return _i10.Greeting.fromJson(data) as T;
     }
-    if (t == _i11.PostLike) {
-      return _i11.PostLike.fromJson(data) as T;
+    if (t == _i11.AppNotification) {
+      return _i11.AppNotification.fromJson(data) as T;
     }
-    if (t == _i12.PresenceStatus) {
-      return _i12.PresenceStatus.fromJson(data) as T;
+    if (t == _i12.Post) {
+      return _i12.Post.fromJson(data) as T;
     }
-    if (t == _i13.UserPresence) {
-      return _i13.UserPresence.fromJson(data) as T;
+    if (t == _i13.PostFeedItem) {
+      return _i13.PostFeedItem.fromJson(data) as T;
     }
-    if (t == _i14.DeviceToken) {
-      return _i14.DeviceToken.fromJson(data) as T;
+    if (t == _i14.PostLike) {
+      return _i14.PostLike.fromJson(data) as T;
     }
-    if (t == _i15.Story) {
-      return _i15.Story.fromJson(data) as T;
+    if (t == _i15.PresenceStatus) {
+      return _i15.PresenceStatus.fromJson(data) as T;
     }
-    if (t == _i16.StoryGroup) {
-      return _i16.StoryGroup.fromJson(data) as T;
+    if (t == _i16.UserPresence) {
+      return _i16.UserPresence.fromJson(data) as T;
     }
-    if (t == _i17.StoryItem) {
-      return _i17.StoryItem.fromJson(data) as T;
+    if (t == _i17.DeviceToken) {
+      return _i17.DeviceToken.fromJson(data) as T;
     }
-    if (t == _i18.StoryView) {
-      return _i18.StoryView.fromJson(data) as T;
+    if (t == _i18.Story) {
+      return _i18.Story.fromJson(data) as T;
+    }
+    if (t == _i19.StoryGroup) {
+      return _i19.StoryGroup.fromJson(data) as T;
+    }
+    if (t == _i20.StoryItem) {
+      return _i20.StoryItem.fromJson(data) as T;
+    }
+    if (t == _i21.StoryView) {
+      return _i21.StoryView.fromJson(data) as T;
     }
     if (t == _i1.getType<_i5.ChatConversationSummary?>()) {
       return (data != null ? _i5.ChatConversationSummary.fromJson(data) : null)
@@ -845,47 +982,63 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i1.getType<_i6.ChatMessage?>()) {
       return (data != null ? _i6.ChatMessage.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i7.Greeting?>()) {
-      return (data != null ? _i7.Greeting.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i7.ChatMessageView?>()) {
+      return (data != null ? _i7.ChatMessageView.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i8.AppNotification?>()) {
-      return (data != null ? _i8.AppNotification.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i8.MessageReaction?>()) {
+      return (data != null ? _i8.MessageReaction.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i9.Post?>()) {
-      return (data != null ? _i9.Post.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i9.MessageReactionSummary?>()) {
+      return (data != null ? _i9.MessageReactionSummary.fromJson(data) : null)
+          as T;
     }
-    if (t == _i1.getType<_i10.PostFeedItem?>()) {
-      return (data != null ? _i10.PostFeedItem.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i10.Greeting?>()) {
+      return (data != null ? _i10.Greeting.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i11.PostLike?>()) {
-      return (data != null ? _i11.PostLike.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i11.AppNotification?>()) {
+      return (data != null ? _i11.AppNotification.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i12.PresenceStatus?>()) {
-      return (data != null ? _i12.PresenceStatus.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i12.Post?>()) {
+      return (data != null ? _i12.Post.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i13.UserPresence?>()) {
-      return (data != null ? _i13.UserPresence.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i13.PostFeedItem?>()) {
+      return (data != null ? _i13.PostFeedItem.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i14.DeviceToken?>()) {
-      return (data != null ? _i14.DeviceToken.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i14.PostLike?>()) {
+      return (data != null ? _i14.PostLike.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i15.Story?>()) {
-      return (data != null ? _i15.Story.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i15.PresenceStatus?>()) {
+      return (data != null ? _i15.PresenceStatus.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i16.StoryGroup?>()) {
-      return (data != null ? _i16.StoryGroup.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i16.UserPresence?>()) {
+      return (data != null ? _i16.UserPresence.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i17.StoryItem?>()) {
-      return (data != null ? _i17.StoryItem.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i17.DeviceToken?>()) {
+      return (data != null ? _i17.DeviceToken.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i18.StoryView?>()) {
-      return (data != null ? _i18.StoryView.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i18.Story?>()) {
+      return (data != null ? _i18.Story.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i19.StoryGroup?>()) {
+      return (data != null ? _i19.StoryGroup.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i20.StoryItem?>()) {
+      return (data != null ? _i20.StoryItem.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i21.StoryView?>()) {
+      return (data != null ? _i21.StoryView.fromJson(data) : null) as T;
+    }
+    if (t == List<_i9.MessageReactionSummary>) {
+      return (data as List)
+              .map((e) => deserialize<_i9.MessageReactionSummary>(e))
+              .toList()
+          as T;
     }
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
-    if (t == List<_i17.StoryItem>) {
-      return (data as List).map((e) => deserialize<_i17.StoryItem>(e)).toList()
+    if (t == List<_i20.StoryItem>) {
+      return (data as List).map((e) => deserialize<_i20.StoryItem>(e)).toList()
           as T;
     }
     if (t == List<_i3.UserProfileModel>) {
@@ -894,35 +1047,35 @@ class Protocol extends _i1.SerializationManagerServer {
               .toList()
           as T;
     }
-    if (t == List<_i19.ChatConversationSummary>) {
+    if (t == List<_i22.ChatConversationSummary>) {
       return (data as List)
-              .map((e) => deserialize<_i19.ChatConversationSummary>(e))
+              .map((e) => deserialize<_i22.ChatConversationSummary>(e))
               .toList()
           as T;
     }
-    if (t == List<_i20.ChatMessage>) {
+    if (t == List<_i23.ChatMessageView>) {
       return (data as List)
-              .map((e) => deserialize<_i20.ChatMessage>(e))
+              .map((e) => deserialize<_i23.ChatMessageView>(e))
               .toList()
           as T;
     }
-    if (t == List<_i21.AppNotification>) {
+    if (t == List<_i24.AppNotification>) {
       return (data as List)
-              .map((e) => deserialize<_i21.AppNotification>(e))
+              .map((e) => deserialize<_i24.AppNotification>(e))
               .toList()
           as T;
     }
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
-    if (t == List<_i22.PostFeedItem>) {
+    if (t == List<_i25.PostFeedItem>) {
       return (data as List)
-              .map((e) => deserialize<_i22.PostFeedItem>(e))
+              .map((e) => deserialize<_i25.PostFeedItem>(e))
               .toList()
           as T;
     }
-    if (t == List<_i23.StoryGroup>) {
-      return (data as List).map((e) => deserialize<_i23.StoryGroup>(e)).toList()
+    if (t == List<_i26.StoryGroup>) {
+      return (data as List).map((e) => deserialize<_i26.StoryGroup>(e)).toList()
           as T;
     }
     try {
@@ -941,18 +1094,21 @@ class Protocol extends _i1.SerializationManagerServer {
     return switch (type) {
       _i5.ChatConversationSummary => 'ChatConversationSummary',
       _i6.ChatMessage => 'ChatMessage',
-      _i7.Greeting => 'Greeting',
-      _i8.AppNotification => 'AppNotification',
-      _i9.Post => 'Post',
-      _i10.PostFeedItem => 'PostFeedItem',
-      _i11.PostLike => 'PostLike',
-      _i12.PresenceStatus => 'PresenceStatus',
-      _i13.UserPresence => 'UserPresence',
-      _i14.DeviceToken => 'DeviceToken',
-      _i15.Story => 'Story',
-      _i16.StoryGroup => 'StoryGroup',
-      _i17.StoryItem => 'StoryItem',
-      _i18.StoryView => 'StoryView',
+      _i7.ChatMessageView => 'ChatMessageView',
+      _i8.MessageReaction => 'MessageReaction',
+      _i9.MessageReactionSummary => 'MessageReactionSummary',
+      _i10.Greeting => 'Greeting',
+      _i11.AppNotification => 'AppNotification',
+      _i12.Post => 'Post',
+      _i13.PostFeedItem => 'PostFeedItem',
+      _i14.PostLike => 'PostLike',
+      _i15.PresenceStatus => 'PresenceStatus',
+      _i16.UserPresence => 'UserPresence',
+      _i17.DeviceToken => 'DeviceToken',
+      _i18.Story => 'Story',
+      _i19.StoryGroup => 'StoryGroup',
+      _i20.StoryItem => 'StoryItem',
+      _i21.StoryView => 'StoryView',
       _ => null,
     };
   }
@@ -971,29 +1127,35 @@ class Protocol extends _i1.SerializationManagerServer {
         return 'ChatConversationSummary';
       case _i6.ChatMessage():
         return 'ChatMessage';
-      case _i7.Greeting():
+      case _i7.ChatMessageView():
+        return 'ChatMessageView';
+      case _i8.MessageReaction():
+        return 'MessageReaction';
+      case _i9.MessageReactionSummary():
+        return 'MessageReactionSummary';
+      case _i10.Greeting():
         return 'Greeting';
-      case _i8.AppNotification():
+      case _i11.AppNotification():
         return 'AppNotification';
-      case _i9.Post():
+      case _i12.Post():
         return 'Post';
-      case _i10.PostFeedItem():
+      case _i13.PostFeedItem():
         return 'PostFeedItem';
-      case _i11.PostLike():
+      case _i14.PostLike():
         return 'PostLike';
-      case _i12.PresenceStatus():
+      case _i15.PresenceStatus():
         return 'PresenceStatus';
-      case _i13.UserPresence():
+      case _i16.UserPresence():
         return 'UserPresence';
-      case _i14.DeviceToken():
+      case _i17.DeviceToken():
         return 'DeviceToken';
-      case _i15.Story():
+      case _i18.Story():
         return 'Story';
-      case _i16.StoryGroup():
+      case _i19.StoryGroup():
         return 'StoryGroup';
-      case _i17.StoryItem():
+      case _i20.StoryItem():
         return 'StoryItem';
-      case _i18.StoryView():
+      case _i21.StoryView():
         return 'StoryView';
     }
     className = _i2.Protocol().getClassNameForObject(data);
@@ -1023,41 +1185,50 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName == 'ChatMessage') {
       return deserialize<_i6.ChatMessage>(data['data']);
     }
+    if (dataClassName == 'ChatMessageView') {
+      return deserialize<_i7.ChatMessageView>(data['data']);
+    }
+    if (dataClassName == 'MessageReaction') {
+      return deserialize<_i8.MessageReaction>(data['data']);
+    }
+    if (dataClassName == 'MessageReactionSummary') {
+      return deserialize<_i9.MessageReactionSummary>(data['data']);
+    }
     if (dataClassName == 'Greeting') {
-      return deserialize<_i7.Greeting>(data['data']);
+      return deserialize<_i10.Greeting>(data['data']);
     }
     if (dataClassName == 'AppNotification') {
-      return deserialize<_i8.AppNotification>(data['data']);
+      return deserialize<_i11.AppNotification>(data['data']);
     }
     if (dataClassName == 'Post') {
-      return deserialize<_i9.Post>(data['data']);
+      return deserialize<_i12.Post>(data['data']);
     }
     if (dataClassName == 'PostFeedItem') {
-      return deserialize<_i10.PostFeedItem>(data['data']);
+      return deserialize<_i13.PostFeedItem>(data['data']);
     }
     if (dataClassName == 'PostLike') {
-      return deserialize<_i11.PostLike>(data['data']);
+      return deserialize<_i14.PostLike>(data['data']);
     }
     if (dataClassName == 'PresenceStatus') {
-      return deserialize<_i12.PresenceStatus>(data['data']);
+      return deserialize<_i15.PresenceStatus>(data['data']);
     }
     if (dataClassName == 'UserPresence') {
-      return deserialize<_i13.UserPresence>(data['data']);
+      return deserialize<_i16.UserPresence>(data['data']);
     }
     if (dataClassName == 'DeviceToken') {
-      return deserialize<_i14.DeviceToken>(data['data']);
+      return deserialize<_i17.DeviceToken>(data['data']);
     }
     if (dataClassName == 'Story') {
-      return deserialize<_i15.Story>(data['data']);
+      return deserialize<_i18.Story>(data['data']);
     }
     if (dataClassName == 'StoryGroup') {
-      return deserialize<_i16.StoryGroup>(data['data']);
+      return deserialize<_i19.StoryGroup>(data['data']);
     }
     if (dataClassName == 'StoryItem') {
-      return deserialize<_i17.StoryItem>(data['data']);
+      return deserialize<_i20.StoryItem>(data['data']);
     }
     if (dataClassName == 'StoryView') {
-      return deserialize<_i18.StoryView>(data['data']);
+      return deserialize<_i21.StoryView>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
@@ -1097,20 +1268,22 @@ class Protocol extends _i1.SerializationManagerServer {
     switch (t) {
       case _i6.ChatMessage:
         return _i6.ChatMessage.t;
-      case _i8.AppNotification:
-        return _i8.AppNotification.t;
-      case _i9.Post:
-        return _i9.Post.t;
-      case _i11.PostLike:
-        return _i11.PostLike.t;
-      case _i13.UserPresence:
-        return _i13.UserPresence.t;
-      case _i14.DeviceToken:
-        return _i14.DeviceToken.t;
-      case _i15.Story:
-        return _i15.Story.t;
-      case _i18.StoryView:
-        return _i18.StoryView.t;
+      case _i8.MessageReaction:
+        return _i8.MessageReaction.t;
+      case _i11.AppNotification:
+        return _i11.AppNotification.t;
+      case _i12.Post:
+        return _i12.Post.t;
+      case _i14.PostLike:
+        return _i14.PostLike.t;
+      case _i16.UserPresence:
+        return _i16.UserPresence.t;
+      case _i17.DeviceToken:
+        return _i17.DeviceToken.t;
+      case _i18.Story:
+        return _i18.Story.t;
+      case _i21.StoryView:
+        return _i21.StoryView.t;
     }
     return null;
   }

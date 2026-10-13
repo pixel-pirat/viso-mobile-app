@@ -456,6 +456,21 @@ class Endpoints extends _i1.EndpointDispatch {
               type: _i1.getType<String>(),
               nullable: false,
             ),
+            'mediaUrl': _i1.ParameterDescription(
+              name: 'mediaUrl',
+              type: _i1.getType<String?>(),
+              nullable: true,
+            ),
+            'mediaType': _i1.ParameterDescription(
+              name: 'mediaType',
+              type: _i1.getType<String?>(),
+              nullable: true,
+            ),
+            'replyToMessageId': _i1.ParameterDescription(
+              name: 'replyToMessageId',
+              type: _i1.getType<int?>(),
+              nullable: true,
+            ),
           },
           call:
               (
@@ -465,6 +480,119 @@ class Endpoints extends _i1.EndpointDispatch {
                 session,
                 params['recipientId'],
                 params['text'],
+                mediaUrl: params['mediaUrl'],
+                mediaType: params['mediaType'],
+                replyToMessageId: params['replyToMessageId'],
+              ),
+        ),
+        'forwardMessage': _i1.MethodConnector(
+          name: 'forwardMessage',
+          params: {
+            'messageId': _i1.ParameterDescription(
+              name: 'messageId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'toRecipientId': _i1.ParameterDescription(
+              name: 'toRecipientId',
+              type: _i1.getType<_i1.UuidValue>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['chat'] as _i5.ChatEndpoint).forwardMessage(
+                session,
+                params['messageId'],
+                params['toRecipientId'],
+              ),
+        ),
+        'editMessage': _i1.MethodConnector(
+          name: 'editMessage',
+          params: {
+            'messageId': _i1.ParameterDescription(
+              name: 'messageId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'newText': _i1.ParameterDescription(
+              name: 'newText',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['chat'] as _i5.ChatEndpoint).editMessage(
+                session,
+                params['messageId'],
+                params['newText'],
+              ),
+        ),
+        'deleteMessageForEveryone': _i1.MethodConnector(
+          name: 'deleteMessageForEveryone',
+          params: {
+            'messageId': _i1.ParameterDescription(
+              name: 'messageId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['chat'] as _i5.ChatEndpoint)
+                  .deleteMessageForEveryone(
+                    session,
+                    params['messageId'],
+                  ),
+        ),
+        'deleteMessageForMe': _i1.MethodConnector(
+          name: 'deleteMessageForMe',
+          params: {
+            'messageId': _i1.ParameterDescription(
+              name: 'messageId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['chat'] as _i5.ChatEndpoint).deleteMessageForMe(
+                    session,
+                    params['messageId'],
+                  ),
+        ),
+        'reactToMessage': _i1.MethodConnector(
+          name: 'reactToMessage',
+          params: {
+            'messageId': _i1.ParameterDescription(
+              name: 'messageId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'emoji': _i1.ParameterDescription(
+              name: 'emoji',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['chat'] as _i5.ChatEndpoint).reactToMessage(
+                session,
+                params['messageId'],
+                params['emoji'],
               ),
         ),
         'markConversationRead': _i1.MethodConnector(

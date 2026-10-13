@@ -10,10 +10,33 @@ fields:
 
   text: String
 
+  ### Set when this message carries a photo/video/voice note/document
+  ### instead of (or alongside) text.
+  mediaUrl: String?
+  mediaType: String?
+
+  ### The message this one is replying to, if any.
+  replyToMessageId: int?
+
   createdAt: DateTime, default=now
+
+  ### Set the first time the recipient's client fetches this message.
+  deliveredAt: DateTime?
 
   ### Set once the recipient has opened the conversation.
   readAt: DateTime?
+
+  ### Set when the sender edits the text after sending.
+  editedAt: DateTime?
+
+  ### Set when the sender deletes this message for everyone. Text/media
+  ### are cleared; the client renders a "message deleted" placeholder.
+  deletedAt: DateTime?
+
+  ### Set when the sender/recipient deletes this message for themselves
+  ### only — the other party still sees it normally.
+  hiddenForSender: DateTime?
+  hiddenForRecipient: DateTime?
 
 indexes:
   chat_message_sender_recipient_idx:

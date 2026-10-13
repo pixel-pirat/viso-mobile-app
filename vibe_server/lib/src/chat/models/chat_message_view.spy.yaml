@@ -1,0 +1,19 @@
+### A fully-resolved chat message, ready for the client to render: media,
+### reply preview and reaction summary already attached.
+class: ChatMessageView
+fields:
+  id: int
+  senderId: UuidValue
+  recipientId: UuidValue
+  text: String
+  mediaUrl: String?
+  mediaType: String?
+  createdAt: DateTime
+  deliveredAt: DateTime?
+  readAt: DateTime?
+  editedAt: DateTime?
+  isDeleted: bool
+  replyToMessageId: int?
+  replyPreviewText: String?
+  replyPreviewMediaType: String?
+  reactions: List<MessageReactionSummary>
