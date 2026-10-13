@@ -17,4 +17,8 @@ fields:
   replyToSenderId: UuidValue?
   replyPreviewText: String?
   replyPreviewMediaType: String?
+  linkPreviewUrl: String?
+  linkPreviewTitle: String?
+  linkPreviewDescription: String?
+  linkPreviewImageUrl: String?
   reactions: List<MessageReactionInfo>

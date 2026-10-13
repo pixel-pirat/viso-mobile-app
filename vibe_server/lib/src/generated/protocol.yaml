@@ -22,6 +22,22 @@ chat:
   - watchTyping:
   - setTyping:
   - listConversations:
+  - getArchivedConversations:
+  - blockUser:
+  - unblockUser:
+  - haveIBlocked:
+  - canMessage:
+  - getBlockedUsers:
+  - muteConversation:
+  - unmuteConversation:
+  - pinConversation:
+  - unpinConversation:
+  - archiveConversation:
+  - unarchiveConversation:
+  - starMessage:
+  - unstarMessage:
+  - getStarredMessageIds:
+  - getStarredMessages:
   - getMessages:
   - sendMessage:
   - forwardMessage:

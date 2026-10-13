@@ -1,0 +1,12 @@
+### [userId] has pinned their conversation with [pinnedUserId] to the
+### top of their chat list.
+class: PinnedConversation
+table: pinned_conversation
+fields:
+  userId: UuidValue
+  pinnedUserId: UuidValue
+  createdAt: DateTime, default=now
+indexes:
+  pinned_conversation_unique:
+    fields: userId, pinnedUserId
+    unique: true

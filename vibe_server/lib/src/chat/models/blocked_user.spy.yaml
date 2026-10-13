@@ -1,0 +1,12 @@
+### [blockerId] has blocked [blockedId]. While blocked, neither can
+### message the other.
+class: BlockedUser
+table: blocked_user
+fields:
+  blockerId: UuidValue
+  blockedId: UuidValue
+  createdAt: DateTime, default=now
+indexes:
+  blocked_user_unique:
+    fields: blockerId, blockedId
+    unique: true

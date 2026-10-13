@@ -23,6 +23,10 @@ abstract class ChatMessage implements _i1.SerializableModel {
     this.mediaUrl,
     this.mediaType,
     this.replyToMessageId,
+    this.linkPreviewUrl,
+    this.linkPreviewTitle,
+    this.linkPreviewDescription,
+    this.linkPreviewImageUrl,
     DateTime? createdAt,
     this.deliveredAt,
     this.readAt,
@@ -40,6 +44,10 @@ abstract class ChatMessage implements _i1.SerializableModel {
     String? mediaUrl,
     String? mediaType,
     int? replyToMessageId,
+    String? linkPreviewUrl,
+    String? linkPreviewTitle,
+    String? linkPreviewDescription,
+    String? linkPreviewImageUrl,
     DateTime? createdAt,
     DateTime? deliveredAt,
     DateTime? readAt,
@@ -62,6 +70,11 @@ abstract class ChatMessage implements _i1.SerializableModel {
       mediaUrl: jsonSerialization['mediaUrl'] as String?,
       mediaType: jsonSerialization['mediaType'] as String?,
       replyToMessageId: jsonSerialization['replyToMessageId'] as int?,
+      linkPreviewUrl: jsonSerialization['linkPreviewUrl'] as String?,
+      linkPreviewTitle: jsonSerialization['linkPreviewTitle'] as String?,
+      linkPreviewDescription:
+          jsonSerialization['linkPreviewDescription'] as String?,
+      linkPreviewImageUrl: jsonSerialization['linkPreviewImageUrl'] as String?,
       createdAt: jsonSerialization['createdAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
@@ -114,6 +127,15 @@ abstract class ChatMessage implements _i1.SerializableModel {
   /// The message this one is replying to, if any.
   int? replyToMessageId;
 
+  /// Populated asynchronously after sending if [text] contains a URL.
+  String? linkPreviewUrl;
+
+  String? linkPreviewTitle;
+
+  String? linkPreviewDescription;
+
+  String? linkPreviewImageUrl;
+
   DateTime createdAt;
 
   /// Set the first time the recipient's client fetches this message.
@@ -146,6 +168,10 @@ abstract class ChatMessage implements _i1.SerializableModel {
     String? mediaUrl,
     String? mediaType,
     int? replyToMessageId,
+    String? linkPreviewUrl,
+    String? linkPreviewTitle,
+    String? linkPreviewDescription,
+    String? linkPreviewImageUrl,
     DateTime? createdAt,
     DateTime? deliveredAt,
     DateTime? readAt,
@@ -165,6 +191,12 @@ abstract class ChatMessage implements _i1.SerializableModel {
       if (mediaUrl != null) 'mediaUrl': mediaUrl,
       if (mediaType != null) 'mediaType': mediaType,
       if (replyToMessageId != null) 'replyToMessageId': replyToMessageId,
+      if (linkPreviewUrl != null) 'linkPreviewUrl': linkPreviewUrl,
+      if (linkPreviewTitle != null) 'linkPreviewTitle': linkPreviewTitle,
+      if (linkPreviewDescription != null)
+        'linkPreviewDescription': linkPreviewDescription,
+      if (linkPreviewImageUrl != null)
+        'linkPreviewImageUrl': linkPreviewImageUrl,
       'createdAt': createdAt.toJson(),
       if (deliveredAt != null) 'deliveredAt': deliveredAt?.toJson(),
       if (readAt != null) 'readAt': readAt?.toJson(),
@@ -193,6 +225,10 @@ class _ChatMessageImpl extends ChatMessage {
     String? mediaUrl,
     String? mediaType,
     int? replyToMessageId,
+    String? linkPreviewUrl,
+    String? linkPreviewTitle,
+    String? linkPreviewDescription,
+    String? linkPreviewImageUrl,
     DateTime? createdAt,
     DateTime? deliveredAt,
     DateTime? readAt,
@@ -208,6 +244,10 @@ class _ChatMessageImpl extends ChatMessage {
          mediaUrl: mediaUrl,
          mediaType: mediaType,
          replyToMessageId: replyToMessageId,
+         linkPreviewUrl: linkPreviewUrl,
+         linkPreviewTitle: linkPreviewTitle,
+         linkPreviewDescription: linkPreviewDescription,
+         linkPreviewImageUrl: linkPreviewImageUrl,
          createdAt: createdAt,
          deliveredAt: deliveredAt,
          readAt: readAt,
@@ -229,6 +269,10 @@ class _ChatMessageImpl extends ChatMessage {
     Object? mediaUrl = _Undefined,
     Object? mediaType = _Undefined,
     Object? replyToMessageId = _Undefined,
+    Object? linkPreviewUrl = _Undefined,
+    Object? linkPreviewTitle = _Undefined,
+    Object? linkPreviewDescription = _Undefined,
+    Object? linkPreviewImageUrl = _Undefined,
     DateTime? createdAt,
     Object? deliveredAt = _Undefined,
     Object? readAt = _Undefined,
@@ -247,6 +291,18 @@ class _ChatMessageImpl extends ChatMessage {
       replyToMessageId: replyToMessageId is int?
           ? replyToMessageId
           : this.replyToMessageId,
+      linkPreviewUrl: linkPreviewUrl is String?
+          ? linkPreviewUrl
+          : this.linkPreviewUrl,
+      linkPreviewTitle: linkPreviewTitle is String?
+          ? linkPreviewTitle
+          : this.linkPreviewTitle,
+      linkPreviewDescription: linkPreviewDescription is String?
+          ? linkPreviewDescription
+          : this.linkPreviewDescription,
+      linkPreviewImageUrl: linkPreviewImageUrl is String?
+          ? linkPreviewImageUrl
+          : this.linkPreviewImageUrl,
       createdAt: createdAt ?? this.createdAt,
       deliveredAt: deliveredAt is DateTime? ? deliveredAt : this.deliveredAt,
       readAt: readAt is DateTime? ? readAt : this.readAt,

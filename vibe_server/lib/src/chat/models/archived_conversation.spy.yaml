@@ -1,0 +1,12 @@
+### [userId] has archived their conversation with [archivedUserId] —
+### it's hidden from their main chat list until unarchived.
+class: ArchivedConversation
+table: archived_conversation
+fields:
+  userId: UuidValue
+  archivedUserId: UuidValue
+  createdAt: DateTime, default=now
+indexes:
+  archived_conversation_unique:
+    fields: userId, archivedUserId
+    unique: true

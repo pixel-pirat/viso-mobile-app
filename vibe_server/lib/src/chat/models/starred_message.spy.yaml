@@ -1,0 +1,11 @@
+### [userId] has starred [messageId] for quick reference later.
+class: StarredMessage
+table: starred_message
+fields:
+  userId: UuidValue
+  messageId: int
+  createdAt: DateTime, default=now
+indexes:
+  starred_message_unique:
+    fields: userId, messageId
+    unique: true

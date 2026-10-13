@@ -318,10 +318,11 @@ class EndpointUserProfile extends _i4.EndpointUserProfileEditBase {
 }
 
 /// Real direct-messaging between signed-in users: conversation list,
-/// message history, sending (text/media/replies), reactions, edits,
-/// deletes, forwarding, read/delivered receipts, typing, live updates
-/// (via [watchConversation]/[watchMyMessages]/[watchTyping]) and finding
-/// people to message.
+/// message history, sending (text/media/replies/link previews), reactions,
+/// edits, deletes, forwarding, read/delivered receipts, typing, live
+/// updates (via [watchConversation]/[watchMyMessages]/[watchTyping]),
+/// blocking, muting, pinning, archiving, starring, and finding people to
+/// message.
 /// {@category Endpoint}
 class EndpointChat extends _i2.EndpointRef {
   EndpointChat(_i2.EndpointCaller caller) : super(caller);
@@ -392,11 +393,135 @@ class EndpointChat extends _i2.EndpointRef {
     },
   );
 
-  /// Returns the signed-in user's conversations, most recent first.
+  /// Returns the signed-in user's conversations, most recent first, with
+  /// pinned ones pinned to the top. Excludes archived conversations — see
+  /// [getArchivedConversations].
   _i3.Future<List<_i8.ChatConversationSummary>> listConversations() =>
       caller.callServerEndpoint<List<_i8.ChatConversationSummary>>(
         'chat',
         'listConversations',
+        {},
+      );
+
+  /// Returns only the signed-in user's archived conversations.
+  _i3.Future<List<_i8.ChatConversationSummary>> getArchivedConversations() =>
+      caller.callServerEndpoint<List<_i8.ChatConversationSummary>>(
+        'chat',
+        'getArchivedConversations',
+        {},
+      );
+
+  _i3.Future<void> blockUser(_i2.UuidValue userId) =>
+      caller.callServerEndpoint<void>(
+        'chat',
+        'blockUser',
+        {'userId': userId},
+      );
+
+  _i3.Future<void> unblockUser(_i2.UuidValue userId) =>
+      caller.callServerEndpoint<void>(
+        'chat',
+        'unblockUser',
+        {'userId': userId},
+      );
+
+  /// Whether the signed-in user has blocked [userId] (used to label the
+  /// "Block"/"Unblock" menu item correctly).
+  _i3.Future<bool> haveIBlocked(_i2.UuidValue userId) =>
+      caller.callServerEndpoint<bool>(
+        'chat',
+        'haveIBlocked',
+        {'userId': userId},
+      );
+
+  /// Whether the signed-in user can currently message [partnerId] — false
+  /// if either party has blocked the other.
+  _i3.Future<bool> canMessage(_i2.UuidValue partnerId) =>
+      caller.callServerEndpoint<bool>(
+        'chat',
+        'canMessage',
+        {'partnerId': partnerId},
+      );
+
+  /// Returns the profiles of everyone the signed-in user has blocked.
+  _i3.Future<List<_i4.UserProfileModel>> getBlockedUsers() =>
+      caller.callServerEndpoint<List<_i4.UserProfileModel>>(
+        'chat',
+        'getBlockedUsers',
+        {},
+      );
+
+  _i3.Future<void> muteConversation(_i2.UuidValue partnerId) =>
+      caller.callServerEndpoint<void>(
+        'chat',
+        'muteConversation',
+        {'partnerId': partnerId},
+      );
+
+  _i3.Future<void> unmuteConversation(_i2.UuidValue partnerId) =>
+      caller.callServerEndpoint<void>(
+        'chat',
+        'unmuteConversation',
+        {'partnerId': partnerId},
+      );
+
+  _i3.Future<void> pinConversation(_i2.UuidValue partnerId) =>
+      caller.callServerEndpoint<void>(
+        'chat',
+        'pinConversation',
+        {'partnerId': partnerId},
+      );
+
+  _i3.Future<void> unpinConversation(_i2.UuidValue partnerId) =>
+      caller.callServerEndpoint<void>(
+        'chat',
+        'unpinConversation',
+        {'partnerId': partnerId},
+      );
+
+  _i3.Future<void> archiveConversation(_i2.UuidValue partnerId) =>
+      caller.callServerEndpoint<void>(
+        'chat',
+        'archiveConversation',
+        {'partnerId': partnerId},
+      );
+
+  _i3.Future<void> unarchiveConversation(_i2.UuidValue partnerId) =>
+      caller.callServerEndpoint<void>(
+        'chat',
+        'unarchiveConversation',
+        {'partnerId': partnerId},
+      );
+
+  _i3.Future<void> starMessage(int messageId) =>
+      caller.callServerEndpoint<void>(
+        'chat',
+        'starMessage',
+        {'messageId': messageId},
+      );
+
+  _i3.Future<void> unstarMessage(int messageId) =>
+      caller.callServerEndpoint<void>(
+        'chat',
+        'unstarMessage',
+        {'messageId': messageId},
+      );
+
+  /// IDs of every message the signed-in user has starred — cheap to fetch
+  /// so the conversation screen can mark loaded messages as starred.
+  _i3.Future<List<int>> getStarredMessageIds() =>
+      caller.callServerEndpoint<List<int>>(
+        'chat',
+        'getStarredMessageIds',
+        {},
+      );
+
+  /// Full, resolved views of every message the signed-in user has
+  /// starred, most recently starred first.
+  _i3.Future<List<_i6.ChatMessageView>> getStarredMessages() =>
+      caller.callServerEndpoint<List<_i6.ChatMessageView>>(
+        'chat',
+        'getStarredMessages',
         {},
       );
 

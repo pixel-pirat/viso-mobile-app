@@ -28,6 +28,8 @@ abstract class ChatConversationSummary
     required this.lastMessageIsMine,
     required this.unreadCount,
     required this.partnerIsOnline,
+    required this.isMuted,
+    required this.isPinned,
   });
 
   factory ChatConversationSummary({
@@ -41,6 +43,8 @@ abstract class ChatConversationSummary
     required bool lastMessageIsMine,
     required int unreadCount,
     required bool partnerIsOnline,
+    required bool isMuted,
+    required bool isPinned,
   }) = _ChatConversationSummaryImpl;
 
   factory ChatConversationSummary.fromJson(
@@ -66,6 +70,8 @@ abstract class ChatConversationSummary
       partnerIsOnline: _i1.BoolJsonExtension.fromJson(
         jsonSerialization['partnerIsOnline'],
       ),
+      isMuted: _i1.BoolJsonExtension.fromJson(jsonSerialization['isMuted']),
+      isPinned: _i1.BoolJsonExtension.fromJson(jsonSerialization['isPinned']),
     );
   }
 
@@ -89,6 +95,10 @@ abstract class ChatConversationSummary
 
   bool partnerIsOnline;
 
+  bool isMuted;
+
+  bool isPinned;
+
   /// Returns a shallow copy of this [ChatConversationSummary]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
@@ -103,6 +113,8 @@ abstract class ChatConversationSummary
     bool? lastMessageIsMine,
     int? unreadCount,
     bool? partnerIsOnline,
+    bool? isMuted,
+    bool? isPinned,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -119,6 +131,8 @@ abstract class ChatConversationSummary
       'lastMessageIsMine': lastMessageIsMine,
       'unreadCount': unreadCount,
       'partnerIsOnline': partnerIsOnline,
+      'isMuted': isMuted,
+      'isPinned': isPinned,
     };
   }
 
@@ -137,6 +151,8 @@ abstract class ChatConversationSummary
       'lastMessageIsMine': lastMessageIsMine,
       'unreadCount': unreadCount,
       'partnerIsOnline': partnerIsOnline,
+      'isMuted': isMuted,
+      'isPinned': isPinned,
     };
   }
 
@@ -160,6 +176,8 @@ class _ChatConversationSummaryImpl extends ChatConversationSummary {
     required bool lastMessageIsMine,
     required int unreadCount,
     required bool partnerIsOnline,
+    required bool isMuted,
+    required bool isPinned,
   }) : super._(
          partnerId: partnerId,
          partnerName: partnerName,
@@ -171,6 +189,8 @@ class _ChatConversationSummaryImpl extends ChatConversationSummary {
          lastMessageIsMine: lastMessageIsMine,
          unreadCount: unreadCount,
          partnerIsOnline: partnerIsOnline,
+         isMuted: isMuted,
+         isPinned: isPinned,
        );
 
   /// Returns a shallow copy of this [ChatConversationSummary]
@@ -188,6 +208,8 @@ class _ChatConversationSummaryImpl extends ChatConversationSummary {
     bool? lastMessageIsMine,
     int? unreadCount,
     bool? partnerIsOnline,
+    bool? isMuted,
+    bool? isPinned,
   }) {
     return ChatConversationSummary(
       partnerId: partnerId ?? this.partnerId,
@@ -206,6 +228,8 @@ class _ChatConversationSummaryImpl extends ChatConversationSummary {
       lastMessageIsMine: lastMessageIsMine ?? this.lastMessageIsMine,
       unreadCount: unreadCount ?? this.unreadCount,
       partnerIsOnline: partnerIsOnline ?? this.partnerIsOnline,
+      isMuted: isMuted ?? this.isMuted,
+      isPinned: isPinned ?? this.isPinned,
     );
   }
 }

@@ -18,6 +18,12 @@ fields:
   ### The message this one is replying to, if any.
   replyToMessageId: int?
 
+  ### Populated asynchronously after sending if [text] contains a URL.
+  linkPreviewUrl: String?
+  linkPreviewTitle: String?
+  linkPreviewDescription: String?
+  linkPreviewImageUrl: String?
+
   createdAt: DateTime, default=now
 
   ### Set the first time the recipient's client fetches this message.

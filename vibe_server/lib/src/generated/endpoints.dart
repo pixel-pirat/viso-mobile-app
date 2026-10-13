@@ -443,6 +443,268 @@ class Endpoints extends _i1.EndpointDispatch {
               ) async => (endpoints['chat'] as _i5.ChatEndpoint)
                   .listConversations(session),
         ),
+        'getArchivedConversations': _i1.MethodConnector(
+          name: 'getArchivedConversations',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['chat'] as _i5.ChatEndpoint)
+                  .getArchivedConversations(session),
+        ),
+        'blockUser': _i1.MethodConnector(
+          name: 'blockUser',
+          params: {
+            'userId': _i1.ParameterDescription(
+              name: 'userId',
+              type: _i1.getType<_i1.UuidValue>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['chat'] as _i5.ChatEndpoint).blockUser(
+                session,
+                params['userId'],
+              ),
+        ),
+        'unblockUser': _i1.MethodConnector(
+          name: 'unblockUser',
+          params: {
+            'userId': _i1.ParameterDescription(
+              name: 'userId',
+              type: _i1.getType<_i1.UuidValue>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['chat'] as _i5.ChatEndpoint).unblockUser(
+                session,
+                params['userId'],
+              ),
+        ),
+        'haveIBlocked': _i1.MethodConnector(
+          name: 'haveIBlocked',
+          params: {
+            'userId': _i1.ParameterDescription(
+              name: 'userId',
+              type: _i1.getType<_i1.UuidValue>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['chat'] as _i5.ChatEndpoint).haveIBlocked(
+                session,
+                params['userId'],
+              ),
+        ),
+        'canMessage': _i1.MethodConnector(
+          name: 'canMessage',
+          params: {
+            'partnerId': _i1.ParameterDescription(
+              name: 'partnerId',
+              type: _i1.getType<_i1.UuidValue>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['chat'] as _i5.ChatEndpoint).canMessage(
+                session,
+                params['partnerId'],
+              ),
+        ),
+        'getBlockedUsers': _i1.MethodConnector(
+          name: 'getBlockedUsers',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['chat'] as _i5.ChatEndpoint)
+                  .getBlockedUsers(session),
+        ),
+        'muteConversation': _i1.MethodConnector(
+          name: 'muteConversation',
+          params: {
+            'partnerId': _i1.ParameterDescription(
+              name: 'partnerId',
+              type: _i1.getType<_i1.UuidValue>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['chat'] as _i5.ChatEndpoint).muteConversation(
+                    session,
+                    params['partnerId'],
+                  ),
+        ),
+        'unmuteConversation': _i1.MethodConnector(
+          name: 'unmuteConversation',
+          params: {
+            'partnerId': _i1.ParameterDescription(
+              name: 'partnerId',
+              type: _i1.getType<_i1.UuidValue>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['chat'] as _i5.ChatEndpoint).unmuteConversation(
+                    session,
+                    params['partnerId'],
+                  ),
+        ),
+        'pinConversation': _i1.MethodConnector(
+          name: 'pinConversation',
+          params: {
+            'partnerId': _i1.ParameterDescription(
+              name: 'partnerId',
+              type: _i1.getType<_i1.UuidValue>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['chat'] as _i5.ChatEndpoint).pinConversation(
+                    session,
+                    params['partnerId'],
+                  ),
+        ),
+        'unpinConversation': _i1.MethodConnector(
+          name: 'unpinConversation',
+          params: {
+            'partnerId': _i1.ParameterDescription(
+              name: 'partnerId',
+              type: _i1.getType<_i1.UuidValue>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['chat'] as _i5.ChatEndpoint).unpinConversation(
+                    session,
+                    params['partnerId'],
+                  ),
+        ),
+        'archiveConversation': _i1.MethodConnector(
+          name: 'archiveConversation',
+          params: {
+            'partnerId': _i1.ParameterDescription(
+              name: 'partnerId',
+              type: _i1.getType<_i1.UuidValue>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['chat'] as _i5.ChatEndpoint).archiveConversation(
+                    session,
+                    params['partnerId'],
+                  ),
+        ),
+        'unarchiveConversation': _i1.MethodConnector(
+          name: 'unarchiveConversation',
+          params: {
+            'partnerId': _i1.ParameterDescription(
+              name: 'partnerId',
+              type: _i1.getType<_i1.UuidValue>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['chat'] as _i5.ChatEndpoint).unarchiveConversation(
+                    session,
+                    params['partnerId'],
+                  ),
+        ),
+        'starMessage': _i1.MethodConnector(
+          name: 'starMessage',
+          params: {
+            'messageId': _i1.ParameterDescription(
+              name: 'messageId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['chat'] as _i5.ChatEndpoint).starMessage(
+                session,
+                params['messageId'],
+              ),
+        ),
+        'unstarMessage': _i1.MethodConnector(
+          name: 'unstarMessage',
+          params: {
+            'messageId': _i1.ParameterDescription(
+              name: 'messageId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['chat'] as _i5.ChatEndpoint).unstarMessage(
+                session,
+                params['messageId'],
+              ),
+        ),
+        'getStarredMessageIds': _i1.MethodConnector(
+          name: 'getStarredMessageIds',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['chat'] as _i5.ChatEndpoint)
+                  .getStarredMessageIds(session),
+        ),
+        'getStarredMessages': _i1.MethodConnector(
+          name: 'getStarredMessages',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['chat'] as _i5.ChatEndpoint)
+                  .getStarredMessages(session),
+        ),
         'getMessages': _i1.MethodConnector(
           name: 'getMessages',
           params: {

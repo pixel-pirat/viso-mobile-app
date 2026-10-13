@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:http/http.dart' as http;
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 
@@ -9,12 +10,15 @@ import '../push/push_sender.dart';
 import 'chat_event_bus.dart';
 
 /// Real direct-messaging between signed-in users: conversation list,
-/// message history, sending (text/media/replies), reactions, edits,
-/// deletes, forwarding, read/delivered receipts, typing, live updates
-/// (via [watchConversation]/[watchMyMessages]/[watchTyping]) and finding
-/// people to message.
+/// message history, sending (text/media/replies/link previews), reactions,
+/// edits, deletes, forwarding, read/delivered receipts, typing, live
+/// updates (via [watchConversation]/[watchMyMessages]/[watchTyping]),
+/// blocking, muting, pinning, archiving, starring, and finding people to
+/// message.
 class ChatEndpoint extends Endpoint {
   final UserProfiles _userProfiles = const UserProfiles();
+
+  static final _urlPattern = RegExp(r'https?://[^\s]+');
 
   @override
   bool get requireLogin => true;
@@ -90,10 +94,26 @@ class ChatEndpoint extends Endpoint {
     );
   }
 
-  /// Returns the signed-in user's conversations, most recent first.
+  /// Returns the signed-in user's conversations, most recent first, with
+  /// pinned ones pinned to the top. Excludes archived conversations — see
+  /// [getArchivedConversations].
   Future<List<ChatConversationSummary>> listConversations(
     final Session session,
-  ) async {
+  ) {
+    return _buildConversationSummaries(session, archivedOnly: false);
+  }
+
+  /// Returns only the signed-in user's archived conversations.
+  Future<List<ChatConversationSummary>> getArchivedConversations(
+    final Session session,
+  ) {
+    return _buildConversationSummaries(session, archivedOnly: true);
+  }
+
+  Future<List<ChatConversationSummary>> _buildConversationSummaries(
+    final Session session, {
+    required final bool archivedOnly,
+  }) async {
     final myId = session.authenticated!.authUserId;
 
     final messages = await ChatMessage.db.find(
@@ -126,9 +146,25 @@ class ChatEndpoint extends Endpoint {
       }
     }
 
+    final archivedIds = (await ArchivedConversation.db.find(
+      session,
+      where: (final t) => t.userId.equals(myId),
+    )).map((final r) => r.archivedUserId).toSet();
+    final mutedIds = (await MutedConversation.db.find(
+      session,
+      where: (final t) => t.userId.equals(myId),
+    )).map((final r) => r.mutedUserId).toSet();
+    final pinnedIds = (await PinnedConversation.db.find(
+      session,
+      where: (final t) => t.userId.equals(myId),
+    )).map((final r) => r.pinnedUserId).toSet();
+
     final summaries = <ChatConversationSummary>[];
     for (final entry in lastMessageByPartner.entries) {
       final partnerId = entry.key;
+      final isArchived = archivedIds.contains(partnerId);
+      if (archivedOnly != isArchived) continue;
+
       final lastMessage = entry.value;
       final profile = await _userProfiles.maybeFindUserProfileByUserId(
         session,
@@ -158,14 +194,276 @@ class ChatEndpoint extends Endpoint {
           lastMessageIsMine: lastMessage.senderId == myId,
           unreadCount: unreadCountByPartner[partnerId] ?? 0,
           partnerIsOnline: isOnline,
+          isMuted: mutedIds.contains(partnerId),
+          isPinned: pinnedIds.contains(partnerId),
         ),
       );
     }
 
-    summaries.sort(
-      (final a, final b) => b.lastMessageAt.compareTo(a.lastMessageAt),
-    );
+    summaries.sort((final a, final b) {
+      if (!archivedOnly && a.isPinned != b.isPinned) {
+        return a.isPinned ? -1 : 1;
+      }
+      return b.lastMessageAt.compareTo(a.lastMessageAt);
+    });
     return summaries;
+  }
+
+  // -------------------------------------------------------
+  // Blocking
+  // -------------------------------------------------------
+
+  Future<void> blockUser(final Session session, final UuidValue userId) async {
+    final myId = session.authenticated!.authUserId;
+    if (userId == myId) throw ArgumentError('Cannot block yourself.');
+    final existing = await BlockedUser.db.findFirstRow(
+      session,
+      where: (final t) => t.blockerId.equals(myId) & t.blockedId.equals(userId),
+    );
+    if (existing != null) return;
+    await BlockedUser.db.insertRow(
+      session,
+      BlockedUser(blockerId: myId, blockedId: userId),
+    );
+  }
+
+  Future<void> unblockUser(
+    final Session session,
+    final UuidValue userId,
+  ) async {
+    final myId = session.authenticated!.authUserId;
+    final existing = await BlockedUser.db.findFirstRow(
+      session,
+      where: (final t) => t.blockerId.equals(myId) & t.blockedId.equals(userId),
+    );
+    if (existing != null) await BlockedUser.db.deleteRow(session, existing);
+  }
+
+  /// Whether the signed-in user has blocked [userId] (used to label the
+  /// "Block"/"Unblock" menu item correctly).
+  Future<bool> haveIBlocked(
+    final Session session,
+    final UuidValue userId,
+  ) async {
+    final myId = session.authenticated!.authUserId;
+    final existing = await BlockedUser.db.findFirstRow(
+      session,
+      where: (final t) => t.blockerId.equals(myId) & t.blockedId.equals(userId),
+    );
+    return existing != null;
+  }
+
+  /// Whether the signed-in user can currently message [partnerId] — false
+  /// if either party has blocked the other.
+  Future<bool> canMessage(
+    final Session session,
+    final UuidValue partnerId,
+  ) async {
+    final myId = session.authenticated!.authUserId;
+    return !await _isBlockedEitherWay(session, myId, partnerId);
+  }
+
+  /// Returns the profiles of everyone the signed-in user has blocked.
+  Future<List<UserProfileModel>> getBlockedUsers(
+    final Session session,
+  ) async {
+    final myId = session.authenticated!.authUserId;
+    final rows = await BlockedUser.db.find(
+      session,
+      where: (final t) => t.blockerId.equals(myId),
+      orderBy: (final t) => t.createdAt,
+      orderDescending: true,
+    );
+    final profiles = <UserProfileModel>[];
+    for (final row in rows) {
+      final profile = await _userProfiles.maybeFindUserProfileByUserId(
+        session,
+        row.blockedId,
+      );
+      if (profile != null) profiles.add(profile);
+    }
+    return profiles;
+  }
+
+  Future<bool> _isBlockedEitherWay(
+    final Session session,
+    final UuidValue a,
+    final UuidValue b,
+  ) async {
+    final existing = await BlockedUser.db.findFirstRow(
+      session,
+      where: (final t) =>
+          (t.blockerId.equals(a) & t.blockedId.equals(b)) |
+          (t.blockerId.equals(b) & t.blockedId.equals(a)),
+    );
+    return existing != null;
+  }
+
+  // -------------------------------------------------------
+  // Mute / pin / archive
+  // -------------------------------------------------------
+
+  Future<void> muteConversation(
+    final Session session,
+    final UuidValue partnerId,
+  ) async {
+    final myId = session.authenticated!.authUserId;
+    final existing = await MutedConversation.db.findFirstRow(
+      session,
+      where: (final t) =>
+          t.userId.equals(myId) & t.mutedUserId.equals(partnerId),
+    );
+    if (existing != null) return;
+    await MutedConversation.db.insertRow(
+      session,
+      MutedConversation(userId: myId, mutedUserId: partnerId),
+    );
+  }
+
+  Future<void> unmuteConversation(
+    final Session session,
+    final UuidValue partnerId,
+  ) async {
+    final myId = session.authenticated!.authUserId;
+    final existing = await MutedConversation.db.findFirstRow(
+      session,
+      where: (final t) =>
+          t.userId.equals(myId) & t.mutedUserId.equals(partnerId),
+    );
+    if (existing != null) {
+      await MutedConversation.db.deleteRow(session, existing);
+    }
+  }
+
+  Future<void> pinConversation(
+    final Session session,
+    final UuidValue partnerId,
+  ) async {
+    final myId = session.authenticated!.authUserId;
+    final existing = await PinnedConversation.db.findFirstRow(
+      session,
+      where: (final t) =>
+          t.userId.equals(myId) & t.pinnedUserId.equals(partnerId),
+    );
+    if (existing != null) return;
+    await PinnedConversation.db.insertRow(
+      session,
+      PinnedConversation(userId: myId, pinnedUserId: partnerId),
+    );
+  }
+
+  Future<void> unpinConversation(
+    final Session session,
+    final UuidValue partnerId,
+  ) async {
+    final myId = session.authenticated!.authUserId;
+    final existing = await PinnedConversation.db.findFirstRow(
+      session,
+      where: (final t) =>
+          t.userId.equals(myId) & t.pinnedUserId.equals(partnerId),
+    );
+    if (existing != null) {
+      await PinnedConversation.db.deleteRow(session, existing);
+    }
+  }
+
+  Future<void> archiveConversation(
+    final Session session,
+    final UuidValue partnerId,
+  ) async {
+    final myId = session.authenticated!.authUserId;
+    final existing = await ArchivedConversation.db.findFirstRow(
+      session,
+      where: (final t) =>
+          t.userId.equals(myId) & t.archivedUserId.equals(partnerId),
+    );
+    if (existing != null) return;
+    await ArchivedConversation.db.insertRow(
+      session,
+      ArchivedConversation(userId: myId, archivedUserId: partnerId),
+    );
+  }
+
+  Future<void> unarchiveConversation(
+    final Session session,
+    final UuidValue partnerId,
+  ) async {
+    final myId = session.authenticated!.authUserId;
+    final existing = await ArchivedConversation.db.findFirstRow(
+      session,
+      where: (final t) =>
+          t.userId.equals(myId) & t.archivedUserId.equals(partnerId),
+    );
+    if (existing != null) {
+      await ArchivedConversation.db.deleteRow(session, existing);
+    }
+  }
+
+  // -------------------------------------------------------
+  // Starred messages
+  // -------------------------------------------------------
+
+  Future<void> starMessage(final Session session, final int messageId) async {
+    final myId = session.authenticated!.authUserId;
+    final existing = await StarredMessage.db.findFirstRow(
+      session,
+      where: (final t) => t.userId.equals(myId) & t.messageId.equals(messageId),
+    );
+    if (existing != null) return;
+    await StarredMessage.db.insertRow(
+      session,
+      StarredMessage(userId: myId, messageId: messageId),
+    );
+  }
+
+  Future<void> unstarMessage(
+    final Session session,
+    final int messageId,
+  ) async {
+    final myId = session.authenticated!.authUserId;
+    final existing = await StarredMessage.db.findFirstRow(
+      session,
+      where: (final t) => t.userId.equals(myId) & t.messageId.equals(messageId),
+    );
+    if (existing != null) await StarredMessage.db.deleteRow(session, existing);
+  }
+
+  /// IDs of every message the signed-in user has starred — cheap to fetch
+  /// so the conversation screen can mark loaded messages as starred.
+  Future<List<int>> getStarredMessageIds(final Session session) async {
+    final myId = session.authenticated!.authUserId;
+    final rows = await StarredMessage.db.find(
+      session,
+      where: (final t) => t.userId.equals(myId),
+    );
+    return rows.map((final r) => r.messageId).toList();
+  }
+
+  /// Full, resolved views of every message the signed-in user has
+  /// starred, most recently starred first.
+  Future<List<ChatMessageView>> getStarredMessages(
+    final Session session,
+  ) async {
+    final myId = session.authenticated!.authUserId;
+    final rows = await StarredMessage.db.find(
+      session,
+      where: (final t) => t.userId.equals(myId),
+      orderBy: (final t) => t.createdAt,
+      orderDescending: true,
+    );
+    if (rows.isEmpty) return [];
+
+    final messageIds = rows.map((final r) => r.messageId).toSet();
+    final messages = await ChatMessage.db.find(
+      session,
+      where: (final t) => t.id.inSet(messageIds),
+    );
+    final views = await _toViews(session, messages);
+    final byId = {for (final v in views) v.id: v};
+    return rows
+        .map((final r) => byId[r.messageId])
+        .whereType<ChatMessageView>()
+        .toList();
   }
 
   /// Returns the message history with [partnerId], oldest first, with
@@ -231,6 +529,9 @@ class ChatEndpoint extends Endpoint {
     if (recipientId == myId) {
       throw ArgumentError('Cannot send a message to yourself.');
     }
+    if (await _isBlockedEitherWay(session, myId, recipientId)) {
+      throw ArgumentError('You can\'t message this user.');
+    }
 
     final message = await ChatMessage.db.insertRow(
       session,
@@ -270,19 +571,36 @@ class ChatEndpoint extends Endpoint {
       ),
     );
 
-    // Best-effort; never blocks sending the message itself.
-    unawaited(
-      PushSender.sendToUser(
-        session,
-        recipientId,
-        title: senderName,
-        body: notificationBody,
-        data: {'type': 'message', 'senderId': myId.toString()},
-      ),
-    );
+    // Best-effort; never blocks sending the message itself. Skipped if
+    // the recipient has muted this conversation — they still get the
+    // AppNotification above, just no OS-level push.
+    final isMuted =
+        await MutedConversation.db.findFirstRow(
+          session,
+          where: (final t) =>
+              t.userId.equals(recipientId) & t.mutedUserId.equals(myId),
+        ) !=
+        null;
+    if (!isMuted) {
+      unawaited(
+        PushSender.sendToUser(
+          session,
+          recipientId,
+          title: senderName,
+          body: notificationBody,
+          data: {'type': 'message', 'senderId': myId.toString()},
+        ),
+      );
+    }
 
     final view = (await _toViews(session, [message])).first;
     ChatEventBus.instance.publishMessage(view);
+
+    final url = _urlPattern.firstMatch(trimmed)?.group(0);
+    if (url != null) {
+      unawaited(_fetchAndAttachLinkPreview(session, message.id!, url));
+    }
+
     return view;
   }
 
@@ -533,10 +851,90 @@ class ChatEndpoint extends Endpoint {
           replyPreviewMediaType: replyTo == null || replyDeleted
               ? null
               : replyTo.mediaType,
+          linkPreviewUrl: isDeleted ? null : m.linkPreviewUrl,
+          linkPreviewTitle: isDeleted ? null : m.linkPreviewTitle,
+          linkPreviewDescription: isDeleted ? null : m.linkPreviewDescription,
+          linkPreviewImageUrl: isDeleted ? null : m.linkPreviewImageUrl,
           reactions: reactionInfos,
         ),
       );
     }
     return views;
+  }
+
+  /// Fetches [url] and parses its Open Graph tags (falling back to
+  /// `<title>`) to attach a link preview to [messageId]. Best-effort and
+  /// asynchronous — never blocks sending the message, and a failure just
+  /// means no preview shows.
+  Future<void> _fetchAndAttachLinkPreview(
+    final Session session,
+    final int messageId,
+    final String url,
+  ) async {
+    try {
+      final response = await http
+          .get(Uri.parse(url))
+          .timeout(const Duration(seconds: 6));
+      if (response.statusCode != 200) return;
+      final html = response.body;
+
+      final title =
+          _extractMetaContent(html, 'og:title') ?? _extractTitleTag(html);
+      final description =
+          _extractMetaContent(html, 'og:description') ??
+          _extractMetaContent(html, 'description');
+      final image = _extractMetaContent(html, 'og:image');
+      if (title == null && description == null && image == null) return;
+
+      final message = await ChatMessage.db.findById(session, messageId);
+      if (message == null || message.deletedAt != null) return;
+
+      message.linkPreviewUrl = url;
+      message.linkPreviewTitle = title;
+      message.linkPreviewDescription = description;
+      message.linkPreviewImageUrl = image;
+      await ChatMessage.db.updateRow(session, message);
+
+      final view = (await _toViews(session, [message])).first;
+      ChatEventBus.instance.publishMessage(view);
+    } catch (_) {
+      // Best-effort; see doc comment.
+    }
+  }
+
+  String? _extractMetaContent(final String html, final String property) {
+    final forward = RegExp(
+      '<meta[^>]+(?:property|name)=["\']$property["\'][^>]+content=["\']([^"\']*)["\']',
+      caseSensitive: false,
+    );
+    final forwardMatch = forward.firstMatch(html);
+    if (forwardMatch != null) return _unescapeHtml(forwardMatch.group(1));
+
+    // Some pages put content before property/name.
+    final reversed = RegExp(
+      '<meta[^>]+content=["\']([^"\']*)["\'][^>]+(?:property|name)=["\']$property["\']',
+      caseSensitive: false,
+    );
+    final reversedMatch = reversed.firstMatch(html);
+    return reversedMatch != null ? _unescapeHtml(reversedMatch.group(1)) : null;
+  }
+
+  String? _extractTitleTag(final String html) {
+    final match = RegExp(
+      r'<title[^>]*>([^<]*)</title>',
+      caseSensitive: false,
+    ).firstMatch(html);
+    return match != null ? _unescapeHtml(match.group(1)) : null;
+  }
+
+  String? _unescapeHtml(final String? s) {
+    if (s == null) return null;
+    return s
+        .replaceAll('&amp;', '&')
+        .replaceAll('&quot;', '"')
+        .replaceAll('&#39;', "'")
+        .replaceAll('&lt;', '<')
+        .replaceAll('&gt;', '>')
+        .trim();
   }
 }

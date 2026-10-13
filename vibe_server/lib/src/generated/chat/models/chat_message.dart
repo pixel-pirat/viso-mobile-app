@@ -24,6 +24,10 @@ abstract class ChatMessage
     this.mediaUrl,
     this.mediaType,
     this.replyToMessageId,
+    this.linkPreviewUrl,
+    this.linkPreviewTitle,
+    this.linkPreviewDescription,
+    this.linkPreviewImageUrl,
     DateTime? createdAt,
     this.deliveredAt,
     this.readAt,
@@ -41,6 +45,10 @@ abstract class ChatMessage
     String? mediaUrl,
     String? mediaType,
     int? replyToMessageId,
+    String? linkPreviewUrl,
+    String? linkPreviewTitle,
+    String? linkPreviewDescription,
+    String? linkPreviewImageUrl,
     DateTime? createdAt,
     DateTime? deliveredAt,
     DateTime? readAt,
@@ -63,6 +71,11 @@ abstract class ChatMessage
       mediaUrl: jsonSerialization['mediaUrl'] as String?,
       mediaType: jsonSerialization['mediaType'] as String?,
       replyToMessageId: jsonSerialization['replyToMessageId'] as int?,
+      linkPreviewUrl: jsonSerialization['linkPreviewUrl'] as String?,
+      linkPreviewTitle: jsonSerialization['linkPreviewTitle'] as String?,
+      linkPreviewDescription:
+          jsonSerialization['linkPreviewDescription'] as String?,
+      linkPreviewImageUrl: jsonSerialization['linkPreviewImageUrl'] as String?,
       createdAt: jsonSerialization['createdAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
@@ -117,6 +130,15 @@ abstract class ChatMessage
   /// The message this one is replying to, if any.
   int? replyToMessageId;
 
+  /// Populated asynchronously after sending if [text] contains a URL.
+  String? linkPreviewUrl;
+
+  String? linkPreviewTitle;
+
+  String? linkPreviewDescription;
+
+  String? linkPreviewImageUrl;
+
   DateTime createdAt;
 
   /// Set the first time the recipient's client fetches this message.
@@ -152,6 +174,10 @@ abstract class ChatMessage
     String? mediaUrl,
     String? mediaType,
     int? replyToMessageId,
+    String? linkPreviewUrl,
+    String? linkPreviewTitle,
+    String? linkPreviewDescription,
+    String? linkPreviewImageUrl,
     DateTime? createdAt,
     DateTime? deliveredAt,
     DateTime? readAt,
@@ -171,6 +197,12 @@ abstract class ChatMessage
       if (mediaUrl != null) 'mediaUrl': mediaUrl,
       if (mediaType != null) 'mediaType': mediaType,
       if (replyToMessageId != null) 'replyToMessageId': replyToMessageId,
+      if (linkPreviewUrl != null) 'linkPreviewUrl': linkPreviewUrl,
+      if (linkPreviewTitle != null) 'linkPreviewTitle': linkPreviewTitle,
+      if (linkPreviewDescription != null)
+        'linkPreviewDescription': linkPreviewDescription,
+      if (linkPreviewImageUrl != null)
+        'linkPreviewImageUrl': linkPreviewImageUrl,
       'createdAt': createdAt.toJson(),
       if (deliveredAt != null) 'deliveredAt': deliveredAt?.toJson(),
       if (readAt != null) 'readAt': readAt?.toJson(),
@@ -193,6 +225,12 @@ abstract class ChatMessage
       if (mediaUrl != null) 'mediaUrl': mediaUrl,
       if (mediaType != null) 'mediaType': mediaType,
       if (replyToMessageId != null) 'replyToMessageId': replyToMessageId,
+      if (linkPreviewUrl != null) 'linkPreviewUrl': linkPreviewUrl,
+      if (linkPreviewTitle != null) 'linkPreviewTitle': linkPreviewTitle,
+      if (linkPreviewDescription != null)
+        'linkPreviewDescription': linkPreviewDescription,
+      if (linkPreviewImageUrl != null)
+        'linkPreviewImageUrl': linkPreviewImageUrl,
       'createdAt': createdAt.toJson(),
       if (deliveredAt != null) 'deliveredAt': deliveredAt?.toJson(),
       if (readAt != null) 'readAt': readAt?.toJson(),
@@ -245,6 +283,10 @@ class _ChatMessageImpl extends ChatMessage {
     String? mediaUrl,
     String? mediaType,
     int? replyToMessageId,
+    String? linkPreviewUrl,
+    String? linkPreviewTitle,
+    String? linkPreviewDescription,
+    String? linkPreviewImageUrl,
     DateTime? createdAt,
     DateTime? deliveredAt,
     DateTime? readAt,
@@ -260,6 +302,10 @@ class _ChatMessageImpl extends ChatMessage {
          mediaUrl: mediaUrl,
          mediaType: mediaType,
          replyToMessageId: replyToMessageId,
+         linkPreviewUrl: linkPreviewUrl,
+         linkPreviewTitle: linkPreviewTitle,
+         linkPreviewDescription: linkPreviewDescription,
+         linkPreviewImageUrl: linkPreviewImageUrl,
          createdAt: createdAt,
          deliveredAt: deliveredAt,
          readAt: readAt,
@@ -281,6 +327,10 @@ class _ChatMessageImpl extends ChatMessage {
     Object? mediaUrl = _Undefined,
     Object? mediaType = _Undefined,
     Object? replyToMessageId = _Undefined,
+    Object? linkPreviewUrl = _Undefined,
+    Object? linkPreviewTitle = _Undefined,
+    Object? linkPreviewDescription = _Undefined,
+    Object? linkPreviewImageUrl = _Undefined,
     DateTime? createdAt,
     Object? deliveredAt = _Undefined,
     Object? readAt = _Undefined,
@@ -299,6 +349,18 @@ class _ChatMessageImpl extends ChatMessage {
       replyToMessageId: replyToMessageId is int?
           ? replyToMessageId
           : this.replyToMessageId,
+      linkPreviewUrl: linkPreviewUrl is String?
+          ? linkPreviewUrl
+          : this.linkPreviewUrl,
+      linkPreviewTitle: linkPreviewTitle is String?
+          ? linkPreviewTitle
+          : this.linkPreviewTitle,
+      linkPreviewDescription: linkPreviewDescription is String?
+          ? linkPreviewDescription
+          : this.linkPreviewDescription,
+      linkPreviewImageUrl: linkPreviewImageUrl is String?
+          ? linkPreviewImageUrl
+          : this.linkPreviewImageUrl,
       createdAt: createdAt ?? this.createdAt,
       deliveredAt: deliveredAt is DateTime? ? deliveredAt : this.deliveredAt,
       readAt: readAt is DateTime? ? readAt : this.readAt,
@@ -349,6 +411,30 @@ class ChatMessageUpdateTable extends _i1.UpdateTable<ChatMessageTable> {
     table.replyToMessageId,
     value,
   );
+
+  _i1.ColumnValue<String, String> linkPreviewUrl(String? value) =>
+      _i1.ColumnValue(
+        table.linkPreviewUrl,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> linkPreviewTitle(String? value) =>
+      _i1.ColumnValue(
+        table.linkPreviewTitle,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> linkPreviewDescription(String? value) =>
+      _i1.ColumnValue(
+        table.linkPreviewDescription,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> linkPreviewImageUrl(String? value) =>
+      _i1.ColumnValue(
+        table.linkPreviewImageUrl,
+        value,
+      );
 
   _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
       _i1.ColumnValue(
@@ -420,6 +506,22 @@ class ChatMessageTable extends _i1.Table<int?> {
       'replyToMessageId',
       this,
     );
+    linkPreviewUrl = _i1.ColumnString(
+      'linkPreviewUrl',
+      this,
+    );
+    linkPreviewTitle = _i1.ColumnString(
+      'linkPreviewTitle',
+      this,
+    );
+    linkPreviewDescription = _i1.ColumnString(
+      'linkPreviewDescription',
+      this,
+    );
+    linkPreviewImageUrl = _i1.ColumnString(
+      'linkPreviewImageUrl',
+      this,
+    );
     createdAt = _i1.ColumnDateTime(
       'createdAt',
       this,
@@ -470,6 +572,15 @@ class ChatMessageTable extends _i1.Table<int?> {
   /// The message this one is replying to, if any.
   late final _i1.ColumnInt replyToMessageId;
 
+  /// Populated asynchronously after sending if [text] contains a URL.
+  late final _i1.ColumnString linkPreviewUrl;
+
+  late final _i1.ColumnString linkPreviewTitle;
+
+  late final _i1.ColumnString linkPreviewDescription;
+
+  late final _i1.ColumnString linkPreviewImageUrl;
+
   late final _i1.ColumnDateTime createdAt;
 
   /// Set the first time the recipient's client fetches this message.
@@ -500,6 +611,10 @@ class ChatMessageTable extends _i1.Table<int?> {
     mediaUrl,
     mediaType,
     replyToMessageId,
+    linkPreviewUrl,
+    linkPreviewTitle,
+    linkPreviewDescription,
+    linkPreviewImageUrl,
     createdAt,
     deliveredAt,
     readAt,

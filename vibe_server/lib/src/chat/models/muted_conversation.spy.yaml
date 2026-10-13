@@ -1,0 +1,13 @@
+### [userId] has muted push notifications for messages from
+### [mutedUserId]. Messages still arrive normally; only the push is
+### suppressed.
+class: MutedConversation
+table: muted_conversation
+fields:
+  userId: UuidValue
+  mutedUserId: UuidValue
+  createdAt: DateTime, default=now
+indexes:
+  muted_conversation_unique:
+    fields: userId, mutedUserId
+    unique: true

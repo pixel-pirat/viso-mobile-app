@@ -35,6 +35,10 @@ abstract class ChatMessageView
     this.replyToSenderId,
     this.replyPreviewText,
     this.replyPreviewMediaType,
+    this.linkPreviewUrl,
+    this.linkPreviewTitle,
+    this.linkPreviewDescription,
+    this.linkPreviewImageUrl,
     required this.reactions,
   });
 
@@ -54,6 +58,10 @@ abstract class ChatMessageView
     _i1.UuidValue? replyToSenderId,
     String? replyPreviewText,
     String? replyPreviewMediaType,
+    String? linkPreviewUrl,
+    String? linkPreviewTitle,
+    String? linkPreviewDescription,
+    String? linkPreviewImageUrl,
     required List<_i2.MessageReactionInfo> reactions,
   }) = _ChatMessageViewImpl;
 
@@ -93,6 +101,11 @@ abstract class ChatMessageView
       replyPreviewText: jsonSerialization['replyPreviewText'] as String?,
       replyPreviewMediaType:
           jsonSerialization['replyPreviewMediaType'] as String?,
+      linkPreviewUrl: jsonSerialization['linkPreviewUrl'] as String?,
+      linkPreviewTitle: jsonSerialization['linkPreviewTitle'] as String?,
+      linkPreviewDescription:
+          jsonSerialization['linkPreviewDescription'] as String?,
+      linkPreviewImageUrl: jsonSerialization['linkPreviewImageUrl'] as String?,
       reactions: _i3.Protocol().deserialize<List<_i2.MessageReactionInfo>>(
         jsonSerialization['reactions'],
       ),
@@ -129,6 +142,14 @@ abstract class ChatMessageView
 
   String? replyPreviewMediaType;
 
+  String? linkPreviewUrl;
+
+  String? linkPreviewTitle;
+
+  String? linkPreviewDescription;
+
+  String? linkPreviewImageUrl;
+
   List<_i2.MessageReactionInfo> reactions;
 
   /// Returns a shallow copy of this [ChatMessageView]
@@ -150,6 +171,10 @@ abstract class ChatMessageView
     _i1.UuidValue? replyToSenderId,
     String? replyPreviewText,
     String? replyPreviewMediaType,
+    String? linkPreviewUrl,
+    String? linkPreviewTitle,
+    String? linkPreviewDescription,
+    String? linkPreviewImageUrl,
     List<_i2.MessageReactionInfo>? reactions,
   });
   @override
@@ -172,6 +197,12 @@ abstract class ChatMessageView
       if (replyPreviewText != null) 'replyPreviewText': replyPreviewText,
       if (replyPreviewMediaType != null)
         'replyPreviewMediaType': replyPreviewMediaType,
+      if (linkPreviewUrl != null) 'linkPreviewUrl': linkPreviewUrl,
+      if (linkPreviewTitle != null) 'linkPreviewTitle': linkPreviewTitle,
+      if (linkPreviewDescription != null)
+        'linkPreviewDescription': linkPreviewDescription,
+      if (linkPreviewImageUrl != null)
+        'linkPreviewImageUrl': linkPreviewImageUrl,
       'reactions': reactions.toJson(valueToJson: (v) => v.toJson()),
     };
   }
@@ -196,6 +227,12 @@ abstract class ChatMessageView
       if (replyPreviewText != null) 'replyPreviewText': replyPreviewText,
       if (replyPreviewMediaType != null)
         'replyPreviewMediaType': replyPreviewMediaType,
+      if (linkPreviewUrl != null) 'linkPreviewUrl': linkPreviewUrl,
+      if (linkPreviewTitle != null) 'linkPreviewTitle': linkPreviewTitle,
+      if (linkPreviewDescription != null)
+        'linkPreviewDescription': linkPreviewDescription,
+      if (linkPreviewImageUrl != null)
+        'linkPreviewImageUrl': linkPreviewImageUrl,
       'reactions': reactions.toJson(valueToJson: (v) => v.toJsonForProtocol()),
     };
   }
@@ -225,6 +262,10 @@ class _ChatMessageViewImpl extends ChatMessageView {
     _i1.UuidValue? replyToSenderId,
     String? replyPreviewText,
     String? replyPreviewMediaType,
+    String? linkPreviewUrl,
+    String? linkPreviewTitle,
+    String? linkPreviewDescription,
+    String? linkPreviewImageUrl,
     required List<_i2.MessageReactionInfo> reactions,
   }) : super._(
          id: id,
@@ -242,6 +283,10 @@ class _ChatMessageViewImpl extends ChatMessageView {
          replyToSenderId: replyToSenderId,
          replyPreviewText: replyPreviewText,
          replyPreviewMediaType: replyPreviewMediaType,
+         linkPreviewUrl: linkPreviewUrl,
+         linkPreviewTitle: linkPreviewTitle,
+         linkPreviewDescription: linkPreviewDescription,
+         linkPreviewImageUrl: linkPreviewImageUrl,
          reactions: reactions,
        );
 
@@ -265,6 +310,10 @@ class _ChatMessageViewImpl extends ChatMessageView {
     Object? replyToSenderId = _Undefined,
     Object? replyPreviewText = _Undefined,
     Object? replyPreviewMediaType = _Undefined,
+    Object? linkPreviewUrl = _Undefined,
+    Object? linkPreviewTitle = _Undefined,
+    Object? linkPreviewDescription = _Undefined,
+    Object? linkPreviewImageUrl = _Undefined,
     List<_i2.MessageReactionInfo>? reactions,
   }) {
     return ChatMessageView(
@@ -291,6 +340,18 @@ class _ChatMessageViewImpl extends ChatMessageView {
       replyPreviewMediaType: replyPreviewMediaType is String?
           ? replyPreviewMediaType
           : this.replyPreviewMediaType,
+      linkPreviewUrl: linkPreviewUrl is String?
+          ? linkPreviewUrl
+          : this.linkPreviewUrl,
+      linkPreviewTitle: linkPreviewTitle is String?
+          ? linkPreviewTitle
+          : this.linkPreviewTitle,
+      linkPreviewDescription: linkPreviewDescription is String?
+          ? linkPreviewDescription
+          : this.linkPreviewDescription,
+      linkPreviewImageUrl: linkPreviewImageUrl is String?
+          ? linkPreviewImageUrl
+          : this.linkPreviewImageUrl,
       reactions:
           reactions ?? this.reactions.map((e0) => e0.copyWith()).toList(),
     );

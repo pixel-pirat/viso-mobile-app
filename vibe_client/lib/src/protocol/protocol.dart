@@ -12,43 +12,53 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'chat/models/chat_conversation_summary.dart' as _i2;
-import 'chat/models/chat_message.dart' as _i3;
-import 'chat/models/chat_message_view.dart' as _i4;
-import 'chat/models/message_reaction.dart' as _i5;
-import 'chat/models/message_reaction_info.dart' as _i6;
-import 'chat/models/typing_status.dart' as _i7;
-import 'greetings/greeting.dart' as _i8;
-import 'notifications/models/app_notification.dart' as _i9;
-import 'posts/models/post.dart' as _i10;
-import 'posts/models/post_feed_item.dart' as _i11;
-import 'posts/models/post_like.dart' as _i12;
-import 'presence/models/presence_status.dart' as _i13;
-import 'presence/models/user_presence.dart' as _i14;
-import 'push/models/device_token.dart' as _i15;
-import 'stories/models/story.dart' as _i16;
-import 'stories/models/story_group.dart' as _i17;
-import 'stories/models/story_item.dart' as _i18;
-import 'stories/models/story_view.dart' as _i19;
+import 'chat/models/archived_conversation.dart' as _i2;
+import 'chat/models/blocked_user.dart' as _i3;
+import 'chat/models/chat_conversation_summary.dart' as _i4;
+import 'chat/models/chat_message.dart' as _i5;
+import 'chat/models/chat_message_view.dart' as _i6;
+import 'chat/models/message_reaction.dart' as _i7;
+import 'chat/models/message_reaction_info.dart' as _i8;
+import 'chat/models/muted_conversation.dart' as _i9;
+import 'chat/models/pinned_conversation.dart' as _i10;
+import 'chat/models/starred_message.dart' as _i11;
+import 'chat/models/typing_status.dart' as _i12;
+import 'greetings/greeting.dart' as _i13;
+import 'notifications/models/app_notification.dart' as _i14;
+import 'posts/models/post.dart' as _i15;
+import 'posts/models/post_feed_item.dart' as _i16;
+import 'posts/models/post_like.dart' as _i17;
+import 'presence/models/presence_status.dart' as _i18;
+import 'presence/models/user_presence.dart' as _i19;
+import 'push/models/device_token.dart' as _i20;
+import 'stories/models/story.dart' as _i21;
+import 'stories/models/story_group.dart' as _i22;
+import 'stories/models/story_item.dart' as _i23;
+import 'stories/models/story_view.dart' as _i24;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
-    as _i20;
-import 'package:vibe_client/src/protocol/chat/models/chat_conversation_summary.dart'
-    as _i21;
-import 'package:vibe_client/src/protocol/chat/models/chat_message_view.dart'
-    as _i22;
-import 'package:vibe_client/src/protocol/notifications/models/app_notification.dart'
-    as _i23;
-import 'package:vibe_client/src/protocol/posts/models/post_feed_item.dart'
-    as _i24;
-import 'package:vibe_client/src/protocol/stories/models/story_group.dart'
     as _i25;
-import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
+import 'package:vibe_client/src/protocol/chat/models/chat_conversation_summary.dart'
     as _i26;
+import 'package:vibe_client/src/protocol/chat/models/chat_message_view.dart'
+    as _i27;
+import 'package:vibe_client/src/protocol/notifications/models/app_notification.dart'
+    as _i28;
+import 'package:vibe_client/src/protocol/posts/models/post_feed_item.dart'
+    as _i29;
+import 'package:vibe_client/src/protocol/stories/models/story_group.dart'
+    as _i30;
+import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
+    as _i31;
+export 'chat/models/archived_conversation.dart';
+export 'chat/models/blocked_user.dart';
 export 'chat/models/chat_conversation_summary.dart';
 export 'chat/models/chat_message.dart';
 export 'chat/models/chat_message_view.dart';
 export 'chat/models/message_reaction.dart';
 export 'chat/models/message_reaction_info.dart';
+export 'chat/models/muted_conversation.dart';
+export 'chat/models/pinned_conversation.dart';
+export 'chat/models/starred_message.dart';
 export 'chat/models/typing_status.dart';
 export 'greetings/greeting.dart';
 export 'notifications/models/app_notification.dart';
@@ -98,195 +108,235 @@ class Protocol extends _i1.SerializationManager {
       }
     }
 
-    if (t == _i2.ChatConversationSummary) {
-      return _i2.ChatConversationSummary.fromJson(data) as T;
+    if (t == _i2.ArchivedConversation) {
+      return _i2.ArchivedConversation.fromJson(data) as T;
     }
-    if (t == _i3.ChatMessage) {
-      return _i3.ChatMessage.fromJson(data) as T;
+    if (t == _i3.BlockedUser) {
+      return _i3.BlockedUser.fromJson(data) as T;
     }
-    if (t == _i4.ChatMessageView) {
-      return _i4.ChatMessageView.fromJson(data) as T;
+    if (t == _i4.ChatConversationSummary) {
+      return _i4.ChatConversationSummary.fromJson(data) as T;
     }
-    if (t == _i5.MessageReaction) {
-      return _i5.MessageReaction.fromJson(data) as T;
+    if (t == _i5.ChatMessage) {
+      return _i5.ChatMessage.fromJson(data) as T;
     }
-    if (t == _i6.MessageReactionInfo) {
-      return _i6.MessageReactionInfo.fromJson(data) as T;
+    if (t == _i6.ChatMessageView) {
+      return _i6.ChatMessageView.fromJson(data) as T;
     }
-    if (t == _i7.TypingStatus) {
-      return _i7.TypingStatus.fromJson(data) as T;
+    if (t == _i7.MessageReaction) {
+      return _i7.MessageReaction.fromJson(data) as T;
     }
-    if (t == _i8.Greeting) {
-      return _i8.Greeting.fromJson(data) as T;
+    if (t == _i8.MessageReactionInfo) {
+      return _i8.MessageReactionInfo.fromJson(data) as T;
     }
-    if (t == _i9.AppNotification) {
-      return _i9.AppNotification.fromJson(data) as T;
+    if (t == _i9.MutedConversation) {
+      return _i9.MutedConversation.fromJson(data) as T;
     }
-    if (t == _i10.Post) {
-      return _i10.Post.fromJson(data) as T;
+    if (t == _i10.PinnedConversation) {
+      return _i10.PinnedConversation.fromJson(data) as T;
     }
-    if (t == _i11.PostFeedItem) {
-      return _i11.PostFeedItem.fromJson(data) as T;
+    if (t == _i11.StarredMessage) {
+      return _i11.StarredMessage.fromJson(data) as T;
     }
-    if (t == _i12.PostLike) {
-      return _i12.PostLike.fromJson(data) as T;
+    if (t == _i12.TypingStatus) {
+      return _i12.TypingStatus.fromJson(data) as T;
     }
-    if (t == _i13.PresenceStatus) {
-      return _i13.PresenceStatus.fromJson(data) as T;
+    if (t == _i13.Greeting) {
+      return _i13.Greeting.fromJson(data) as T;
     }
-    if (t == _i14.UserPresence) {
-      return _i14.UserPresence.fromJson(data) as T;
+    if (t == _i14.AppNotification) {
+      return _i14.AppNotification.fromJson(data) as T;
     }
-    if (t == _i15.DeviceToken) {
-      return _i15.DeviceToken.fromJson(data) as T;
+    if (t == _i15.Post) {
+      return _i15.Post.fromJson(data) as T;
     }
-    if (t == _i16.Story) {
-      return _i16.Story.fromJson(data) as T;
+    if (t == _i16.PostFeedItem) {
+      return _i16.PostFeedItem.fromJson(data) as T;
     }
-    if (t == _i17.StoryGroup) {
-      return _i17.StoryGroup.fromJson(data) as T;
+    if (t == _i17.PostLike) {
+      return _i17.PostLike.fromJson(data) as T;
     }
-    if (t == _i18.StoryItem) {
-      return _i18.StoryItem.fromJson(data) as T;
+    if (t == _i18.PresenceStatus) {
+      return _i18.PresenceStatus.fromJson(data) as T;
     }
-    if (t == _i19.StoryView) {
-      return _i19.StoryView.fromJson(data) as T;
+    if (t == _i19.UserPresence) {
+      return _i19.UserPresence.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i2.ChatConversationSummary?>()) {
-      return (data != null ? _i2.ChatConversationSummary.fromJson(data) : null)
+    if (t == _i20.DeviceToken) {
+      return _i20.DeviceToken.fromJson(data) as T;
+    }
+    if (t == _i21.Story) {
+      return _i21.Story.fromJson(data) as T;
+    }
+    if (t == _i22.StoryGroup) {
+      return _i22.StoryGroup.fromJson(data) as T;
+    }
+    if (t == _i23.StoryItem) {
+      return _i23.StoryItem.fromJson(data) as T;
+    }
+    if (t == _i24.StoryView) {
+      return _i24.StoryView.fromJson(data) as T;
+    }
+    if (t == _i1.getType<_i2.ArchivedConversation?>()) {
+      return (data != null ? _i2.ArchivedConversation.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i3.ChatMessage?>()) {
-      return (data != null ? _i3.ChatMessage.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i3.BlockedUser?>()) {
+      return (data != null ? _i3.BlockedUser.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i4.ChatMessageView?>()) {
-      return (data != null ? _i4.ChatMessageView.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i5.MessageReaction?>()) {
-      return (data != null ? _i5.MessageReaction.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i6.MessageReactionInfo?>()) {
-      return (data != null ? _i6.MessageReactionInfo.fromJson(data) : null)
+    if (t == _i1.getType<_i4.ChatConversationSummary?>()) {
+      return (data != null ? _i4.ChatConversationSummary.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i7.TypingStatus?>()) {
-      return (data != null ? _i7.TypingStatus.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i5.ChatMessage?>()) {
+      return (data != null ? _i5.ChatMessage.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i8.Greeting?>()) {
-      return (data != null ? _i8.Greeting.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i6.ChatMessageView?>()) {
+      return (data != null ? _i6.ChatMessageView.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i9.AppNotification?>()) {
-      return (data != null ? _i9.AppNotification.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i7.MessageReaction?>()) {
+      return (data != null ? _i7.MessageReaction.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i10.Post?>()) {
-      return (data != null ? _i10.Post.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i8.MessageReactionInfo?>()) {
+      return (data != null ? _i8.MessageReactionInfo.fromJson(data) : null)
+          as T;
     }
-    if (t == _i1.getType<_i11.PostFeedItem?>()) {
-      return (data != null ? _i11.PostFeedItem.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i9.MutedConversation?>()) {
+      return (data != null ? _i9.MutedConversation.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i12.PostLike?>()) {
-      return (data != null ? _i12.PostLike.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i10.PinnedConversation?>()) {
+      return (data != null ? _i10.PinnedConversation.fromJson(data) : null)
+          as T;
     }
-    if (t == _i1.getType<_i13.PresenceStatus?>()) {
-      return (data != null ? _i13.PresenceStatus.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i11.StarredMessage?>()) {
+      return (data != null ? _i11.StarredMessage.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i14.UserPresence?>()) {
-      return (data != null ? _i14.UserPresence.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i12.TypingStatus?>()) {
+      return (data != null ? _i12.TypingStatus.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i15.DeviceToken?>()) {
-      return (data != null ? _i15.DeviceToken.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i13.Greeting?>()) {
+      return (data != null ? _i13.Greeting.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i16.Story?>()) {
-      return (data != null ? _i16.Story.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i14.AppNotification?>()) {
+      return (data != null ? _i14.AppNotification.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i17.StoryGroup?>()) {
-      return (data != null ? _i17.StoryGroup.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i15.Post?>()) {
+      return (data != null ? _i15.Post.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i18.StoryItem?>()) {
-      return (data != null ? _i18.StoryItem.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i16.PostFeedItem?>()) {
+      return (data != null ? _i16.PostFeedItem.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i19.StoryView?>()) {
-      return (data != null ? _i19.StoryView.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i17.PostLike?>()) {
+      return (data != null ? _i17.PostLike.fromJson(data) : null) as T;
     }
-    if (t == List<_i6.MessageReactionInfo>) {
+    if (t == _i1.getType<_i18.PresenceStatus?>()) {
+      return (data != null ? _i18.PresenceStatus.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i19.UserPresence?>()) {
+      return (data != null ? _i19.UserPresence.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i20.DeviceToken?>()) {
+      return (data != null ? _i20.DeviceToken.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i21.Story?>()) {
+      return (data != null ? _i21.Story.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i22.StoryGroup?>()) {
+      return (data != null ? _i22.StoryGroup.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i23.StoryItem?>()) {
+      return (data != null ? _i23.StoryItem.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i24.StoryView?>()) {
+      return (data != null ? _i24.StoryView.fromJson(data) : null) as T;
+    }
+    if (t == List<_i8.MessageReactionInfo>) {
       return (data as List)
-              .map((e) => deserialize<_i6.MessageReactionInfo>(e))
+              .map((e) => deserialize<_i8.MessageReactionInfo>(e))
               .toList()
           as T;
     }
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
-    if (t == List<_i18.StoryItem>) {
-      return (data as List).map((e) => deserialize<_i18.StoryItem>(e)).toList()
+    if (t == List<_i23.StoryItem>) {
+      return (data as List).map((e) => deserialize<_i23.StoryItem>(e)).toList()
           as T;
     }
-    if (t == List<_i20.UserProfileModel>) {
+    if (t == List<_i25.UserProfileModel>) {
       return (data as List)
-              .map((e) => deserialize<_i20.UserProfileModel>(e))
+              .map((e) => deserialize<_i25.UserProfileModel>(e))
               .toList()
           as T;
     }
-    if (t == List<_i21.ChatConversationSummary>) {
+    if (t == List<_i26.ChatConversationSummary>) {
       return (data as List)
-              .map((e) => deserialize<_i21.ChatConversationSummary>(e))
+              .map((e) => deserialize<_i26.ChatConversationSummary>(e))
               .toList()
           as T;
     }
-    if (t == List<_i22.ChatMessageView>) {
+    if (t == List<int>) {
+      return (data as List).map((e) => deserialize<int>(e)).toList() as T;
+    }
+    if (t == List<_i27.ChatMessageView>) {
       return (data as List)
-              .map((e) => deserialize<_i22.ChatMessageView>(e))
+              .map((e) => deserialize<_i27.ChatMessageView>(e))
               .toList()
           as T;
     }
-    if (t == List<_i23.AppNotification>) {
+    if (t == List<_i28.AppNotification>) {
       return (data as List)
-              .map((e) => deserialize<_i23.AppNotification>(e))
+              .map((e) => deserialize<_i28.AppNotification>(e))
               .toList()
           as T;
     }
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
-    if (t == List<_i24.PostFeedItem>) {
+    if (t == List<_i29.PostFeedItem>) {
       return (data as List)
-              .map((e) => deserialize<_i24.PostFeedItem>(e))
+              .map((e) => deserialize<_i29.PostFeedItem>(e))
               .toList()
           as T;
     }
-    if (t == List<_i25.StoryGroup>) {
-      return (data as List).map((e) => deserialize<_i25.StoryGroup>(e)).toList()
+    if (t == List<_i30.StoryGroup>) {
+      return (data as List).map((e) => deserialize<_i30.StoryGroup>(e)).toList()
           as T;
     }
     try {
-      return _i20.Protocol().deserialize<T>(data, t);
+      return _i25.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     try {
-      return _i26.Protocol().deserialize<T>(data, t);
+      return _i31.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
 
   static String? getClassNameForType(Type type) {
     return switch (type) {
-      _i2.ChatConversationSummary => 'ChatConversationSummary',
-      _i3.ChatMessage => 'ChatMessage',
-      _i4.ChatMessageView => 'ChatMessageView',
-      _i5.MessageReaction => 'MessageReaction',
-      _i6.MessageReactionInfo => 'MessageReactionInfo',
-      _i7.TypingStatus => 'TypingStatus',
-      _i8.Greeting => 'Greeting',
-      _i9.AppNotification => 'AppNotification',
-      _i10.Post => 'Post',
-      _i11.PostFeedItem => 'PostFeedItem',
-      _i12.PostLike => 'PostLike',
-      _i13.PresenceStatus => 'PresenceStatus',
-      _i14.UserPresence => 'UserPresence',
-      _i15.DeviceToken => 'DeviceToken',
-      _i16.Story => 'Story',
-      _i17.StoryGroup => 'StoryGroup',
-      _i18.StoryItem => 'StoryItem',
-      _i19.StoryView => 'StoryView',
+      _i2.ArchivedConversation => 'ArchivedConversation',
+      _i3.BlockedUser => 'BlockedUser',
+      _i4.ChatConversationSummary => 'ChatConversationSummary',
+      _i5.ChatMessage => 'ChatMessage',
+      _i6.ChatMessageView => 'ChatMessageView',
+      _i7.MessageReaction => 'MessageReaction',
+      _i8.MessageReactionInfo => 'MessageReactionInfo',
+      _i9.MutedConversation => 'MutedConversation',
+      _i10.PinnedConversation => 'PinnedConversation',
+      _i11.StarredMessage => 'StarredMessage',
+      _i12.TypingStatus => 'TypingStatus',
+      _i13.Greeting => 'Greeting',
+      _i14.AppNotification => 'AppNotification',
+      _i15.Post => 'Post',
+      _i16.PostFeedItem => 'PostFeedItem',
+      _i17.PostLike => 'PostLike',
+      _i18.PresenceStatus => 'PresenceStatus',
+      _i19.UserPresence => 'UserPresence',
+      _i20.DeviceToken => 'DeviceToken',
+      _i21.Story => 'Story',
+      _i22.StoryGroup => 'StoryGroup',
+      _i23.StoryItem => 'StoryItem',
+      _i24.StoryView => 'StoryView',
       _ => null,
     };
   }
@@ -301,48 +351,58 @@ class Protocol extends _i1.SerializationManager {
     }
 
     switch (data) {
-      case _i2.ChatConversationSummary():
+      case _i2.ArchivedConversation():
+        return 'ArchivedConversation';
+      case _i3.BlockedUser():
+        return 'BlockedUser';
+      case _i4.ChatConversationSummary():
         return 'ChatConversationSummary';
-      case _i3.ChatMessage():
+      case _i5.ChatMessage():
         return 'ChatMessage';
-      case _i4.ChatMessageView():
+      case _i6.ChatMessageView():
         return 'ChatMessageView';
-      case _i5.MessageReaction():
+      case _i7.MessageReaction():
         return 'MessageReaction';
-      case _i6.MessageReactionInfo():
+      case _i8.MessageReactionInfo():
         return 'MessageReactionInfo';
-      case _i7.TypingStatus():
+      case _i9.MutedConversation():
+        return 'MutedConversation';
+      case _i10.PinnedConversation():
+        return 'PinnedConversation';
+      case _i11.StarredMessage():
+        return 'StarredMessage';
+      case _i12.TypingStatus():
         return 'TypingStatus';
-      case _i8.Greeting():
+      case _i13.Greeting():
         return 'Greeting';
-      case _i9.AppNotification():
+      case _i14.AppNotification():
         return 'AppNotification';
-      case _i10.Post():
+      case _i15.Post():
         return 'Post';
-      case _i11.PostFeedItem():
+      case _i16.PostFeedItem():
         return 'PostFeedItem';
-      case _i12.PostLike():
+      case _i17.PostLike():
         return 'PostLike';
-      case _i13.PresenceStatus():
+      case _i18.PresenceStatus():
         return 'PresenceStatus';
-      case _i14.UserPresence():
+      case _i19.UserPresence():
         return 'UserPresence';
-      case _i15.DeviceToken():
+      case _i20.DeviceToken():
         return 'DeviceToken';
-      case _i16.Story():
+      case _i21.Story():
         return 'Story';
-      case _i17.StoryGroup():
+      case _i22.StoryGroup():
         return 'StoryGroup';
-      case _i18.StoryItem():
+      case _i23.StoryItem():
         return 'StoryItem';
-      case _i19.StoryView():
+      case _i24.StoryView():
         return 'StoryView';
     }
-    className = _i20.Protocol().getClassNameForObject(data);
+    className = _i25.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth_core.$className';
     }
-    className = _i26.Protocol().getClassNameForObject(data);
+    className = _i31.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth_idp.$className';
     }
@@ -355,67 +415,82 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName is! String) {
       return super.deserializeByClassName(data);
     }
+    if (dataClassName == 'ArchivedConversation') {
+      return deserialize<_i2.ArchivedConversation>(data['data']);
+    }
+    if (dataClassName == 'BlockedUser') {
+      return deserialize<_i3.BlockedUser>(data['data']);
+    }
     if (dataClassName == 'ChatConversationSummary') {
-      return deserialize<_i2.ChatConversationSummary>(data['data']);
+      return deserialize<_i4.ChatConversationSummary>(data['data']);
     }
     if (dataClassName == 'ChatMessage') {
-      return deserialize<_i3.ChatMessage>(data['data']);
+      return deserialize<_i5.ChatMessage>(data['data']);
     }
     if (dataClassName == 'ChatMessageView') {
-      return deserialize<_i4.ChatMessageView>(data['data']);
+      return deserialize<_i6.ChatMessageView>(data['data']);
     }
     if (dataClassName == 'MessageReaction') {
-      return deserialize<_i5.MessageReaction>(data['data']);
+      return deserialize<_i7.MessageReaction>(data['data']);
     }
     if (dataClassName == 'MessageReactionInfo') {
-      return deserialize<_i6.MessageReactionInfo>(data['data']);
+      return deserialize<_i8.MessageReactionInfo>(data['data']);
+    }
+    if (dataClassName == 'MutedConversation') {
+      return deserialize<_i9.MutedConversation>(data['data']);
+    }
+    if (dataClassName == 'PinnedConversation') {
+      return deserialize<_i10.PinnedConversation>(data['data']);
+    }
+    if (dataClassName == 'StarredMessage') {
+      return deserialize<_i11.StarredMessage>(data['data']);
     }
     if (dataClassName == 'TypingStatus') {
-      return deserialize<_i7.TypingStatus>(data['data']);
+      return deserialize<_i12.TypingStatus>(data['data']);
     }
     if (dataClassName == 'Greeting') {
-      return deserialize<_i8.Greeting>(data['data']);
+      return deserialize<_i13.Greeting>(data['data']);
     }
     if (dataClassName == 'AppNotification') {
-      return deserialize<_i9.AppNotification>(data['data']);
+      return deserialize<_i14.AppNotification>(data['data']);
     }
     if (dataClassName == 'Post') {
-      return deserialize<_i10.Post>(data['data']);
+      return deserialize<_i15.Post>(data['data']);
     }
     if (dataClassName == 'PostFeedItem') {
-      return deserialize<_i11.PostFeedItem>(data['data']);
+      return deserialize<_i16.PostFeedItem>(data['data']);
     }
     if (dataClassName == 'PostLike') {
-      return deserialize<_i12.PostLike>(data['data']);
+      return deserialize<_i17.PostLike>(data['data']);
     }
     if (dataClassName == 'PresenceStatus') {
-      return deserialize<_i13.PresenceStatus>(data['data']);
+      return deserialize<_i18.PresenceStatus>(data['data']);
     }
     if (dataClassName == 'UserPresence') {
-      return deserialize<_i14.UserPresence>(data['data']);
+      return deserialize<_i19.UserPresence>(data['data']);
     }
     if (dataClassName == 'DeviceToken') {
-      return deserialize<_i15.DeviceToken>(data['data']);
+      return deserialize<_i20.DeviceToken>(data['data']);
     }
     if (dataClassName == 'Story') {
-      return deserialize<_i16.Story>(data['data']);
+      return deserialize<_i21.Story>(data['data']);
     }
     if (dataClassName == 'StoryGroup') {
-      return deserialize<_i17.StoryGroup>(data['data']);
+      return deserialize<_i22.StoryGroup>(data['data']);
     }
     if (dataClassName == 'StoryItem') {
-      return deserialize<_i18.StoryItem>(data['data']);
+      return deserialize<_i23.StoryItem>(data['data']);
     }
     if (dataClassName == 'StoryView') {
-      return deserialize<_i19.StoryView>(data['data']);
+      return deserialize<_i24.StoryView>(data['data']);
     }
     if (dataClassName.startsWith('serverpod_auth_core.')) {
       data['className'] = dataClassName.substring(20);
-      return _i20.Protocol().deserializeByClassName(data);
+      return _i25.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod_auth_idp.')) {
       data['className'] = dataClassName.substring(19);
-      return _i26.Protocol().deserializeByClassName(data);
+      return _i31.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }
@@ -430,10 +505,10 @@ class Protocol extends _i1.SerializationManager {
       return null;
     }
     try {
-      return _i20.Protocol().mapRecordToJson(record);
+      return _i25.Protocol().mapRecordToJson(record);
     } catch (_) {}
     try {
-      return _i26.Protocol().mapRecordToJson(record);
+      return _i31.Protocol().mapRecordToJson(record);
     } catch (_) {}
     throw Exception('Unsupported record type ${record.runtimeType}');
   }
